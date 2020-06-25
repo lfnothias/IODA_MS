@@ -1,0 +1,22 @@
+name: environment
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - numpy
+  - pip
+  - pip:
+    - pandas
+    - matplotlib
+    - jupyterlab
+    - zip
+    - nbconvert
+    - widgetsnbextension
+    - ipykernel
+    - ipywidgets
+    - ipyleaflet
+    - altair=3.1
+        - bqplot
+    - seaborn
+    - scikit-image
+    - scikit-learn
