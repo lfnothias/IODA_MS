@@ -2,16 +2,16 @@ name: environment
 channels:
   - conda-forge
 dependencies:
-  - python=3.7
+  - python
   - numpy
   - pip
   - pip:
     - pandas
     - matplotlib
-    - jupyterlab
+  #  - jupyterlab
     - zip
-    - nbconvert
-    - widgetsnbextension
-    - ipykernel
-    - ipywidgets
-    - ipyleaflet
+  #  - nbconvert
+  #  - widgetsnbextension
+  #  - ipykernel
+  #  - ipywidgets
+  #  - ipyleaflet
