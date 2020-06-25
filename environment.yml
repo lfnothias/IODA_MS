@@ -15,8 +15,3 @@ dependencies:
     - ipykernel
     - ipywidgets
     - ipyleaflet
-    - altair=3.1
-        - bqplot
-    - seaborn
-    - scikit-image
-    - scikit-learn
