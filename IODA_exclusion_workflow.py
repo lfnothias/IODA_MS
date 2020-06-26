@@ -1,5 +1,6 @@
 
 # coding: utf-8
+# Author: Louis Felix Nothias, louisfelix.nothias@gmail.com, June 2020
 import pandas as pd
 import numpy as np
 import sys
@@ -12,8 +13,10 @@ from format_to_qexactive_list import *
 from zipfile import ZipFile
 from logzero import logger, logfile
 import datetime
-#set logfile path
-logfile('results/logfile.txt')
+
+os.system('mkdir download_results')
+os.system('mkdir results')
+logfile('download_results/logfile.txt')
 
 now = datetime.datetime.now()
 logger.info(now)
@@ -105,10 +108,10 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
     Labels.append(Label1)
     plt.yscale('log')
     if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size = 16)
+        plt.title(title+', in m/z range', size = 13)
         plt.xlabel('m/z', size = 12)
     if column == 'retention_time':
-        plt.title(title+', in retention time range range', size =14)
+        plt.title(title+', in retention time range range', size =13)
         plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
     plt.legend(labels=Labels, fontsize =10)
@@ -118,6 +121,26 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
         plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
     plt.close()
 
+
+def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, title: str):
+    Labels = []
+    table0 = pd.read_csv(input_filename, sep=',', header=0)
+    rt_start = table0['retention_time']-table0['rt_start']
+    rt_end = table0['rt_end']-table0['retention_time']
+    rt_range = [rt_start, rt_end]
+    table0[blank_samplename] = (table0[blank_samplename])/100000
+    gradient = table0[blank_samplename].to_list()
+    plt.figure(figsize=(9,6))
+    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
+    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
+
+    Label1 = ['Ions excluded (n='+ str(table0.shape[0])+'), Red circle = intensit, Blue lines = rt range']
+    Labels.append(Label1)
+    plt.title(title, size =13)
+    plt.xlabel('Ret. time (sec)')
+    plt.ylabel('m/z')
+    plt.legend(labels=Labels, fontsize = 10)
+    plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
 
 def get_all_file_paths(directory,output_zip_path):
     # initializing empty file paths list
@@ -137,27 +160,6 @@ def get_all_file_paths(directory,output_zip_path):
             zip.write(file)
 
     print('All files zipped successfully!')
-
-
-def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, title: str):
-    Labels = []
-    table0 = pd.read_csv(input_filename, sep=',', header=0)
-    rt_start = table0['retention_time']-table0['rt_start']
-    rt_end = table0['rt_end']-table0['retention_time']
-    rt_range = [rt_start, rt_end]
-    table0[blank_samplename] = (table0[blank_samplename])/100000
-    gradient = table0[blank_samplename].to_list()
-    plt.figure(figsize=(10,7))
-    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
-    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
-
-    Label1 = ['Ions excluded (n='+ str(table0.shape[0])+'), Red circle = intensit, Blue lines = rt range']
-    Labels.append(Label1)
-    plt.title(title, size =14)
-    plt.xlabel('Ret. time (sec)')
-    plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10)
-    plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
 
 # Make exclusion list from two mzTabs
 def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str):
@@ -219,7 +221,6 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
     logger.info('Starting the IODA-exclusion workflow')
     output_dir = 'results'
-    os.system('mkdir results')
     print('======')
     print('Getting the mzTab')
     if input_filename.startswith('http'):
@@ -280,7 +281,6 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
 
-    os.system('mkdir download_results')
     print('=======================')
     print('Zipping workflow results files')
     get_all_file_paths('results','download_results/results_IODA_exclusion.zip')
