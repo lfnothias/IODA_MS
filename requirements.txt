@@ -8,3 +8,4 @@ vdom
 jupyterlab
 jupyter_contrib_nbextensions
 zip
+matplotlib

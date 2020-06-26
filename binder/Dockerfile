@@ -1,24 +1,25 @@
 FROM openms/library:release-2.5.0
 
+RUN echo ${HOME}
+
+# Copying files
+COPY . ${HOME}
+
 # Installing core dependencies for python
 RUN apt-get update -y
 RUN apt-get install -y python3-pip python3 build-essential
 
-RUN pip3 install ftputil
-RUN pip3 install flask
-RUN pip3 install gunicorn
-RUN pip3 install requests
-RUN pip3 install celery
-RUN pip3 install joblib
-RUN pip3 install vladiate
-RUN pip3 install pandas
-RUN pip3 install matplotlib
+RUN pwd ${HOME}
+RUN ls ${HOME}
+#RUN pip3 install -r ${HOME}/requirements.txt
+RUN pip3 install ipython
 
 # Building OpenMS
 WORKDIR /
-RUN git clone -b Release2.4.0 --single-branch https://github.com/OpenMS/OpenMS.git && cd /OpenMS
+#RUN git clone -b Release2.5.0 --single-branch https://github.com/OpenMS/OpenMS.git && cd /OpenMS
+RUN ls
 
-RUN mkdir openms-build
+#RUN mkdir openms-build
 WORKDIR /openms-build
 
 # configure
@@ -47,7 +48,6 @@ RUN adduser --disabled-password \
     --uid ${NB_UID} \
     ${NB_USER}
 
-COPY . ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
