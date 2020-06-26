@@ -9,6 +9,14 @@ from io import StringIO
 import warnings
 from pandas.core.common import SettingWithCopyWarning
 from format_to_qexactive_list import *
+from zipfile import ZipFile
+from logzero import logger, logfile
+import datetime
+#set logfile path
+logfile('results/logfile.txt')
+
+now = datetime.datetime.now()
+logger.info(now)
 
 def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str):
     """Take an mzTab containing one sample, output a table with mz, charge, rt, intensities."""
@@ -34,8 +42,7 @@ def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str
             if x not in Filenames:
                 Filenames.append(x[:-5])
 
-    print('Filename(s) in the mzTab')
-    print(Filenames)
+    logger.info('Filename(s) in the mzTab'+str(Filenames))
 
     Filename1 = Filenames[0]
 
@@ -83,8 +90,10 @@ def make_exclusion_list(input_filename: str, sample: str, intensity:float):
     df_master_exclusion_list = df_master[(df_master[sample] > intensity)]
     df_master_exclusion_list.to_csv(output_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
-    print('Initial number of features = ' + str(df_master.shape[0]))
-    print('Number of features in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity >'+str(intensity))
+    number_of_ions = 'Initial number of ions = '+ str(df_master.shape[0])
+    logger.info(number_of_ions)
+    number_of_ions_after_filtering = 'Number of ions after intensity filtering = '+str(df_master_exclusion_list.shape[0]) +', with intensity >'+ str(intensity)
+    logger.info(number_of_ions_after_filtering)
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
@@ -108,6 +117,27 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
     if column == 'retention_time':
         plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
     plt.close()
+
+
+def get_all_file_paths(directory,output_zip_path):
+    # initializing empty file paths list
+    file_paths = []
+
+    # crawling through directory and subdirectories
+    for root, directories, files in os.walk(directory):
+        for filename in files:
+            # join the two strings in order to form the full filepath.
+            filepath = os.path.join(root, filename)
+            file_paths.append(filepath)
+
+            # writing files to a zipfile
+    with ZipFile(output_zip_path,'w') as zip:
+        # writing each file one by one
+        for file in file_paths:
+            zip.write(file)
+
+    print('All files zipped successfully!')
+
 
 def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, title: str):
     Labels = []
@@ -134,7 +164,8 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
     # Convert the mzTabs into a Table to generate exclusion list
     output_filename = output_dir+'/'+input_filename[:-6]+'.csv'
 
-    print('Starting the IODA-exclusion workflow')
+    logger.info('Starting the IODA-exclusion workflow')
+
     print('======')
     print('Converting mzTab to table format')
     print('For narrow features')
@@ -186,43 +217,38 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
+    logger.info('Starting the IODA-exclusion workflow')
     output_dir = 'results'
     os.system('mkdir results')
-    print('=======================')
-    print('Starting the IODA-exclusion workflow')
-    print('=======================')
-    print('This is the input file path: '+str(input_filename))
+    print('======')
+    print('Getting the mzTab')
     if input_filename.startswith('http'):
         if 'google' in input_filename:
+            logger.info('This is the Google Drive download link:'+str(input_filename))
             url_id = input_filename.split('/', 10)[5]
-            print('This is the google drive ID:'+str(url_id))
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_filename = prefixe_google_download+url_id
-            print('This is the Google Drive download link:'+str(input_filename))
             output_filename = output_dir+'/Exclusion_sample.csv'
         else:
             output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
-            print('This is the output file path: '+str(output_filename))
+            logger.info('This is the output file path: '+str(output_filename))
     else:
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
-        print('This is the output file path: '+str(output_filename))
+        logger.info('This is the input file path: '+str(input_filename))
+        logger.info('This is the output file path: '+str(output_filename))
     print('======')
     print('Converting mzTab to table format')
     convert_blank_range_mzTab_to_table(input_filename,output_filename)
 
-    print('======')
-
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     blank_samplename = feature_table.columns[-3]
-    print('Assumed blank sample name: '+ blank_samplename)
-    print('======')
+    logger.info('Assumed blank sample name: '+ blank_samplename)
 
     # User-defined parameters
-    print('User-defined parameters')
-    print('Minimum ion intensity treshold (count) = '+ str(min_intensity))
-    print('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
-    print('======')
+    logger.info('User-defined parameters')
+    logger.info('Minimum ion intensity treshold (count) = '+ str(min_intensity))
+    logger.info('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
 
     # Concatenating the tables from narrow and large features:
     df_narrow = pd.read_csv(output_filename,sep=',')
@@ -250,21 +276,22 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # === Plot the features  ====
     print('Preparing plotting of the ions excluded')
-    print(' ')
     plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
 
-    os.system('zip -r results/IODA_exclusion_results.zip results')
+    os.system('mkdir download_results')
+    print('=======================')
+    print('Zipping workflow results files')
+    get_all_file_paths('results','download_results/results_IODA_exclusion.zip')
 
     print('=======================')
     print('End the IODA-exclusion workflow')
     print('=======================')
-    print(' ')
-    print('=======================')
     print('Plotting the results')
     print('=======================')
     print(' ')
+
 
 
 if __name__ == "__main__":
