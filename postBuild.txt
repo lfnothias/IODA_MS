@@ -1,3 +1,0 @@
-# Start up Jupyter lab
-jupyter lab workspaces import binder/workspace.json
-#jupyter nbextension enable autoscroll_set_on_load 10000
