@@ -199,8 +199,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_filename = prefixe_google_download+url_id
             print('This is the google drive download link:'+str(input_filename))
-        output_filename = output_dir+'/Exclusion_sample.csv'
-        print('This is the base name and path of the output file: '+str(output_filename[:-4]))
+            output_filename = output_dir+'/Exclusion_sample.csv'
     else:
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         print('This is the output file path: '+str(output_filename))
