@@ -86,50 +86,48 @@ def make_exclusion_list(input_filename: str, sample: str, intensity:float):
     print('Initial number of features = ' + str(df_master.shape[0]))
     print('Number of features in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity >'+str(intensity))
 
-def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, output_filename:str, title: str):
+def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
     Labels = []
     table0 = pd.read_csv(input_filename, sep=',', header=0)
-    fig = plt.figure(figsize=(12,8))
+    fig = plt.figure(figsize=(8,6))
     fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='blue',s=4, alpha=0.4)
     Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
     plt.yscale('log')
     if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size =16)
+        plt.title(title+', in m/z range', size = 16)
         plt.xlabel('m/z', size = 12)
     if column == 'retention_time':
-        plt.title(title+', in retention time range range', size =16)
-        plt.xlabel('Retention time in seconds', size = 12)
-
-    plt.ylabel('Feature intensity (log scale)', size = 12)
-    plt.legend(labels=Labels, fontsize =12)
+        plt.title(title+', in retention time range range', size =14)
+        plt.xlabel('Ret. time (sec)', size = 11)
+    plt.ylabel('Ion intensity (log scale)', size = 11)
+    plt.legend(labels=Labels, fontsize =10)
     if column == 'Mass [m/z]':
-        plt.savefig(output_filename[:-4]+'_EXCLUSION_scatter_plot_mz.png', dpi=300)
+        plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
-        plt.savefig(output_filename[:-4]+'_EXCLUSION_scatter_plot_rt.png', dpi=300)
+        plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
+    plt.close()
 
-def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, output_filename:str, title: str):
+def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, title: str):
     Labels = []
-    table0 = pd.read_csv(output_filename, sep=',', header=0)
+    table0 = pd.read_csv(input_filename, sep=',', header=0)
     rt_start = table0['retention_time']-table0['rt_start']
     rt_end = table0['rt_end']-table0['retention_time']
     rt_range = [rt_start, rt_end]
     table0[blank_samplename] = (table0[blank_samplename])/100000
     gradient = table0[blank_samplename].to_list()
-    plt.figure(figsize=(12,8))
+    plt.figure(figsize=(10,7))
     plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
     plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
 
-    Label1 = ['Ions excluded (n='+ str(table0.shape[0])+'), Blue horizontal lines = rt range, Red circle = ion intensity.']
+    Label1 = ['Ions excluded (n='+ str(table0.shape[0])+'), Red circle = intensit, Blue lines = rt range']
     Labels.append(Label1)
-
-    plt.title(title, size =16)
+    plt.title(title, size =14)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-
-    plt.legend(labels=Labels, fontsize =14)
-    plt.savefig(output_filename[:-4]+'_EXCLUSION_rt_range_plot.png', dpi=300)
+    plt.legend(labels=Labels, fontsize = 10)
+    plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
 
 # Make exclusion list from two mzTabs
 def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str):
@@ -189,10 +187,9 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
     output_dir = 'results'
-    os.system('mkdir results')
-    print('======')
-    print('Starting the workflow')
-    print('======')
+    print('=======================')
+    print('Starting the IODA-exclusion workflow')
+    print('=======================')
     print('This is the input file path: '+str(input_filename))
     if input_filename.startswith('http'):
         if 'google' in input_filename:
@@ -250,13 +247,21 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
 
     # === Plot the features  ====
-    print('Plotting the ions excluded')
+    print('Preparing plotting of the ions excluded')
     print(' ')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename, 'Distribution of excluded ions')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', output_filename, 'Intensity distribution of ions excluded')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', output_filename, 'Intensity distribution of ions excluded')
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
 
     os.system('zip -r results/IODA_exclusion_results.zip results')
+
+    print('=======================')
+    print('End the IODA-exclusion workflow')
+    print('=======================')
+    print(' ')
+    print('=======================')
+    print('Plotting results')
+    print('=======================')
 
 if __name__ == "__main__":
     make_exclusion_from_mzTab(str(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]))
