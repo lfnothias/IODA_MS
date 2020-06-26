@@ -36,7 +36,7 @@ RUN apt-get install -y xvfb
 
 
 # Binder Specific Installations
-RUN pip install --no-cache-dir notebook==5.*
+RUN pip3 install --no-cache-dir notebook==5.*
 ARG NB_USER=jovyan
 ARG NB_UID=1000
 ENV USER ${NB_USER}
