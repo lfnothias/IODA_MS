@@ -10,7 +10,7 @@ import warnings
 from pandas.core.common import SettingWithCopyWarning
 from format_to_qexactive_list import *
 
-def convert_blank_range_mzTab_to_table(input_filename: str,output_filename: str):
+def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str):
     """Take an mzTab containing one sample, output a table with mz, charge, rt, intensities."""
     df = pd.read_csv(input_filename, sep='\t', error_bad_lines=False, warn_bad_lines=False)
 
@@ -187,6 +187,7 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
     output_dir = 'results'
+    os.system('mkdir results')
     print('=======================')
     print('Starting the IODA-exclusion workflow')
     print('=======================')
@@ -203,7 +204,6 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     else:
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         print('This is the output file path: '+str(output_filename))
-    print(input_filename)
     print('======')
     print('Converting mzTab to table format')
     convert_blank_range_mzTab_to_table(input_filename,output_filename)
