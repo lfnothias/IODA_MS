@@ -189,6 +189,7 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
     output_dir = 'results'
+    os.system('mkdir results')
     print('======')
     print('Starting the workflow')
     print('======')
