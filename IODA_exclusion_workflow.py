@@ -214,10 +214,11 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
     now = datetime.datetime.now()
     logger.info(now)
+    os.system('rm -r results')
     os.system('rm -r download_results')
-    os.system('mkdir download_results')
     os.system('mkdir results')
-    logfile('download_results/logfile.txt')
+    os.system('mkdir download_results')
+    logfile('results/logfile.txt')
 
     logger.info('Starting the IODA-exclusion workflow')
     output_dir = 'results'
