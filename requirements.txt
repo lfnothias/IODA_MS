@@ -4,5 +4,5 @@ pandas==1.0.1
 numpy==1.16.4
 matplotlib==3.1.1
 vdom
-jupyterlab=0.33.12
+jupyterlab==0.33.12
 jupyterlab_launcher>=0.5.0
