@@ -14,13 +14,6 @@ from zipfile import ZipFile
 from logzero import logger, logfile
 import datetime
 
-os.system('mkdir download_results')
-os.system('mkdir results')
-logfile('download_results/logfile.txt')
-
-now = datetime.datetime.now()
-logger.info(now)
-
 def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str):
     """Take an mzTab containing one sample, output a table with mz, charge, rt, intensities."""
     df = pd.read_csv(input_filename, sep='\t', error_bad_lines=False, warn_bad_lines=False)
@@ -219,6 +212,13 @@ def make_exclusion_from_mzTabs(input_dir:str, min_intensity:int , output_dir:str
 
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:str):
+    now = datetime.datetime.now()
+    logger.info(now)
+    os.system('rm -r download_results')
+    os.system('mkdir download_results')
+    os.system('mkdir results')
+    logfile('download_results/logfile.txt')
+
     logger.info('Starting the IODA-exclusion workflow')
     output_dir = 'results'
     print('======')
