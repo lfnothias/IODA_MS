@@ -8,7 +8,7 @@ This repository will help accomplish two things:
 
 We can run this on Binder, click it below
 
-[![TOPPAS Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mwang87/IODA_MS/openms-docker-binder)
+[![TOPPAS Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mwang87/IODA_MS/)
 
 You will need to do two things:
 
