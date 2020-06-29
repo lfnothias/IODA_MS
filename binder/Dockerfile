@@ -1,25 +1,11 @@
 FROM openms/library:release-2.5.0
 
-RUN echo ${HOME}
-
-# Copying files
-COPY . ${HOME}
 
 # Installing core dependencies for python
 RUN apt-get update -y
 RUN apt-get install -y python3-pip python3 build-essential
 
-RUN pwd ${HOME}
-RUN ls ${HOME}
-#RUN pip3 install -r ${HOME}/requirements.txt
-RUN pip3 install ipython
-
 # Building OpenMS
-WORKDIR /
-#RUN git clone -b Release2.5.0 --single-branch https://github.com/OpenMS/OpenMS.git && cd /OpenMS
-RUN ls
-
-#RUN mkdir openms-build
 WORKDIR /openms-build
 
 # configure
@@ -35,7 +21,6 @@ RUN /bin/bash -c "cmake -DCMAKE_PREFIX_PATH='/contrib-build/;/usr/;/usr/local' -
 RUN apt-get install -y xvfb
 RUN apt-get install -y wget
 
-
 # Binder Specific Installations
 RUN pip3 install --no-cache-dir notebook==5.*
 ARG NB_USER=jovyan
@@ -44,6 +29,15 @@ ENV USER ${NB_USER}
 ENV NB_UID ${NB_UID}
 ENV HOME /home/${NB_USER}
 WORKDIR /home/${NB_USER}
+
+# Copying files
+RUN echo ${HOME}
+COPY . ${HOME}
+
+RUN pwd ${HOME}
+RUN ls ${HOME}
+#RUN pip3 install -r ${HOME}/requirements.txt
+RUN pip3 install ipython
 
 RUN adduser --disabled-password \
     --gecos "Default user" \
