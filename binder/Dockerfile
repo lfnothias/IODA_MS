@@ -33,6 +33,7 @@ RUN make -j7
 
 # Installing Virtual Frame Buffer
 RUN apt-get install -y xvfb
+RUN apt-get install -y wget
 
 
 # Binder Specific Installations
