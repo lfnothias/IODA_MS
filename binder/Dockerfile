@@ -37,7 +37,6 @@ COPY . ${HOME}
 RUN pwd ${HOME}
 RUN ls ${HOME}
 RUN pip3 install -r ${HOME}/requirements.txt
-RUN pip3 install ipython
 
 RUN adduser --disabled-password \
     --gecos "Default user" \
