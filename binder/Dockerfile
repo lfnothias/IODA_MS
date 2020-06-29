@@ -26,10 +26,10 @@ WORKDIR /openms-build
 RUN /bin/bash -c "cmake -DCMAKE_PREFIX_PATH='/contrib-build/;/usr/;/usr/local' -DBOOST_USE_STATIC=OFF -DWITH_GUI=ON ../OpenMS"
 
 # make OpenMS library
-RUN make OpenMS -j7
+# RUN make OpenMS -j7
 
 # Linking all executables
-RUN make -j7
+# RUN make -j7
 
 # Installing Virtual Frame Buffer
 RUN apt-get install -y xvfb
@@ -43,6 +43,7 @@ ARG NB_UID=1000
 ENV USER ${NB_USER}
 ENV NB_UID ${NB_UID}
 ENV HOME /home/${NB_USER}
+WORKDIR /home/${NB_USER}
 
 RUN adduser --disabled-password \
     --gecos "Default user" \
