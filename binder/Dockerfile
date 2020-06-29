@@ -12,10 +12,10 @@ WORKDIR /openms-build
 RUN /bin/bash -c "cmake -DCMAKE_PREFIX_PATH='/contrib-build/;/usr/;/usr/local' -DBOOST_USE_STATIC=OFF -DWITH_GUI=ON ../OpenMS"
 
 # make OpenMS library
-# RUN make OpenMS -j7
+RUN make OpenMS -j7
 
 # Linking all executables
-# RUN make -j7
+RUN make -j7
 
 # Installing Virtual Frame Buffer
 RUN apt-get install -y xvfb
