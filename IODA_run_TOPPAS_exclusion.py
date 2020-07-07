@@ -14,7 +14,8 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     TOPPAS_Pipeline = "toppas_Exclusion_workflow.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_folder = "TOPPAS_Workflow"
-    os.system('mkdir results')
+    os.system('rm download_results/IODA_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/toppas_output/TOPPAS_out/')
     os.system('mkdir download_results')
     #large_noise = 5E5
     #narrow_noise = 1E5
@@ -134,7 +135,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     print('Completed the TOPPAS/OpenMS workflow')
     print('======')
     print('Zipping up the TOPPAS/OpenMS workflow files')
-    get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_exclusion_OpenMS_results.zip')
+    get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_OpenMS_results.zip')
 
     print('======')
     print('Completed zipping up the TOPPAS/OpenMS workflow output files')
