@@ -51,7 +51,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         cp2 = subprocess.run(bashCommand2,shell=True)
         cp2
 
-    bashCommand3 = "cp input.mzML "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+    bashCommand3 = "cp input.mzML "+TOPPAS_folder+"/"+TOPPAS_output_folder+'/Blank.mzML'
     cp3 = subprocess.run(bashCommand3,shell=True)
     cp3
 
@@ -62,7 +62,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     print('======')
     print('Changing variables of the TOPPAS/OpenMS workflow')
 
-    a_file = open("TOPPAS_Workflow/toppas_Exclusion_workflow_OK.toppas", "r")
+    a_file = open("TOPPAS_Workflow/toppas_Exclusion_workflow.toppas", "r")
     list_of_lines = a_file.readlines()
 
     # Check format for variable
