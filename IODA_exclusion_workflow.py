@@ -181,7 +181,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     output_filename = output_dir+'/'+input_filename[:-6]+'.csv'
 
     # Read the table to get the filenames
-    feature_table = pd.read_csv(output_dir+'/table_large.csv)
+    feature_table = pd.read_csv(output_dir+'/table_large.csv')
     blank_samplename = feature_table.columns[-3]
     logger.info('Assumed blank sample name: '+ blank_samplename)
 
