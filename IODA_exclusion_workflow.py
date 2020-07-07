@@ -156,13 +156,13 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Make exclusion list from two mzTabs
 def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
-    input_dir='TOPPAS_Workflow/toppas_ouput'
+    input_dir='TOPPAS_Workflow/toppas_output/'
     output_dir = 'results'
 
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results')
-    os.system('rm -r download_results')
+    os.system('rm download_results/IODA_exclusion_from_mzTabs.zip')
     os.system('mkdir results')
     os.system('mkdir download_results')
     logfile('results/logfile.txt')
@@ -183,7 +183,6 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     blank_samplename = feature_table.columns[-3]
 
     output_filename = output_dir+'/'+blank_samplename+'.csv'
-    print(output_filename)
     logger.info('Assumed blank sample name: '+ blank_samplename)
 
     # User-defined parameters
@@ -227,10 +226,11 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
     # Cleaning the files first
     os.system('mkdir results/intermediate_files')
-    os.system('mv results/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv intermediate_files/')
-    os.system('mv results/'+output_filename+' intermediate_files/')
+    os.system('mv '+output_filename[:-4]+'_EXCLUSION_BLANK.csv intermediate_files/')
+    os.system('mv '+output_filename+' results/intermediate_files/')
+    print('mv '+output_filename+' results/intermediate_files/')
     os.system('mv results/table* results/intermediate_files/')
-
+    print(output_filename)
     get_all_file_paths('results','download_results/IODA_exclusion_from_mzTabs.zip')
 
     print('======')
@@ -246,7 +246,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results')
-    os.system('rm -r download_results')
+    os.system('rm download_results/IODA_exclusion_from_mzTab.zip')
     os.system('mkdir results')
     os.system('mkdir download_results')
     logfile('results/logfile.txt')
