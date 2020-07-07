@@ -119,7 +119,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     print('Completed the TOPPAS/OpenMS workflow')
     print('======')
     print('Zipping up the TOPPAS/OpenMS workflow files')
-    get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_TOPPAS_OpenMS_exclusion.zip')
+    get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_exclusion_OpenMS_results.zip')
 
     print('======')
     print('Completed zipping up the TOPPAS/OpenMS workflow output files')
