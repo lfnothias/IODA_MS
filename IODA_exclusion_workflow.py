@@ -170,6 +170,8 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     # Convert the mzTabs into Tables to generate exclusion list
     print('======')
     print('Starting the IODA-exclusion workflow')
+    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
+    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
     print('======')
     print('Converting mzTab to table format')
     print('For narrow features')
@@ -255,6 +257,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     output_dir = 'results'
     print('======')
     print('Getting the mzTab')
+    logger.info('This is the input: '+input_filename)
     if input_filename.startswith('http'):
         if 'google' in input_filename:
             logger.info('This is the Google Drive download link:'+str(input_filename))

@@ -30,6 +30,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     print('======')
     print('Getting the mzML, please wait ...')
 
+    logger.info('This is the input: '+input_mzML)
     if input_mzML.startswith('http'):
         if 'google' in input_mzML:
             logger.info('This is the Google Drive download link:'+str(input_mzML))
