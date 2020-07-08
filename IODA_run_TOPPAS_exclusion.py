@@ -25,7 +25,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logfile('results/logfile_IODA_from_mzML_'+str(today)+'.txt')
+    logfile('TOPPAS_Workflow/logfile_IODA_from_mzML_'+str(today)+'.txt')
     print('======')
     print('Starting the IODA-Exclusion workflow from a mzML file')
     print('======')
