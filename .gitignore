@@ -1,2 +1,13 @@
 
 .DS_Store
+__pycache__/IODA_exclusion_workflow.cpython-37.pyc
+__pycache__/format_to_qexactive_list.cpython-37.pyc
+.ipynb_checkpoints/IODA_TOPPAS_mztab_generation-checkpoint.ipynb
+.ipynb_checkpoints/IODA_notebooks_welcome-checkpoint.ipynb
+.ipynb_checkpoints/IODA_exclusion_from_mztab-checkpoint.ipynb
+results/logfile.txt
+results/Exclusion_sample_EXCLUSION_BLANK_XCalibur.csv
+results/Exclusion_sample_EXCLUSION_BLANK_MaxQuantLive.txt
+results/Exclusion_sample_EXCLUSION_BLANK.csv
+results/Exclusion_sample.csv
+.ipynb_checkpoints/IODA_exclusion_from_mzML-checkpoint.ipynb
