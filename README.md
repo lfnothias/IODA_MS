@@ -8,7 +8,7 @@ This repository will help accomplish two things:
 
 We can run this on Binder, click it below
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mwang87/IODA_MS/master?filepath=IODA_notebooks_welcome.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/master?filepath=IODA_notebooks_welcome.ipynb)
 
 
 You will need to do two things:
