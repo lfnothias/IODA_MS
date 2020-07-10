@@ -13,7 +13,7 @@ from format_to_qexactive_list import *
 from zipfile import ZipFile
 from logzero import logger, logfile
 import datetime
-from split_features import *
+from IODA_split_features import *
 from format_to_qexactive_list import *
 
 def convert_mzTab_to_table(input_filename: str,output_filename: str):
