@@ -107,7 +107,7 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
         plt.title(title+', in retention time range range', size =13)
         plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
-    plt.legend(labels=Labels, fontsize =10)
+    plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
     if column == 'Mass [m/z]':
         plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
@@ -132,7 +132,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     plt.title(title, size =13)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10)
+    plt.legend(labels=Labels, fontsize = 10, loc='best', markerscale=5)
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
 
 def get_all_file_paths(directory,output_zip_path):

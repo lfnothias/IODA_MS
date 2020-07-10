@@ -40,8 +40,8 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
             if x not in Filenames:
                 Filenames.append(x[:-5])
 
-    print('Filenames in the mzTab')
-    print(Filenames)
+    #print('Filenames in the mzTab')
+    #print(Filenames)
 
     Filename1 = Filenames[0]
     Filename2 = Filenames[1]
@@ -50,10 +50,10 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     for x in Filenames:
         if x == "ms_run[2]-location":
             Filename3 = Filenames[2]
-            print['Warning: There is more than two samples in that mzTab file. We support only two samples currently']
+            logger.info('Warning: There is more than two samples in that mzTab file. We support only two samples currently')
         if x == "ms_run[4]-location":
             Filename4 = Filenames[3]
-            print['Warning: There is more than three samples in that mzTab file. We support only two samples currently.']
+            logger.info('Warning: There is more than three samples in that mzTab file. We support only two samples currently.')
 
     # Read and edit the table
     main_df = pd.read_csv(input_filename,sep='\t',index_col=0, skiprows=range(0,start_row_consensus))
@@ -68,19 +68,19 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     df_master = pd.concat([feat_mz,feat_ret,feat_charge,feat_int], axis=1)
 
     #Detection of blank
-    print('#Deducing the blank sample by comparing the sum of feature intensity between samples')
+    #print('#Deducing the blank sample by comparing the sum of feature intensity between samples')
     column1_sum = df_master['peptide_abundance_study_variable[1]'].sum()
-    print('- For sample '+Filename1+' the sum of feature intensities is = '+str(column1_sum))
+    logger.info('- For sample '+Filename1+' the sum of feature intensities is = '+str(column1_sum))
     column2_sum = df_master['peptide_abundance_study_variable[2]'].sum()
-    print('- For sample '+Filename2+' the sum of feature intensities = '+str(column2_sum))
+    logger.info('- For sample '+Filename2+' the sum of feature intensities = '+str(column2_sum))
     if column1_sum > column2_sum:
-        print('- The blank sample is assumed to be '+str(Filename2)+' in the mzTab-M')
-        print('- The samples is assumed to be '+str(Filename1)+' in the mzTab-M')
+    #    logger.info('- The blank sample is assumed to be '+str(Filename2)+' in the mzTab-M')
+    #    logger.info('- The samples is assumed to be '+str(Filename1)+' in the mzTab-M')
         df_master.rename(columns={'peptide_abundance_study_variable[1]':Filename2}, inplace=True)
         df_master.rename(columns={'peptide_abundance_study_variable[2]':Filename1}, inplace=True)
     if column1_sum < column2_sum:
-        print('- The blank sample is assumed to be '+str(Filename1)+' in the mzTab-M')
-        print('- The samples is assumed to be '+str(Filename2)+' in the mzTab-M')
+    #    logger.info('- The blank sample is assumed to be '+str(Filename1)+' in the mzTab-M')
+    #    logger.info('- The samples is assumed to be '+str(Filename2)+' in the mzTab-M')
         df_master.rename(columns={'peptide_abundance_study_variable[1]':Filename1}, inplace=True)
         df_master.rename(columns={'peptide_abundance_study_variable[2]':Filename2}, inplace=True)
 
@@ -102,8 +102,8 @@ def make_exclusion_list_blank(input_filename: str, sample: str, window: float):
     df_master_exclusion_list = df_master[(df_master[sample] != 0)]
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
-    print('Initial number of features ' + str(df_master.shape[0]))
-    print('Number of features in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity != 0 ')
+    logger.info('Initial number of ions ' + str(df_master.shape[0]))
+    logger.info('Number of ions in the blank = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_exclusion_list_shared(input_filename: str, blank: str, sample: str, window: float):
     """From a table with mz, charge, rt, intensities, keep only features shared amongst the two samples specified"""
@@ -111,76 +111,82 @@ def make_exclusion_list_shared(input_filename: str, blank: str, sample: str, win
     df_master_exclusion_list = df_master[(df_master[blank] != 0) & (df_master[sample] != 0)]
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
-    print('Initial number of features ' + str(df_master.shape[0]))
-    print('Number of features shared between the blank and the sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity != 0 ')
+    #logger.info('Initial number of ions ' + str(df_master.shape[0]))
+    logger.info('Number of ions shared between blank and sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_shotgun_targeted_list(input_filename: str, sample: str, window: float):
     """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_shotgun_list = df_master[(df_master[sample] != 0)]
     df_master_shotgun_list.to_csv(input_filename[:-4]+'_SHOTGUN.csv', sep=',', index = False)
-    print('Initial number of features ' + str(df_master.shape[0]))
-    print('Number of features in the "shotgun" list = '+ str(df_master_shotgun_list.shape[0])+', with intensity != 0 ')
+    #logger.info('Initial number of ions ' + str(df_master.shape[0]))
+    logger.info('Number of ions in the sample (shotgun) = '+ str(df_master_shotgun_list.shape[0])+', with int.!= 0 ')
 
 def make_targeted_list_ratio(input_filename: str, blank: str, sample: str, window:float, ratio:float):
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above the specified ratio between the sample/blank"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_targeted_list_ratio = df_master[(df_master[sample] > 0) & (df_master[sample]/df_master[blank] > ratio) & (df_master[blank] == 0)]
     df_master_targeted_list_ratio.to_csv(input_filename[:-4]+'_TARGETED_RATIO.csv', sep=',', index = False,)
-    print('Initial number of features ' + str(df_master.shape[0]))
-    print('Number of features in the targeted list = '+ str(df_master_targeted_list_ratio.shape[0])\
-          +', with a ratio of Sample/Blank ratio of '+str(ratio))
+    #logger.info('Initial number of ions = ' + str(df_master.shape[0]))
+    logger.info('Number of target ions = '+ str(df_master_targeted_list_ratio.shape[0])\
+          +', with a ratio of sample/blank ratio of '+str(ratio))
 
 def make_targeted_list_intensity(input_filename: str, blank: str, sample: str, window: str, intensity:float):
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above specified intensity"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_targeted_list_intensity = df_master[(df_master[sample] > intensity) & (df_master[blank] < intensity) & (df_master[blank] == 0)]
     df_master_targeted_list_intensity.to_csv(input_filename[:-4]+'_TARGETED_INTENSITY.csv', sep=',', index = False,)
-    print('Initial number of features ' + str(df_master.shape[0]))
-    print('Number of features in the targeted list = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
+    #logger.info('Initial number of features ' + str(df_master.shape[0]))
+    logger.info('Number of target ions = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
 
-def plot_targets_exclusion(input_filename: str,output_string: str, sample: str,title: str):
+
+def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
-    #Plot
     Labels = []
     table0 = pd.read_csv(input_filename, sep=',', header=0)
-    plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=1.5, alpha=0.5)
-    Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
+    fig = plt.figure(figsize=(8,6))
+    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='blue',s=4, alpha=0.4)
+    Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
-
     plt.yscale('log')
+    if column == 'Mass [m/z]':
+        plt.title(title+', in m/z range', size = 13)
+        plt.xlabel('m/z', size = 12)
+    if column == 'retention_time':
+        plt.title(title+', in retention time range range', size =13)
+        plt.xlabel('Ret. time (sec)', size = 11)
+    plt.ylabel('Ion intensity (log scale)', size = 11)
+    plt.legend(labels=Labels, fontsize =10)
+    if column == 'Mass [m/z]':
+        plt.savefig(input_filename[:-4]+'_excluded_MZ_scatter_plot.png', dpi=200)
+    if column == 'retention_time':
+        plt.savefig(input_filename[:-4]+'_excluded_RT_scatter_plot.png', dpi=200)
+    plt.close()
 
-    plt.title(title)
-    plt.xlabel('Ret. time (sec)')
-    plt.ylabel('Feature intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =8)
-    plt.savefig(input_filename[:-4]+'_EXCLUSION_'+output_string+'_scatter_plot.png', dpi=200)
-    plt.clf()
-
-def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, injections: int):
+def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, experiment: int):
     """From a table, make a scatter plot of up to 4 samples"""
     #Plot
     Labels = []
-    if injections >= 1:
+    if experiements >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=3, alpha=0.6)
         Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
         Labels.append(Label1)
 
-    if injections >= 2:
+    if experiements >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=3, alpha=0.6)
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
-    if injections >= 3:
+    if experiements >= 3:
         table2 = pd.read_csv(table_list[2], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=3, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
         Labels.append(Label3)
 
-    if injections >= 4:
+    if experiements >= 4:
         table3 = pd.read_csv(table_list[3], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=3, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
@@ -189,37 +195,37 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     plt.yscale('log')
     plt.ylim(bottom=2)
 
-    plt.title('Features per injection: '+ output_string)
+    plt.title('Ions per experiment: '+ output_string)
     plt.xlabel('Ret. time (sec)')
-    plt.ylabel('Feature intensity (log scale)')
+    plt.ylabel('Ion intensity (log scale)')
 
     plt.legend(labels=Labels, fontsize =8)
     plt.savefig(output_filename[:-4]+'_injection_'+output_string+'_scatter_plot.png', dpi=300)
-    plt.clf()
+    plt.close()
 
-def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, injections: int):
+def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiements: int):
     """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
     #Plot
     Labels = []
-    if injections >= 1:
+    if experiements >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=1, alpha=0.6)
         Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
         Labels.append(Label1)
 
-    if injections >= 2:
+    if experiements >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=1, alpha=0.6)
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
-    if injections >= 3:
+    if experiements >= 3:
         table2 = pd.read_csv(table_list[2], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=1, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
         Labels.append(Label3)
 
-    if injections >= 4:
+    if experiements >= 4:
         table3 = pd.read_csv(table_list[3], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=1, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
@@ -233,14 +239,14 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
 
     plt.yscale('log')
     plt.ylim(bottom=2)
-
-    plt.title('Features per injection and shared with blank: '+ output_string)
+    plt.title('Ions per experiment (w. blank): '+ output_string, size =10)
     plt.xlabel('Ret. time (sec)')
-    plt.ylabel('Feature intensity (log scale)')
+    plt.ylabel('Ion intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =8)
+    plt.legend(labels=Labels, fontsize =8, loc='best', markerscale=5)
     plt.savefig(output_filename[:-4]+'_injection_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
-    plt.clf()
+    plt.savefig('injection_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
+    plt.close()
 
 
 def get_all_file_paths(directory,output_zip_path):
@@ -260,7 +266,7 @@ def get_all_file_paths(directory,output_zip_path):
         for file in file_paths:
             zip.write(file)
 
-    print('All files zipped successfully!')
+    logger.info('All files zipped successfully!')
 
 # Make targeted list from mzTab
 def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, ratio_value:float, min_intensity_value:int):
@@ -272,12 +278,12 @@ def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, rati
     os.system('mkdir download_results')
     logfile('results_targeted/logfile.txt')
 
+    logger.info(' ==== RUNNING ====')
     logger.info('Starting the IODA targeted-from-mzTab workflow')
     output_dir = 'results_targeted'
-    print('======')
-
-    print('Getting the mzTab')
-    logger.info('This is the input: '+input_filename)
+    logger.info('======')
+    logger.info('Getting the mzTab')
+    os.system('cp '+input_filename+'results_targeted/')
     if input_filename.startswith('http'):
         if 'google' in input_filename:
             logger.info('This is the Google Drive download link:'+str(input_filename))
@@ -294,110 +300,106 @@ def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, rati
         logger.info('This is the output file path: '+str(output_filename))
 
     # Convert the mzTab into a Table
-    print('Starting the workflow')
-    print('======')
-    print('Converting mzTab to table format')
+    logger.info('======')
+    logger.info('Converting mzTab to table format')
     convert_mzTab_to_table(input_filename,output_filename)
-    print('======')
+    logger.info('======')
 
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     samplename = feature_table.columns[-1]
-    print('Assumed sample name: '+samplename)
+    logger.info('Assumed sample name: '+samplename)
     blank_samplename = feature_table.columns[-2]
-    print('Assumed blank sample name: ' +blank_samplename)
-    print('======')
+    logger.info('Assumed blank sample name: ' +blank_samplename)
+    logger.info('======')
 
     # User-defined parameters
-    print('User-defined parameters')
+    logger.info('User-defined parameters')
     ratio = ratio_value
-    print('Ratio = ' + str(ratio))
+    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = min_intensity_value
-    print('Minimum intensity = '+ str(min_intensity))
-    injections = injection_number
-    print('Injections = ' + str(injections))
-    print('======')
+    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
+    experiements = experiment_number
+    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('======')
 
     # Hard coded parameters
-    print('Hard coded parameters')
+    logger.info('Hard coded parameters')
     window_exclusion = 30
-    print('Window for exclusion = '+ str(window_exclusion))
+    logger.info('Retention time window (sec.) for ions excluded = '+ str(window_exclusion))
     window_targeted = 5
-    print('Window for targets = ' + str(window_targeted))
+    logger.info('Retention time window (sec.) for ions targeted = ' + str(window_targeted))
     window_bin = 30
-    print('Window for binning of targets = ' +str(window_bin))
-    print('======')
+    logger.info('Retention time window (sec.) for binning target ions = ' +str(window_bin))
+    logger.info('======')
 
     # Running the table processing
-    print('Running the table processing')
+    logger.info('Running the table processing')
     make_exclusion_list_blank(output_filename, blank_samplename, window_exclusion)
-    print('======')
+    logger.info('======')
     make_exclusion_list_shared(output_filename, blank_samplename, samplename, window_exclusion)
-    print('======')
+    logger.info('======')
     make_shotgun_targeted_list(output_filename, samplename, window_targeted)
-    print('======')
+    logger.info('======')
     make_targeted_list_ratio(output_filename, blank_samplename, samplename, window_targeted, ratio)
-    print('======')
+    logger.info('======')
     make_targeted_list_intensity(output_filename, blank_samplename, samplename, window_targeted, min_intensity)
-    print('======')
+    logger.info('======')
 
-    # Split the tables for multiple injections
-    print('Splitting the tables')
+    # Split the tables for multiple experiements
+    logger.info('Splitting the tables')
     from IODA_split_features import split_features
-    #split_features(output_filename[:-4]+'_EXCLUSION_BLANK.csv', 'Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv',samplename, window_bin, injections)
-    #split_features(output_filename[:-4]+'_EXCLUSION_SHARED.csv','Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_SHOTGUN.csv', output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, injections)
-    print('======')
+    split_features(output_filename[:-4]+'_SHOTGUN.csv', output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, experiements)
+    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, experiements)
+    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, experiements)
+    logger.info('======')
 
-    print('Generating filename list')
     # Generate the filename list
     table_list = []
-    for x in range(1,injections+1):
+    for x in range(1,experiements+1):
             table_list.append(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv')
 
     table_list_ratio = []
-    for x in range(1,injections+1):
+    for x in range(1,experiements+1):
             table_list_ratio.append(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv')
 
     table_list_shotgun = []
-    for x in range(1,injections+1):
+    for x in range(1,experiements+1):
             table_list_shotgun.append(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv')
-    print('======')
 
     # === OUTPUT FILES BELOW + LOG ====
-    print('Plotting the features')
-    #plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_BLANK.csv','Distribution of features on the exclusion list')
-    #plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_SHARED.csv','Distribution of shared features between blank and sample')
-    plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, injections)
-    plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, injections)
-    plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, injections)
-    plot_targets_per_groups_w_shared(output_filename, table_list,'TARGETED_INTENSITY', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
-    plot_targets_per_groups_w_shared(output_filename, table_list_ratio,'TARGETED_RATIO', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
-    print('======')
+    logger.info('Plotting the ions ... please wait ...')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
+    plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, experiements)
+    plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, experiements)
+    plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, experiements)
+    plot_targets_per_groups_w_shared(output_filename, table_list,'TARGETED_INTENSITY', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,experiements)
+    plot_targets_per_groups_w_shared(output_filename, table_list_ratio,'TARGETED_RATIO', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,experiements)
+
+    logger.info('======')
 
     # Convert to XCalibur format
-    print('Converting tables to XCalibur format')
-    for x in range(1,injections+1):
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_'+str(x)+'.csv', window_targeted)
-    print('======')
+    logger.info('Converting tables to XCalibur format')
+    for x in range(1,experiements+1):
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', window_targeted)
+    logger.info('======')
 
         # Convert the MaxQuant.Live format
-    print('Converting tables to MaxQuant.Live format')
-    for x in range(1,injections+1):
-            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+    logger.info('Converting tables to MaxQuant.Live format')
+    for x in range(1,experiements+1):
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
 
-    print('=======================')
-    print('Zipping workflow results files')
+    logger.info('======')
+    logger.info('Cleaning and zipping workflow results files')
 
     # Cleaning files first
 
@@ -431,6 +433,7 @@ def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, rati
 
     # mkdir intermediate files
     os.system('mkdir results_targeted/intermediate_files')
+    os.system('mkdir results_targeted/intermediate_files/converted')
     os.system('mkdir results_targeted/intermediate_files/exclusion')
     os.system('mkdir results_targeted/intermediate_files/shotgun')
     os.system('mkdir results_targeted/intermediate_files/targeted_ratio')
@@ -438,8 +441,11 @@ def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, rati
     os.system('mkdir results_targeted/plots')
     # mv plots
     os.system('mv results_targeted/*SHOTGUN_scatter_plot* results_targeted/plots')
+    os.system('mv results_targeted/scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/*TARGETED_INTENSITY_scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/*TARGETED_RATIO_scatter_plot* results_targeted/plots')
+    os.system('mv injection_blank_shared_TARGETED_RATIO_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv injection_blank_shared_TARGETED_INTENSITY_scatter_view.png results_targeted/intermediate_files/')
     # mv intermediate files
     os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
     os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
@@ -449,11 +455,12 @@ def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, rati
 
     # mv plots
     os.system('rm shotgun')
-    os.system('mv '+output_filename+' results_targeted/intermediate_files/')
+    os.system('mv '+output_filename+' results_targeted/intermediate_files/converted')
     os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
 
     get_all_file_paths('results_targeted','download_results/IODA_targeted_from_mzTab.zip')
 
-
-    print('======')
-    print('Workflow terminated')
+    logger.info('======')
+    logger.info('End the IODA-targeted workflow')
+    logger.info('======')
+    print(' ')
