@@ -100,7 +100,7 @@ def make_exclusion_list_blank(input_filename: str, sample: str, window: float):
     """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_exclusion_list = df_master[(df_master[sample] != 0)]
-    df_master_exclusion_list.to_csv(output_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
+    df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
     print('Initial number of features ' + str(df_master.shape[0]))
     print('Number of features in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity != 0 ')
@@ -109,7 +109,7 @@ def make_exclusion_list_shared(input_filename: str, blank: str, sample: str, win
     """From a table with mz, charge, rt, intensities, keep only features shared amongst the two samples specified"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_exclusion_list = df_master[(df_master[blank] != 0) & (df_master[sample] != 0)]
-    df_master_exclusion_list.to_csv(output_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
+    df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
     print('Initial number of features ' + str(df_master.shape[0]))
     print('Number of features shared between the blank and the sample = ' + str(df_master_exclusion_list.shape[0]) +', with intensity != 0 ')
@@ -118,7 +118,7 @@ def make_shotgun_targeted_list(input_filename: str, sample: str, window: float):
     """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_shotgun_list = df_master[(df_master[sample] != 0)]
-    df_master_shotgun_list.to_csv(output_filename[:-4]+'_SHOTGUN.csv', sep=',', index = False)
+    df_master_shotgun_list.to_csv(input_filename[:-4]+'_SHOTGUN.csv', sep=',', index = False)
     print('Initial number of features ' + str(df_master.shape[0]))
     print('Number of features in the "shotgun" list = '+ str(df_master_shotgun_list.shape[0])+', with intensity != 0 ')
 
@@ -126,7 +126,7 @@ def make_targeted_list_ratio(input_filename: str, blank: str, sample: str, windo
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above the specified ratio between the sample/blank"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_targeted_list_ratio = df_master[(df_master[sample] > 0) & (df_master[sample]/df_master[blank] > ratio) & (df_master[blank] == 0)]
-    df_master_targeted_list_ratio.to_csv(output_filename[:-4]+'_TARGETED_RATIO.csv', sep=',', index = False,)
+    df_master_targeted_list_ratio.to_csv(input_filename[:-4]+'_TARGETED_RATIO.csv', sep=',', index = False,)
     print('Initial number of features ' + str(df_master.shape[0]))
     print('Number of features in the targeted list = '+ str(df_master_targeted_list_ratio.shape[0])\
           +', with a ratio of Sample/Blank ratio of '+str(ratio))
@@ -135,7 +135,7 @@ def make_targeted_list_intensity(input_filename: str, blank: str, sample: str, w
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above specified intensity"""
     df_master = pd.read_csv(input_filename, sep=',')
     df_master_targeted_list_intensity = df_master[(df_master[sample] > intensity) & (df_master[blank] < intensity) & (df_master[blank] == 0)]
-    df_master_targeted_list_intensity.to_csv(output_filename[:-4]+'_TARGETED_INTENSITY.csv', sep=',', index = False,)
+    df_master_targeted_list_intensity.to_csv(input_filename[:-4]+'_TARGETED_INTENSITY.csv', sep=',', index = False,)
     print('Initial number of features ' + str(df_master.shape[0]))
     print('Number of features in the targeted list = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
 
@@ -155,10 +155,10 @@ def plot_targets_exclusion(input_filename: str,output_string: str, sample: str,t
     plt.ylabel('Feature intensity (log scale)')
 
     plt.legend(labels=Labels, fontsize =8)
-    plt.savefig(output_filename[:-4]+'_EXCLUSION_'+output_string+'_scatter_plot.png', dpi=200)
+    plt.savefig(input_filename[:-4]+'_EXCLUSION_'+output_string+'_scatter_plot.png', dpi=200)
     plt.clf()
 
-def plot_targets_per_groups(table_list: str, output_string:str, sample: str, injections: int):
+def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, injections: int):
     """From a table, make a scatter plot of up to 4 samples"""
     #Plot
     Labels = []
@@ -197,7 +197,7 @@ def plot_targets_per_groups(table_list: str, output_string:str, sample: str, inj
     plt.savefig(output_filename[:-4]+'_injection_'+output_string+'_scatter_plot.png', dpi=300)
     plt.clf()
 
-def plot_targets_per_groups_w_shared(table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, injections: int):
+def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, injections: int):
     """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
     #Plot
     Labels = []
@@ -263,7 +263,36 @@ def get_all_file_paths(directory,output_zip_path):
     print('All files zipped successfully!')
 
 # Make targeted list from mzTab
-def make_targeted_list_from_mzTab(input_filename:str, output_filename:str, injection_number:int, ratio_value:float, min_intensity_value:int):
+def make_targeted_list_from_mzTab(input_filename:str, injection_number:int, ratio_value:float, min_intensity_value:int):
+    now = datetime.datetime.now()
+    logger.info(now)
+    os.system('rm -r results_targeted')
+    os.system('rm download_results/IODA_targeted_from_mzTab.zip')
+    os.system('mkdir results_targeted')
+    os.system('mkdir download_results')
+    logfile('results_targeted/logfile.txt')
+
+    logger.info('Starting the IODA targeted-from-mzTab workflow')
+    output_dir = 'results_targeted'
+    print('======')
+
+    print('Getting the mzTab')
+    logger.info('This is the input: '+input_filename)
+    if input_filename.startswith('http'):
+        if 'google' in input_filename:
+            logger.info('This is the Google Drive download link:'+str(input_filename))
+            url_id = input_filename.split('/', 10)[5]
+            prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
+            input_filename = prefixe_google_download+url_id
+            output_filename = output_dir+'/Exclusion_sample.csv'
+        else:
+            output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+            logger.info('This is the output file path: '+str(output_filename))
+    else:
+        output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+        logger.info('This is the input file path: '+str(input_filename))
+        logger.info('This is the output file path: '+str(output_filename))
+
     # Convert the mzTab into a Table
     print('Starting the workflow')
     print('======')
@@ -314,58 +343,117 @@ def make_targeted_list_from_mzTab(input_filename:str, output_filename:str, injec
 
     # Split the tables for multiple injections
     print('Splitting the tables')
-    from split_features import split_features
+    from IODA_split_features import split_features
     #split_features(output_filename[:-4]+'_EXCLUSION_BLANK.csv', 'Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv',samplename, window_bin, injections)
     #split_features(output_filename[:-4]+'_EXCLUSION_SHARED.csv','Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_SHOTGUN.csv', 'Intermediate_files/'+output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', 'Intermediate_files/'+output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, injections)
-    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', 'Intermediate_files/'+output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, injections)
+    split_features(output_filename[:-4]+'_SHOTGUN.csv', output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, injections)
+    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, injections)
+    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, injections)
     print('======')
 
     print('Generating filename list')
     # Generate the filename list
     table_list = []
     for x in range(1,injections+1):
-            table_list.append('Intermediate_files/'+output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv')
+            table_list.append(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv')
 
     table_list_ratio = []
     for x in range(1,injections+1):
-            table_list_ratio.append('Intermediate_files/'+output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv')
+            table_list_ratio.append(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv')
 
     table_list_shotgun = []
     for x in range(1,injections+1):
-            table_list_shotgun.append('Intermediate_files/'+output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv')
+            table_list_shotgun.append(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv')
     print('======')
 
     # === OUTPUT FILES BELOW + LOG ====
     print('Plotting the features')
-    plot_targets_exclusion('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Plots/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv','Distribution of features on the exclusion list')
-    plot_targets_exclusion('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Plots/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv','Distribution of shared features between blank and sample')
-    plot_targets_per_groups(table_list_ratio, 'SHOTGUN', samplename, injections)
-    plot_targets_per_groups(table_list, 'TARGETED_INTENSITY', samplename, injections)
-    plot_targets_per_groups(table_list_ratio, 'TARGETED_RATIO', samplename, injections)
-    plot_targets_per_groups_w_shared(table_list,'TARGETED_INTENSITY', 'Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
-    plot_targets_per_groups_w_shared(table_list_ratio,'TARGETED_RATIO', 'Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
+    #plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_BLANK.csv','Distribution of features on the exclusion list')
+    #plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_SHARED.csv','Distribution of shared features between blank and sample')
+    plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, injections)
+    plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, injections)
+    plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, injections)
+    plot_targets_per_groups_w_shared(output_filename, table_list,'TARGETED_INTENSITY', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
+    plot_targets_per_groups_w_shared(output_filename, table_list_ratio,'TARGETED_RATIO', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,injections)
     print('======')
 
     # Convert to XCalibur format
     print('Converting tables to XCalibur format')
     for x in range(1,injections+1):
-            generate_QE_list('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv', 'XCalibur/Exclusion/'+output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', 'XCalibur/Exclusion/'+output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list('Intermediate_files/'+output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', 'XCalibur/Targeted/'+output_filename[:-4]+'_SHOTGUN_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list('Intermediate_files/'+output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', 'XCalibur/Targeted/'+output_filename[:-4]+'_TARGETED_RATIO_XCalibur_'+str(x)+'.csv', window_targeted)
-            generate_QE_list('Intermediate_files/'+output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', 'XCalibur/Targeted/'+output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_'+str(x)+'.csv', window_targeted)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_'+str(x)+'.csv', window_targeted)
     print('======')
 
         # Convert the MaxQuant.Live format
     print('Converting tables to MaxQuant.Live format')
     for x in range(1,injections+1):
-            generate_MQL_list('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_BLANK.csv', 'MaxQuantLive/Exclusion/'+output_filename[:-4]+'_EXCLUSION_BLANK_MQL_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list('Intermediate_files/'+output_filename[:-4]+'_EXCLUSION_SHARED.csv', 'MaxQuantLive/Exclusion/'+output_filename[:-4]+'_EXCLUSION_SHARED_MQL_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list('Intermediate_files/'+output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', 'MaxQuantLive/Targeted/'+output_filename[:-4]+'_SHOTGUN_MQL_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list('Intermediate_files/'+output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', 'MaxQuantLive/Targeted/'+output_filename[:-4]+'_TARGETED_RATIO_MQL_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list('Intermediate_files/'+output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', 'MaxQuantLive/Targeted/'+output_filename[:-4]+'_TARGETED_INTENSITY_MQL_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_'+str(x)+'.csv', window_targeted)
+
+    print('=======================')
+    print('Zipping workflow results files')
+
+    # Cleaning files first
+
+    #mkdir XCalibur
+    os.system('mkdir results_targeted/XCalibur')
+    os.system('mkdir results_targeted/XCalibur/exclusion')
+    os.system('mkdir results_targeted/XCalibur/shotgun')
+    os.system('mkdir results_targeted/XCalibur/targeted_ratio')
+    os.system('mkdir results_targeted/XCalibur/targeted_intensity')
+    # mv files XCalibur
+    os.system('mv results_targeted/*EXCLUSION_BLANK_XCalibur* results_targeted/XCalibur/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED_XCalibur* results_targeted/XCalibur/exclusion')
+    os.system('mv results_targeted/*SHOTGUN_XCalibur* results_targeted/XCalibur/shotgun')
+    os.system('mv results_targeted/*TARGETED_INTENSITY_XCalibur* results_targeted/XCalibur/targeted_intensity')
+    os.system('mv results_targeted/*TARGETED_RATIO_XCalibur* results_targeted/XCalibur/targeted_ratio')
+
+
+    #mkdir XCalibur
+    os.system('mkdir results_targeted/MaxQuantLive')
+    os.system('mkdir results_targeted/MaxQuantLive/exclusion')
+    os.system('mkdir results_targeted/MaxQuantLive/shotgun')
+    os.system('mkdir results_targeted/MaxQuantLive/targeted_ratio')
+    os.system('mkdir results_targeted/MaxQuantLive/targeted_intensity')
+    # mv files XCalibur
+    os.system('mv results_targeted/*EXCLUSION_BLANK_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
+    os.system('mv results_targeted/*SHOTGUN_MaxQuantLive* results_targeted/MaxQuantLive/shotgun')
+    os.system('mv results_targeted/*TARGETED_INTENSITY_MaxQuantLive* results_targeted/MaxQuantLive/targeted_intensity')
+    os.system('mv results_targeted/*TARGETED_RATIO_MaxQuantLive* results_targeted/MaxQuantLive/targeted_ratio')
+
+
+    # mkdir intermediate files
+    os.system('mkdir results_targeted/intermediate_files')
+    os.system('mkdir results_targeted/intermediate_files/exclusion')
+    os.system('mkdir results_targeted/intermediate_files/shotgun')
+    os.system('mkdir results_targeted/intermediate_files/targeted_ratio')
+    os.system('mkdir results_targeted/intermediate_files/targeted_intensity')
+    os.system('mkdir results_targeted/plots')
+    # mv plots
+    os.system('mv results_targeted/*SHOTGUN_scatter_plot* results_targeted/plots')
+    os.system('mv results_targeted/*TARGETED_INTENSITY_scatter_plot* results_targeted/plots')
+    os.system('mv results_targeted/*TARGETED_RATIO_scatter_plot* results_targeted/plots')
+    # mv intermediate files
+    os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
+    os.system('mv results_targeted/*SHOTGUN* results_targeted/intermediate_files/shotgun')
+    os.system('mv results_targeted/*TARGETED_INTENSITY* results_targeted/intermediate_files/targeted_intensity')
+    os.system('mv results_targeted/*TARGETED_RATIO* results_targeted/intermediate_files/targeted_ratio')
+
+    # mv plots
+    os.system('rm shotgun')
+    os.system('mv '+output_filename+' results_targeted/intermediate_files/')
+    os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
+
+    get_all_file_paths('results_targeted','download_results/IODA_targeted_from_mzTab.zip')
+
 
     print('======')
     print('Workflow terminated')
