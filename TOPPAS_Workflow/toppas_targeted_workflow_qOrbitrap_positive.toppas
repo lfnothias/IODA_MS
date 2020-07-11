@@ -11,8 +11,8 @@
       <ITEM name="recycle_output" value="false" type="string" description="" required="false" advanced="false" />
       <ITEM name="toppas_type" value="input file list" type="string" description="" required="false" advanced="false" />
       <ITEMLIST name="file_names" type="string" description="" required="false" advanced="false">
-        <LISTITEM value="Blank.mzML"/>
-        <LISTITEM value="Sample.mzML"/>
+        <LISTITEM value="toppas_input/Blank.mzML"/>
+        <LISTITEM value="toppas_input/Sample.mzML"/>
       </ITEMLIST>
       <ITEM name="x_pos" value="-460.0" type="double" description="" required="false" advanced="false" />
       <ITEM name="y_pos" value="-400.0" type="double" description="" required="false" advanced="false" />
