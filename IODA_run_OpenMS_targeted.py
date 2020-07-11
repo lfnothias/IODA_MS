@@ -12,7 +12,7 @@ from IODA_exclusion_workflow import get_all_file_paths
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
     #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
     #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
-    TOPPAS_Pipeline = "TOPPAS_Create_mzTab_for_Targeted_list_QE_positive.toppas"
+    TOPPAS_Pipeline = "toppas_targeted_workflow_qOrbitrap_positive.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
@@ -44,7 +44,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
                 url_id = input_mzML.split('/', 10)[5]
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
-                bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_output_folder+'/'+name_mzML
+                bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
             else:
@@ -52,7 +52,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
                 raise
         else:
             logger.info('This is the input file path: '+str(input_mzML))
-            bashCommand2 = "cp "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_output_folder+'/'+name_mzML
+            bashCommand2 = "cp "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
 
@@ -64,7 +64,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     # ==> Check the workflow location and name_mzML
     # ===> Check folder consistency OpenMS TOPPAS_out
     # Hardcore sample name TOPPAS_Workflow
-    
+
     print('======')
     print('Changing variables of the OpenMS workflow')
     logger.info('   ppm error = '+str(ppm_error))
