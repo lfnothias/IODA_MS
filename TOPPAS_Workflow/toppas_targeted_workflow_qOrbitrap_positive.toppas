@@ -36,12 +36,12 @@
         <ITEM name="test" value="false" type="bool" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" />
         <NODE name="algorithm" description="Algorithm parameters section">
           <NODE name="common" description="Common parameters for all other subsections">
-            <ITEM name="noise_threshold_int" value="1.05e05" type="double" description="Intensity threshold below which peaks are regarded as noise." required="false" advanced="false" />
+            <ITEM name="noise_threshold_int" value="NOISE" type="double" description="Intensity threshold below which peaks are regarded as noise." required="false" advanced="false" />
             <ITEM name="chrom_peak_snr" value="3.0" type="double" description="Minimum signal-to-noise a mass trace should have." required="false" advanced="false" />
             <ITEM name="chrom_fwhm" value="10.0" type="double" description="Expected chromatographic peak width (in seconds)." required="false" advanced="false" />
           </NODE>
           <NODE name="mtd" description="Mass Trace Detection parameters">
-            <ITEM name="mass_error_ppm" value="10.0" type="double" description="Allowed mass deviation (in ppm)." required="false" advanced="false" />
+            <ITEM name="mass_error_ppm" value="PPM_ERROR" type="double" description="Allowed mass deviation (in ppm)." required="false" advanced="false" />
             <ITEM name="reestimate_mt_sd" value="true" type="string" description="Enables dynamic re-estimation of m/z variance during mass trace collection stage." required="false" advanced="false" restrictions="true,false" />
             <ITEM name="quant_method" value="max_height" type="string" description="Method of quantification for mass traces. For LC data &apos;area&apos; is recommended, &apos;median&apos; for direct injection data. &apos;max_height&apos; simply uses the most intense peak in the trace." required="false" advanced="false" restrictions="area,median,max_height" />
             <ITEM name="trace_termination_criterion" value="outlier" type="string" description="Termination criterion for the extension of mass traces. In &apos;outlier&apos; mode, trace extension cancels if a predefined number of consecutive outliers are found (see trace_termination_outliers parameter). In &apos;sample_rate&apos; mode, trace extension in both directions stops if ratio of found peaks versus visited spectra falls below the &apos;min_sample_rate&apos; threshold." required="false" advanced="true" restrictions="outlier,sample_rate" />
