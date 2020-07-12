@@ -8,6 +8,7 @@ import datetime
 import zipfile
 from datetime import date
 from IODA_exclusion_workflow import get_all_file_paths
+from subprocess import call
 
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
     #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
@@ -26,10 +27,9 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     now = datetime.datetime.now()
     logger.info(now)
     logfile('TOPPAS_Workflow/logfile_IODA_from_mzML_'+str(today)+'.txt')
-    print('======')
-    print('Starting the IODA-Exclusion workflow from a mzML file')
-    print('======')
-    print('Getting the mzML, please wait ...')
+    logger.info('STARTING the IODA-exclusion WORKFLOW with OpenMS')
+    logger.info('======')
+    logger.info('Getting the mzML, please wait ...')
 
     logger.info('This is the input: '+input_mzML)
     if input_mzML.startswith('http'):
@@ -56,12 +56,11 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     cp3 = subprocess.run(bashCommand3,shell=True)
     cp3
 
-    print('======')
-    print('Copying the mzML to the TOPPAS/OpenMS input folder')
+    logger.info('Copying the mzML to the OpenMS input folder')
 
 
-    print('======')
-    print('Changing variables of the TOPPAS/OpenMS workflow')
+    logger.info('======')
+    logger.info('Changing variables of the OpenMS workflow')
     logger.info('   ppm error = '+str(ppm_error))
     logger.info('   narrow peak/feature noise threshold = '+str(narrow_noise_threshold))
     logger.info('   large peak/feature noise_threshold = '+str(large_noise_threshold))
@@ -79,17 +78,17 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     try:
         float(large_noise_threshold)
     except ValueError:
-        print("== The noise level must be a float or an integer, such as 6.0e05 ==")
+        logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
 
     try:
         float(narrow_noise_threshold)
     except ValueError:
-        print("== The noise level must be a float or an integer, such as 6.0e05 ==")
+        logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
 
     try:
         float(ppm_error)
     except ValueError:
-        print("== The ppm error must be a float or an integer, such as 10 ppm ==")
+        logger.info("== The ppm error must be a float or an integer, such as 10 ppm ==")
 
     # Make string object for the noise level line FFM
     noise_line = '''            <ITEM name="noise_threshold_int" value="NOISE" type="double" description="Intensity threshold below which peaks are regarded as noise." required="false" advanced="false" />'''
@@ -110,8 +109,8 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     a_file.writelines(list_of_lines)
     a_file.close()
 
-    print('======')
-    print('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('======')
+    logger.info('Initializing the TOPPAS/OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
@@ -119,29 +118,28 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     except:
         raise
 
-    print('======')
-    print('Running the TOPPAS/OpenMS workflow, this could take several minutes, please wait ...')
+    logger.info('======')
+    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:
         cp4 = subprocess.run(bashCommand4,shell=True)
         cp4
-    except:
+    except CalledProcessError as e:
+        logger.info("!!! There was an error with OpenMS workflow, please check your input files and parameters !!!")
+        logger.info(e.output)
         raise
 
     vdisplay.stop()
 
-    print('======')
-    print('Completed the TOPPAS/OpenMS workflow')
-    print('======')
-    print('Zipping up the TOPPAS/OpenMS workflow files')
+    logger.info('======')
+    logger.info('Completed the OpenMS workflow')
+    logger.info('======')
+    logger.info('Zipping up the OpenMS workflow results ...')
     get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_OpenMS_results.zip')
 
-    print('======')
-    print('Completed zipping up the TOPPAS/OpenMS workflow output files')
-
-    print('======')
-    print('You can continue the rest of the IODA workflow')
+    logger.info('======')
+    logger.info('NOW CONTINUE WITH THE REST OF THE IODA-exclusion WORKFLOW')
 
 if __name__ == "__main__":
     IODA_run_TOPPAS_exclusion(str(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))

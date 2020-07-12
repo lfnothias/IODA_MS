@@ -8,6 +8,7 @@ import datetime
 import zipfile
 from datetime import date
 from IODA_exclusion_workflow import get_all_file_paths
+from subprocess import call
 
 def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
@@ -27,25 +28,22 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     now = datetime.datetime.now()
     logger.info(now)
     logfile('TOPPAS_Workflow/logfile_IODA_from_mzML_'+str(today)+'.txt')
-    print('======')
-    print('Starting the IODA-targeted workflow from a mzML file')
-    print('======')
-    print('Getting the mzML, please wait ...')
-
-    logger.info('These are the path to the input files: ')
+    logger.info('STARTING the IODA-targeted WORKFLOW with OpenMS')
+    logger.info('======')
+    logger.info('Path to the input files: ')
     logger.info('Blank: '+blank_mzML)
-    logger.info('Blank: '+sample_mzML)
+    logger.info('Sample: '+sample_mzML)
 
     # Collect the mzML and copy
     def download_copy_mzML(input_mzML, name_mzML):
         if input_mzML.startswith('http'):
+            logger.info('Downloading the mzML files, please wait ...')
             if 'google' in input_mzML:
                 logger.info('This is the Google Drive download link:'+str(input_mzML))
                 url_id = input_mzML.split('/', 10)[5]
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
                 bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
-                print(bashCommand1)
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
             else:
@@ -55,18 +53,18 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
                 cp2 = subprocess.run(bashCommand2,shell=True)
                 cp2
         else:
-            logger.info('This is the input file path local: '+str(input_mzML))
+            logger.info('Path to uploaded file: '+str(input_mzML))
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
-            print(bashCommand2)
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
 
     # Run the function for the two input smamples
+    logger.info('Copying the mzML files ...')
     download_copy_mzML(blank_mzML, 'Blank.mzML' )
     download_copy_mzML(sample_mzML, 'Sample.mzML')
 
-    print('======')
-    print('Changing variables of the OpenMS workflow')
+    logger.info('======')
+    logger.info('Changing the variables of the OpenMS workflow ...')
     logger.info('   ppm error = '+str(ppm_error))
     logger.info('   noise threshold = '+str(noise_threshold))
 
@@ -83,12 +81,12 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     try:
         float(noise_threshold)
     except ValueError:
-        print("== The noise level must be a float or an integer, such as 6.0e05 =")
+        logger.info("== The noise level must be a float or an integer, such as 6.0e05 =")
 
     try:
         float(ppm_error)
     except ValueError:
-        print("== The ppm error must be a float or an integer, such as 10 ppm =")
+        logger.info("== The ppm error must be a float or an integer, such as 10 ppm =")
 
     # Preserve the original mzML file names in the OpenMS workflow for local files
     if sample_mzML.startswith('http'):
@@ -108,8 +106,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     a_file.writelines(list_of_lines)
     a_file.close()
 
-    print('======')
-    print('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('======')
+    logger.info('Initializing the TOPPAS/OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
@@ -117,29 +115,32 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     except:
         raise
 
-    print('======')
-    print('Running the TOPPAS/OpenMS workflow, this could take several minutes, please wait ...')
+    logger.info('======')
+    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('If this takes longer, increase the noise feature_noise value ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:
         cp4 = subprocess.run(bashCommand4,shell=True)
         cp4
-    except:
+    except CalledProcessError as e:
+        logger.info("!!! There was an error with OpenMS workflow, please check your input files and parameters !!!")
+        logger.info(e.output)
         raise
 
     vdisplay.stop()
 
-    print('======')
-    print('Completed the TOPPAS/OpenMS workflow')
-    print('======')
-    print('Zipping up the TOPPAS/OpenMS workflow files')
+    logger.info('======')
+    logger.info('Completed the OpenMS workflow')
+    logger.info('======')
+    logger.info('Zipping up the OpenMS workflow results ..')
     get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_OpenMS_results.zip')
 
-    print('======')
-    print('Completed zipping up the TOPPAS/OpenMS workflow output files')
+    logger.info('======')
+    logger.info('Completed zipping up the OpenMS workflow result files')
 
-    print('======')
-    print('You can continue the rest of the IODA workflow')
+    logger.info('======')
+    logger.info('NOW CONTINUE WITH THE REST OF THE IODA-targeted WORKFLOW')
 
 if __name__ == "__main__":
     IODA_targeted_workflow(str(sys.argv[1]),str(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))

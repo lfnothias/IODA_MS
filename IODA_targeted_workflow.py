@@ -270,27 +270,27 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Make targeted list from mzTab
 def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int):
+    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
     if input_filename.startswith('http'):
-        logger.info('Filepath specified by the user')
+        logger.info('File path was specified by the user')
         pass
     elif input_filename == 'OpenMS_generated':
-        logger.info('File generated with the OpenMS workflow')
+        logger.info('The mzTab was generated with the IODA-OpenMS workflow')
         path_input_folder = "TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/"
         mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
         input_filename = path_input_folder+mzTab_file
-    else:
-        print("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+    except:
+        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+        raise
 
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results_targeted')
-    os.system('rm download_results/IODA_targeted_from_mzTab.zip')
+    os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
     os.system('mkdir download_results')
     logfile('results_targeted/logfile.txt')
 
-    logger.info(' ==== RUNNING ====')
-    logger.info('Starting the IODA targeted-from-mzTab workflow')
     output_dir = 'results_targeted'
     logger.info('======')
     logger.info('Getting the mzTab')
@@ -314,16 +314,16 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # Convert the mzTab into a Table
     logger.info('======')
-    logger.info('Converting mzTab to table format')
+    logger.info('Converting mzTab to intermediate table format ...')
     convert_mzTab_to_table(input_filename,output_filename)
     logger.info('======')
 
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     samplename = feature_table.columns[-1]
-    logger.info('Assumed sample name: '+samplename)
+    logger.info('Assumed sample filename: '+samplename)
     blank_samplename = feature_table.columns[-2]
-    logger.info('Assumed blank sample name: ' +blank_samplename)
+    logger.info('Assumed blank filename: ' +blank_samplename)
     logger.info('======')
 
     # User-defined parameters
@@ -347,7 +347,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running the table processing')
+    logger.info('Running the table processing ...')
     make_exclusion_list_blank(output_filename, blank_samplename, window_exclusion)
     logger.info('======')
     make_exclusion_list_shared(output_filename, blank_samplename, samplename, window_exclusion)
@@ -393,7 +393,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
     # Convert to XCalibur format
-    logger.info('Converting tables to XCalibur format')
+    logger.info('Converting tables to XCalibur format ...')
     for x in range(1,experiements+1):
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', window_targeted)
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', window_targeted)
@@ -403,7 +403,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
         # Convert the MaxQuant.Live format
-    logger.info('Converting tables to MaxQuant.Live format')
+    logger.info('Converting tables to MaxQuant.Live format ...')
     for x in range(1,experiements+1):
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
@@ -412,7 +412,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
             generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
 
     logger.info('======')
-    logger.info('Cleaning and zipping workflow results files')
+    logger.info('Cleaning and zipping workflow results files ...')
 
     # Cleaning files first
 
@@ -429,7 +429,6 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mv results_targeted/*TARGETED_INTENSITY_XCalibur* results_targeted/XCalibur/targeted_intensity')
     os.system('mv results_targeted/*TARGETED_RATIO_XCalibur* results_targeted/XCalibur/targeted_ratio')
 
-
     #mkdir XCalibur
     os.system('mkdir results_targeted/MaxQuantLive')
     os.system('mkdir results_targeted/MaxQuantLive/exclusion')
@@ -442,7 +441,6 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mv results_targeted/*SHOTGUN_MaxQuantLive* results_targeted/MaxQuantLive/shotgun')
     os.system('mv results_targeted/*TARGETED_INTENSITY_MaxQuantLive* results_targeted/MaxQuantLive/targeted_intensity')
     os.system('mv results_targeted/*TARGETED_RATIO_MaxQuantLive* results_targeted/MaxQuantLive/targeted_ratio')
-
 
     # mkdir intermediate files
     os.system('mkdir results_targeted/intermediate_files')
@@ -471,9 +469,9 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mv '+output_filename+' results_targeted/intermediate_files/converted')
     os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
 
-    get_all_file_paths('results_targeted','download_results/IODA_targeted_from_mzTab.zip')
+    get_all_file_paths('results_targeted','download_results/IODA_targeted_results.zip')
 
     logger.info('======')
-    logger.info('End of the IODA-targeted workflow')
+    logger.info('END OF THE IODA-targeted-from-mzTab WORKFLOW')
     logger.info('======')
     print(' ')
