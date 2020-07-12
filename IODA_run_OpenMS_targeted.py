@@ -17,7 +17,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
     os.system('rm download_results/IODA_OpenMS_results.zip')
-    os.system('rm -r TOPPAS_Workflow/toppas_output/TOPPAS_out/')
+    os.system('rm -r TOPPAS_Workflow/'+TOPPAS_output_folder+'/TOPPAS_out/')
     os.system('mkdir download_results')
     #large_noise = 5E5
     #narrow_noise = 1E5
@@ -55,8 +55,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
                 cp2 = subprocess.run(bashCommand2,shell=True)
                 cp2
         else:
-            logger.info('This is the input file path: '+str(input_mzML))
-            bashCommand2 = "cp "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+            logger.info('This is the input file path local: '+str(input_mzML))
+            bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
             print(bashCommand2)
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
@@ -72,7 +72,6 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
 
     try:
         bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/targeted_draft/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
-        print(bashCommand0)
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
@@ -91,15 +90,19 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     except ValueError:
         print("== The ppm error must be a float or an integer, such as 10 ppm =")
 
-    print(list_of_lines[38])
-    print(list_of_lines[43])
+    # Preserve the original mzML file names in the OpenMS workflow for local files
+    if sample_mzML.startswith('http'):
+        if 'google' in sample_mzML:
+            pass
+    else:
+        blank_filename = str(blank_mzML.split('/', 10)[-1])
+        sample_filename = str(sample_mzML.split('/', 10)[-1])
+        list_of_lines = [sub.replace('LISTITEM value="toppas_input/Blank.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+blank_filename) for sub in list_of_lines]
+        list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
+    # Replace OpenMS workflow parameters
     list_of_lines = [sub.replace('NOISE', str(noise_threshold)) for sub in list_of_lines]
     list_of_lines = [sub.replace('PPM_ERROR', str(ppm_error)) for sub in list_of_lines]
-
-    print(list_of_lines[38])
-    print(list_of_lines[43])
-
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)

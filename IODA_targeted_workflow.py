@@ -171,25 +171,25 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     if experiments >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=3, alpha=0.6)
-        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
+        Label1 = ['Exp. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
         Labels.append(Label1)
 
     if experiments >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=3, alpha=0.6)
-        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
+        Label2 = ['Exp. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
     if experiments >= 3:
         table2 = pd.read_csv(table_list[2], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=3, alpha=0.6)
-        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
+        Label3 = ['Exp. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
         Labels.append(Label3)
 
     if experiments >= 4:
         table3 = pd.read_csv(table_list[3], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=3, alpha=0.6)
-        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
+        Label4 =['Exp. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
         Labels.append(Label4)
 
     plt.yscale('log')
@@ -200,7 +200,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     plt.ylabel('Ion intensity (log scale)')
 
     plt.legend(labels=Labels, fontsize =8)
-    plt.savefig(output_filename[:-4]+'_injection_'+output_string+'_scatter_plot.png', dpi=300)
+    plt.savefig(output_filename[:-4]+'_experiment_'+output_string+'_scatter_plot.png', dpi=300)
     plt.close()
 
 def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
@@ -210,25 +210,25 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     if experiments >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=1, alpha=0.6)
-        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
+        Label1 = ['Exp. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
         Labels.append(Label1)
 
     if experiments >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=1, alpha=0.6)
-        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
+        Label2 = ['Exp. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
     if experiments >= 3:
         table2 = pd.read_csv(table_list[2], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=1, alpha=0.6)
-        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
+        Label3 = ['Exp. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
         Labels.append(Label3)
 
     if experiments >= 4:
         table3 = pd.read_csv(table_list[3], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=1, alpha=0.6)
-        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
+        Label4 =['Exp. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
         Labels.append(Label4)
 
     # Show shared features between blank and sample
@@ -244,8 +244,8 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     plt.ylabel('Ion intensity (log scale)')
 
     plt.legend(labels=Labels, fontsize =8, loc='best', markerscale=5)
-    plt.savefig(output_filename[:-4]+'_injection_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
-    plt.savefig('injection_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
+    plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
+    plt.savefig('experiment_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
 
 
@@ -269,7 +269,18 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make targeted list from mzTab
-def make_targeted_list_from_mzTab(input_filename:str, experiment_number:int, ratio_value:float, min_intensity_value:int):
+def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int):
+    if input_filename.startswith('http'):
+        logger.info('Filepath specified by the user')
+        pass
+    elif input_filename == 'OpenMS_generated':
+        logger.info('File generated with the OpenMS workflow')
+        path_input_folder = "TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/"
+        mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
+        input_filename = path_input_folder+mzTab_file
+    else:
+        print("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results_targeted')
@@ -294,10 +305,12 @@ def make_targeted_list_from_mzTab(input_filename:str, experiment_number:int, rat
         else:
             output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
             logger.info('This is the output file path: '+str(output_filename))
+
     else:
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
+
 
     # Convert the mzTab into a Table
     logger.info('======')
@@ -444,8 +457,8 @@ def make_targeted_list_from_mzTab(input_filename:str, experiment_number:int, rat
     os.system('mv results_targeted/scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/*TARGETED_INTENSITY_scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/*TARGETED_RATIO_scatter_plot* results_targeted/plots')
-    os.system('mv injection_blank_shared_TARGETED_RATIO_scatter_view.png results_targeted/intermediate_files/')
-    os.system('mv injection_blank_shared_TARGETED_INTENSITY_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv experiment_blank_shared_TARGETED_RATIO_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv experiment_blank_shared_TARGETED_INTENSITY_scatter_view.png results_targeted/intermediate_files/')
     # mv intermediate files
     os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
     os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
