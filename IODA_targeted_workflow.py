@@ -270,7 +270,12 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Make targeted list from mzTab
 def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int):
+    os.system('rm -r results_targeted')
+    os.system('rm download_results/IODA_targeted_results.zip')
+    os.system('mkdir results_targeted')
+    os.system('mkdir download_results')
     logfile('results_targeted/logfile.txt')
+
     logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
@@ -285,10 +290,6 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     now = datetime.datetime.now()
     logger.info(now)
-    os.system('rm -r results_targeted')
-    os.system('rm download_results/IODA_targeted_results.zip')
-    os.system('mkdir results_targeted')
-    os.system('mkdir download_results')
 
     output_dir = 'results_targeted'
     logger.info('======')
