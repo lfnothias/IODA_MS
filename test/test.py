@@ -3,8 +3,9 @@ import sys
 
 sys.path.insert(0, "..")
 
+from IODA_exclusion_workflow import *
+
 def test_mztab_import():
-    from IODA_exclusion_workflow import *
 
     input_filename = 'https://drive.google.com/file/d/1LYk-PKsBWl4Pv7c1TlhQwaqwkF2T6sux/view?usp=sharing'
     min_intensity = 100

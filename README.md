@@ -15,3 +15,12 @@ You will need to do two things:
 
 1. Open IODA_TOPPAS_mztab_generation.ipynb to run the feature finding to create the mztab file
 2. Open IODA_exclusion_from_mztab.ipyn to create the exclusion file to download
+
+
+## Testing
+
+Unit tests are run using github actions. To run them manually:
+
+```make test-unit```
+
+The actual tests are in the ```test``` directory. 
