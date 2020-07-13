@@ -11,7 +11,7 @@ from IODA_targeted_workflow import *
 
 ### IODA-targeted-from-mzTabs
 def test_targeted_from_mztab_googledrive():
-    os.system('pwd)
+    os.system('pwd')
     os.system('ls')
     input_filename = 'https://drive.google.com/file/d/1NGVzhrw-xZ4nMJserIQ7v4tYgcmraZ6g/view?usp=sharing'
     ratio_value = 5
