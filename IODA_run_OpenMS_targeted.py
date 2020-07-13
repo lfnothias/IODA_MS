@@ -27,7 +27,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logfile('TOPPAS_Workflow/logfile_IODA_from_mzML_'+str(today)+'.txt')
+    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     logger.info('STARTING the IODA-targeted WORKFLOW with OpenMS')
     logger.info('======')
     logger.info('Path to the input files: ')
