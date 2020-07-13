@@ -19,7 +19,7 @@ def test_exclusion_from_mztab_googledrive():
 
 def test_exclusion_from_mztab():
 
-    input_filename = 'tests/Euphorbia/exclusion/ioda_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzTab'
+    input_filename = '../tests/Euphorbia/exclusion/ioda_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzTab'
     min_intensity = 100
     rt_exclusion_margin = 5
 
@@ -28,7 +28,7 @@ def test_exclusion_from_mztab():
 
 def test_exclusion_from_mzml_local():
 
-    input_filename = 'tests/Euphorbia/exclusion/toppas_input/Blank.mzML'
+    input_filename = '../tests/Euphorbia/exclusion/toppas_input/Blank.mzML'
     ppm_error = 10
     narrow_feature_noise = 1E5
     large_feature_noise = 5E5
