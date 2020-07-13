@@ -32,8 +32,8 @@ def test_targeted_from_mztab_local():
 
 ### IODA-targeted-from-mzML
 def test_targeted_from_mzml_local():
-    input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
-    input_SAMPLE = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+    input_BLANK = "../tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+    input_SAMPLE = "../tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
     ppm_error = 10
     feature_noise = 1E6
 
