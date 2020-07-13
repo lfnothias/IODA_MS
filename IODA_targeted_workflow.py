@@ -279,7 +279,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
         path_input_folder = "TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/"
         mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
         input_filename = path_input_folder+mzTab_file
-    except:
+    else:
         logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
         raise
 
