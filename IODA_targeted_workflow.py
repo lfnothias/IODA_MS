@@ -281,7 +281,6 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
         input_filename = path_input_folder+mzTab_file
     else:
         logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
-        raise
 
     now = datetime.datetime.now()
     logger.info(now)
@@ -294,7 +293,6 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     output_dir = 'results_targeted'
     logger.info('======')
     logger.info('Getting the mzTab')
-    os.system('cp '+input_filename+'results_targeted/')
     if input_filename.startswith('http'):
         if 'google' in input_filename:
             logger.info('This is the Google Drive download link: '+str(input_filename))
@@ -302,8 +300,10 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_filename = prefixe_google_download+url_id
             output_filename = output_dir+'/Converted_mzTab.csv'
+
         else:
             output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+            logger.info('This is the input file path: '+str(input_filename))
             logger.info('This is the output file path: '+str(output_filename))
 
     else:
