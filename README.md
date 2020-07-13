@@ -1,3 +1,5 @@
+# IODA MS
+
 This repository will help accomplish two things:
 
 1. Feature Detection using TOPPAS/OPENMS
@@ -18,8 +20,10 @@ You will need to do two things:
 
 ## Testing
 
+![Unit Test](https://github.com/lfnothias/IODA_MS/workflows/Unit%20Test/badge.svg)
+
 Unit tests are run using github actions. To run them manually:
 
 ```make test-unit```
 
-The actual tests are in the ```test``` directory. 
+The actual tests are in the ```test``` directory.
