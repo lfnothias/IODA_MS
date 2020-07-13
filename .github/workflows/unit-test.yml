@@ -22,3 +22,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install nose2
+    - name: Run Test
+      run: |
+        cd test && nose2 -v
