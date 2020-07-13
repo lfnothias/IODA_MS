@@ -13,3 +13,7 @@ results/Exclusion_sample.csv
 .ipynb_checkpoints/IODA_exclusion_from_mzML-checkpoint.ipynb
 .ipynb_checkpoints/IODA_targeted_from_mztab-checkpoint.ipynb
 .ipynb_checkpoints/IODA_targeted_from_mzML-checkpoint.ipynb
+__pycache__/format_to_qexactive_list.cpython-35.pyc
+__pycache__/IODA_exclusion_workflow.cpython-35.pyc
+results/Exclusion_sample_EXCLUSION_LIST_MaxQuantLive.txt
+results/Exclusion_sample_EXCLUSION_LIST_XCalibur.csv
