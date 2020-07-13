@@ -12,6 +12,8 @@ from subprocess import call
 
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
     #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
+    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
+
     TOPPAS_Pipeline = "toppas_Exclusion_workflow.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_folder = "TOPPAS_Workflow"
@@ -26,7 +28,6 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     logger.info('STARTING the IODA-exclusion WORKFLOW with OpenMS')
     logger.info('======')
     logger.info('Getting the mzML, please wait ...')
