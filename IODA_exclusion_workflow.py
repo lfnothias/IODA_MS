@@ -107,7 +107,7 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
         plt.title(title+', in retention time range range', size =13)
         plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
-    plt.legend(labels=Labels, fontsize =10)
+    plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
     if column == 'Mass [m/z]':
         plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
@@ -132,8 +132,9 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     plt.title(title, size =13)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10)
+    plt.legend(labels=Labels, fontsize = 10, loc='best', markerscale=1)
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
+    plt.close()
 
 def get_all_file_paths(directory,output_zip_path):
     # initializing empty file paths list
@@ -162,7 +163,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results')
-    os.system('rm download_results/IODA_exclusion_list_from_OpenMS.zip')
+    os.system('rm download_results/IODA_exclusion_results.zip')
     os.system('mkdir results')
     os.system('mkdir download_results')
     logfile('results/logfile.txt')
@@ -231,7 +232,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     os.system('mv '+output_filename[:-4]+'_EXCLUSION_BLANK.csv intermediate_files/')
     os.system('mv '+output_filename+' results/intermediate_files/')
     os.system('mv results/table* results/intermediate_files/')
-    get_all_file_paths('results','download_results/IODA_exclusion_list_from_OpenMS.zip')
+    get_all_file_paths('results','download_results/IODA_exclusion_results.zip')
 
     print('======')
     print('End the IODA-exclusion workflow')
@@ -246,7 +247,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     now = datetime.datetime.now()
     logger.info(now)
     os.system('rm -r results')
-    os.system('rm download_results/IODA_exclusion_from_mzTab.zip')
+    os.system('rm download_results/IODA_exclusion_results.zip')
     os.system('mkdir results')
     os.system('mkdir download_results')
     logfile('results/logfile.txt')
@@ -323,7 +324,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     os.system('mv results/'+output_filename+' intermediate_files/')
     os.system('mv results/table* results/intermediate_files/')
 
-    get_all_file_paths('results','download_results/IODA_exclusion_from_mzTab.zip')
+    get_all_file_paths('results','download_results/IODA_exclusion_results.zip')
     print('=======================')
     print('End the IODA-exclusion workflow')
     print('=======================')
