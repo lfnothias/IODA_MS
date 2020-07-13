@@ -19,6 +19,8 @@ You will need to do two things:
 
 ## Testing
 
+![Unit Test](https://github.com/lfnothias/IODA_MS/workflows/Unit%20Test/badge.svg)
+
 Unit tests are run using github actions. To run them manually:
 
 ```make test-unit```
