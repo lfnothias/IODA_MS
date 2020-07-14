@@ -10,7 +10,7 @@ from datetime import date
 from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
-def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
+def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
     #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
     logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
@@ -65,8 +65,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
 
     logger.info('======')
     logger.info('Changing the variables of the OpenMS workflow ...')
-    logger.info('   ppm error = '+str(ppm_error))
-    logger.info('   noise threshold = '+str(noise_threshold))
+    logger.info('   ppm error = '+str(ppm_tolerance))
+    logger.info('   noise threshold = '+str(noise_level))
 
     try:
         bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/targeted_draft/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
@@ -79,12 +79,12 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
 
     # Check format for variable
     try:
-        float(noise_threshold)
+        float(noise_level)
     except ValueError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 =")
 
     try:
-        float(ppm_error)
+        float(ppm_tolerance)
     except ValueError:
         logger.info("== The ppm error must be a float or an integer, such as 10 ppm =")
 
@@ -99,8 +99,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
         list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
     # Replace OpenMS workflow parameters
-    list_of_lines = [sub.replace('NOISE', str(noise_threshold)) for sub in list_of_lines]
-    list_of_lines = [sub.replace('PPM_ERROR', str(ppm_error)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('NOISE', str(noise_level)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('PPM_ERROR', str(ppm_tolerance)) for sub in list_of_lines]
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)
@@ -117,7 +117,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_error,noise_threshold):
 
     logger.info('======')
     logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
-    logger.info('If this takes longer, increase the noise feature_noise value ...')
+    logger.info('If this takes longer, increase the noise_level value ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:

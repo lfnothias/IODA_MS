@@ -153,7 +153,7 @@ def get_all_file_paths(directory,output_zip_path):
         for file in file_paths:
             zip.write(file)
 
-    print('All files zipped successfully!')
+    logger.info('All files zipped successfully!')
 
 # Make exclusion list from two mzTabs
 def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
