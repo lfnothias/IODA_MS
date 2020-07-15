@@ -53,7 +53,8 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         cp2 = subprocess.run(bashCommand2,shell=True)
         cp2
 
-    bashCommand3 = "cp input.mzML "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+    bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+    print(bashCommand3)
     cp3 = subprocess.run(bashCommand3,shell=True)
     cp3
 
