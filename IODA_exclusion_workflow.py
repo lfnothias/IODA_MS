@@ -46,7 +46,7 @@ def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str
     for x in Filenames:
         if x == "ms_run[2]-location":
             Filename2 = Filenames[1]
-            print['Warning: There is more than two samples in that mzTab file. We support only one sample in the mzTab currently']
+            logger.info('Warning: There is more than two samples in that mzTab file. We support only one sample in the mzTab currently')
 
     # Read and edit the table
     main_df = pd.read_csv(input_filename,sep='\t',index_col=0, skiprows=range(0,start_row_consensus))
@@ -169,17 +169,17 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     logfile('results/logfile.txt')
 
     # Convert the mzTabs into Tables to generate exclusion list
-    print('======')
-    print('Starting the IODA-exclusion workflow')
+    logger.info('======')
+    logger.info('Starting the IODA-exclusion workflow')
     logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
     logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
-    print('======')
-    print('Converting mzTab to table format')
-    print('For narrow features')
+    logger.info('======')
+    logger.info('Converting mzTab to table format')
+    logger.info('For narrow features')
     convert_blank_range_mzTab_to_table(input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab', output_dir+'/table_narrow.csv')
-    print('For large features')
+    logger.info('For large features')
     convert_blank_range_mzTab_to_table(input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab', output_dir+'/table_large.csv')
-    print('======')
+    logger.info('======')
 
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_dir+'/table_large.csv')
@@ -206,26 +206,26 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     df_concat.to_csv(output_filename, sep=',', index=False)
 
     # Running the table processing
-    print('Running the table processing')
+    logger.info('Running the table processing')
     make_exclusion_list(output_filename, blank_samplename, min_intensity)
-    print('======')
+    logger.info('======')
 
     # Convert to XCalibur format
-    print('Preparing list of excluded ions in XCalibur format')
+    logger.info('Preparing list of excluded ions in XCalibur format')
     generate_QE_list_rt_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename,output_filename[:-4]+'_EXCLUSION_LIST_XCalibur.csv')
-    print('======')
-    print('Preparing list of excluded ions in MaxQuant.Live format')
+    logger.info('======')
+    logger.info('Preparing list of excluded ions in MaxQuant.Live format')
     generate_MQL_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_LIST_MaxQuantLive.txt')
-    print('======')
+    logger.info('======')
 
     # === Plot the features  ====
-    print('Preparing plotting of the ions excluded')
+    logger.info('Preparing scatter plots of the excluded ions/features')
     plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
 
-    print('======')
-    print('Zipping workflow results files')
+    logger.info('======')
+    logger.info('Zipping workflow results files')
 
     # Cleaning the files first
     os.system('mkdir results/intermediate_files')
@@ -234,12 +234,10 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     os.system('mv results/table* results/intermediate_files/')
     get_all_file_paths('results','download_results/IODA_exclusion_results.zip')
 
-    print('======')
-    print('End the IODA-exclusion workflow')
-    print('======')
-    print('Plotting the results')
-    print('======')
-    print(' ')
+    logger.info('======')
+    logger.info('End the IODA-exclusion workflow processing')
+    logger.info('======')
+    logger.info(' ')
 
 
 # Make exclusion list from one mzTab
@@ -255,8 +253,8 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     logger.info('Starting the IODA exclusion-from-mzTab workflow')
     output_dir = 'results'
-    print('======')
-    print('Getting the mzTab')
+    logger.info('======')
+    logger.info('Getting the mzTab')
     logger.info('This is the input: '+input_filename)
     if input_filename.startswith('http'):
         if 'google' in input_filename:
@@ -272,14 +270,14 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
-    print('======')
-    print('Converting mzTab to table format')
+    logger.info('======')
+    logger.info('Converting mzTab to table format')
     convert_blank_range_mzTab_to_table(input_filename,output_filename)
 
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     blank_samplename = feature_table.columns[-3]
-    logger.info('Assumed blank sample name: '+ blank_samplename)
+    logger.info('Blank sample name for exclusion: '+ blank_samplename)
 
     # User-defined parameters
     logger.info('User-defined parameters')
@@ -297,27 +295,27 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     df_narrow.to_csv(output_filename, sep=',', index=False)
 
     # Running the table processing
-    print('Preparing the table')
+    logger.info('Processing the table')
     make_exclusion_list(output_filename, blank_samplename, min_intensity)
-    print('======')
+    logger.info('======')
 
     # Convert to XCalibur format
-    print('Preparing list of excluded ions in XCalibur format')
+    logger.info('Preparing list of excluded ions in XCalibur format')
     generate_QE_list_rt_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_LIST_XCalibur.csv')
-    print('======')
-    print('Preparing list of excluded ions in MaxQuant.Live format')
+    logger.info('======')
+    logger.info('Preparing list of excluded ions in MaxQuant.Live format')
     generate_MQL_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, output_filename[:-4]+'_EXCLUSION_LIST_MaxQuantLive.txt')
-    print('======')
+    logger.info('======')
 
 
     # === Plot the features  ====
-    print('Preparing plotting of the ions excluded')
+    logger.info('Preparing scatter plots of the excluded ions/features')
     plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
 
-    print('=======================')
-    print('Zipping workflow results files')
+    logger.info('=======================')
+    logger.info('Zipping workflow results files')
 
     # Cleaning files first
     os.system('mkdir results/intermediate_files')
@@ -326,12 +324,10 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     os.system('mv results/table* results/intermediate_files/')
 
     get_all_file_paths('results','download_results/IODA_exclusion_results.zip')
-    print('=======================')
-    print('End the IODA-exclusion workflow')
-    print('=======================')
-    print('Plotting the results')
-    print('=======================')
-    print(' ')
+    logger.info('=======================')
+    logger.info('End the IODA-exclusion workflow')
+    logger.info('=======================')
+    logger.info(' ')
 
 
 if __name__ == "__main__":
