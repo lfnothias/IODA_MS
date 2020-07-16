@@ -118,15 +118,15 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
     # Replace OpenMS workflow parameters
-    list_of_lines = [sub.replace('NOISE', str(noise_level)) for sub in list_of_lines]
-    list_of_lines = [sub.replace('PPM_ERROR', str(ppm_tolerance)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('1E5', str(noise_level)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('11', str(ppm_tolerance)) for sub in list_of_lines]
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)
     a_file.close()
 
     logger.info('======')
-    logger.info('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('Initializing the OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
@@ -135,7 +135,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         raise
 
     logger.info('======')
-    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
     logger.info('If this takes longer, increase the noise_level value ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
