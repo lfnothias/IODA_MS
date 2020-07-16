@@ -37,6 +37,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     if input_mzML.startswith(('http','ftp')):
         if 'google' in input_mzML:
             logger.info('This is the Google Drive download link:'+str(input_mzML))
+            logger.info('Downloading the mzML, please wait ...')
             url_id = input_mzML.split('/', 10)[5]
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_mzML = prefixe_google_download+url_id
@@ -44,12 +45,14 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             cp1 = subprocess.run(bashCommand1,shell=True)
             cp1
         if 'massive.ucsd.edu' in input_mzML:
-            logger.info('This is the MassIVE repository link:'+str(input_mzML))
+            logger.info('This is the MassIVE repository link: '+str(input_mzML))
+            logger.info('Downloading the mzML, please wait ... ')
             bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp4 = subprocess.run(bashCommand4,shell=True)
             cp4
         else:
             logger.info('This is the input file path: '+str(input_mzML))
+            logger.info('Downloading the mzML, please wait ... ')
             try:
                 bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             except:

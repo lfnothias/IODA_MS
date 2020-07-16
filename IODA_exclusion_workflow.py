@@ -132,7 +132,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     plt.title(title, size =13)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10, loc='best')
+    plt.legend(labels=Labels, fontsize = 10, loc='upper left', markerscale=0.3)
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
     plt.close()
 
@@ -187,7 +187,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     blank_samplename = feature_table.columns[-3]
 
     output_filename = output_dir+'/'+blank_samplename+'.csv'
-    logger.info('Assumed blank sample name: '+ blank_samplename)
+    logger.info('Blank sample name: was internally renamed as '+ blank_samplename)
 
     # User-defined parameters
     logger.info('User-defined parameters')
@@ -221,9 +221,9 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
     # === Plot the features  ====
     logger.info('Preparing scatter plots of the excluded ions/features')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in'+ blank_samplename)
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
 
     logger.info('======')
     logger.info('Zipping workflow results files')
@@ -314,9 +314,9 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # === Plot the features  ====
     logger.info('Preparing scatter plots of the excluded ions/features')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of excluded ions')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
-    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in'+ blank_samplename)
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
 
     logger.info('=======================')
     logger.info('Zipping workflow results files')

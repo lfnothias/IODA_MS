@@ -57,7 +57,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
             if 'massive.ucsd.edu' in input_mzML:
-                logger.info('This is the MassIVE repository link:'+str(input_mzML))
+                logger.info('This is the MassIVE repository link: '+str(input_mzML))
+                logger.info('Downloading ... ')
                 bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
                 cp4 = subprocess.run(bashCommand4,shell=True)
                 cp4
