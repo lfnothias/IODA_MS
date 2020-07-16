@@ -43,18 +43,28 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             input_mzML = prefixe_google_download+url_id
             bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp1 = subprocess.run(bashCommand1,shell=True)
+            try:
+                cp1
+            except subprocess.CalledProcessError:
+                raise
         if 'massive.ucsd.edu' in input_mzML:
             logger.info('This is the MassIVE repository link: '+str(input_mzML))
             logger.info('Downloading the mzML, please wait ... ')
             bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp4 = subprocess.run(bashCommand4,shell=True)
-            cp4
+            try:
+                cp4
+            except subprocess.CalledProcessError:
+                raise
     else:
         #Check the file path is correct for local upload
         logger.info('This is the input file path: '+str(input_mzML))
         bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
         cp3 = subprocess.run(bashCommand3,shell=True)
-        cp3
+        try:
+            cp3
+        except subprocess.CalledProcessError:
+            raise
     # Error getting the file ! PLEASE VERY THE PATH TO THE FILE OR DOWNLOAD LINK ...
     try:
         f = open(TOPPAS_folder+'/toppas_input/Blank.mzML')

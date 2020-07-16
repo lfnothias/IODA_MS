@@ -84,7 +84,6 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
-
             # Error getting the file ! Pleaase, very the path or download link
             try:
                 f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1])
