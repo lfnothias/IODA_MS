@@ -16,12 +16,14 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
         #input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #input_SAMPLE = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        
     logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_targeted_workflow_qOrbitrap_positive.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
     os.system('rm download_results/IODA_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/toppas_input/*')
     os.system('rm -r TOPPAS_Workflow/'+TOPPAS_output_folder+'/TOPPAS_out/')
     os.system('mkdir download_results')
     #large_noise = 5E5

@@ -12,19 +12,17 @@ from subprocess import call
 
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
     #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
-    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
+    #input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
 
+    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_Exclusion_workflow.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_folder = "TOPPAS_Workflow"
     os.system('rm download_results/IODA_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/toppas_input/*')
     os.system('rm -r TOPPAS_Workflow/toppas_output/TOPPAS_out/')
     os.system('mkdir download_results')
-    #large_noise = 5E5
-    #narrow_noise = 1E5
-    #ppm_error = 10
 
-    #SOURCE_MZML_URL = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)

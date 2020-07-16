@@ -155,7 +155,7 @@ def get_all_file_paths(directory,output_zip_path):
 
     logger.info('All files zipped successfully!')
 
-# Make exclusion list from two mzTabs
+# Make exclusion list from two mzTabs (design to run with the OpenMS TOPPAS workflow in IODA)
 def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
     input_dir='TOPPAS_Workflow/toppas_output/'
     output_dir = 'results'
@@ -242,6 +242,9 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
 # Make exclusion list from one mzTab
 def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusionmargininsecs:float):
+    #Example source filenames
+    #input_filename = 'https://drive.google.com/file/d/1LYk-PKsBWl4Pv7c1TlhQwaqwkF2T6sux/view?usp=sharing'
+    #input_filename = 'tests/Euphorbia/exclusion/ioda_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzTab'
     os.system('rm -r results')
     os.system('rm download_results/IODA_exclusion_results.zip')
     os.system('mkdir results')
