@@ -39,24 +39,19 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             url_id = input_mzML.split('/', 10)[5]
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_mzML = prefixe_google_download+url_id
-            bashCommand1 = "wget -r "+input_mzML+" -O input.mzML"
+            bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp1 = subprocess.run(bashCommand1,shell=True)
             cp1
         else:
             logger.info('This is the input file path: '+str(input_mzML))
-            bashCommand2 = "wget -r "+input_mzML+" -O input.mzML"
+            bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
     else:
         logger.info('This is the input file path: '+str(input_mzML))
-        bashCommand2 = "cp "+input_mzML+" -O input.mzML"
-        cp2 = subprocess.run(bashCommand2,shell=True)
-        cp2
-
-    bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
-    print(bashCommand3)
-    cp3 = subprocess.run(bashCommand3,shell=True)
-    cp3
+        bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+        cp3 = subprocess.run(bashCommand3,shell=True)
+        cp3
 
     logger.info('Copying the mzML to the OpenMS input folder')
 
@@ -112,7 +107,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     a_file.close()
 
     logger.info('======')
-    logger.info('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('Initializing the OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
@@ -121,7 +116,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         raise
 
     logger.info('======')
-    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:

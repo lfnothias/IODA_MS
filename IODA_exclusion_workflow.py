@@ -132,7 +132,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     plt.title(title, size =13)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10, loc='best', markerscale=1)
+    plt.legend(labels=Labels, fontsize = 10, loc='best')
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
     plt.close()
 
