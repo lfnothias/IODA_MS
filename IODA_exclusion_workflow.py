@@ -166,6 +166,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     os.system('mkdir download_results')
     now = datetime.datetime.now()
     logger.info(now)
+    os.system('rm results/logfile.txt')
     logfile('results/logfile.txt')
 
     # Convert the mzTabs into Tables to generate exclusion list
@@ -249,7 +250,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     os.system('rm download_results/IODA_exclusion_results.zip')
     os.system('mkdir results')
     os.system('mkdir download_results')
-
+    os.system('rm results/logfile.txt')
     logfile('results/logfile.txt')
     now = datetime.datetime.now()
     logger.info(now)
