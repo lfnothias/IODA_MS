@@ -56,12 +56,28 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
+
+                # Error getting the file ! Pleaase, very the path or download link
+                try:
+                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
+                    f.close()
+                except subprocess.CalledProcessError:
+                    logger.info('There was an error downloading the file ! Pleaase, very the link')
+                logger.info('The mzML file was download succesfully')
+
             if 'massive.ucsd.edu' in input_mzML:
                 logger.info('This is the MassIVE repository link: '+str(input_mzML))
                 logger.info('Downloading ... ')
                 bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
                 cp4 = subprocess.run(bashCommand4,shell=True)
                 cp4
+                # Error getting the file ! Pleaase, very the path or download link
+                try:
+                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
+                    f.close()
+                    except subprocess.CalledProcessError:
+                        logger.info('There was an error downloading the file ! Pleaase, very the link')
+                    logger.info('The mzML file was download succesfully')
             else:
                 #logger.info('The Google Drive file path is invalid: '+str(input_mzML))
                 logger.info('This is the input file path: '+str(input_mzML))
@@ -71,11 +87,26 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                     bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp2 = subprocess.run(bashCommand2,shell=True)
                 cp2
+                # Error getting the file ! Pleaase, very the path or download link
+                try:
+                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
+                    f.close()
+                    except subprocess.CalledProcessError:
+                        logger.info('There was an error downloading the file ! Pleaase, very the link')
+                    logger.info('The mzML file was download succesfully')
         else:
             logger.info('Path to uploaded file: '+str(input_mzML))
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
+
+            # Error getting the file ! Pleaase, very the path or download link
+            try:
+                f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1])
+                f.close()
+            except subprocess.CalledProcessError:
+                logger.info('There was an error getting the file ! Pleaase, very the path')
+            logger.info('The mzML file was found')
 
     # Run the function for the two input smamples
     logger.info('Copying the mzML files ...')
@@ -93,8 +124,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
         list_of_lines = a_file.readlines()
-    except:
-        raise
+    except subprocess.CalledProcessError:
+        logger.info('ERROR getting the reference workflow')
 
     # Check format for variable
     try:

@@ -61,26 +61,19 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             cp2
     else:
         #Check the file path is correct for local upload
-        try:
-            os.path.isfile(input_mzML)
-        except NameError:
-            logger.info('There is an error getting the file ! Pleaase, very the path or download link')
-            raise
-
         logger.info('This is the input file path: '+str(input_mzML))
         bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
         cp3 = subprocess.run(bashCommand3,shell=True)
         cp3
-
-    #Check the file was correctly copied to the TOPPAS folder
+    # Error getting the file ! Pleaase, very the path or download link
     try:
-        os.path.isfile(TOPPAS_folder+"/toppas_input/Blank.mzML")
-    except NameError:
-        logger.info('There is an error getting the file ! Pleaase, very the path or download link')
-        raise
+        f = open(TOPPAS_folder+'/toppas_input/Blank.mzML')
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was an error getting the file ! Pleaase, very the path or download link')
+    logger.info('The mzML file was found')
 
     logger.info('Copying the mzML to the OpenMS input folder. File will be renamed internally "Blank.mzML"')
-
 
     logger.info('======')
     logger.info('Changing variables of the OpenMS workflow')
@@ -155,11 +148,12 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
 
     vdisplay.stop()
 
+    # Error with the OpenMS workflow. No output files.
     try:
-        os.path.isdir('TOPPAS_Workflow/toppas_output/TOPPAS_out/')
-    except NameError:
-        logger.info('!!! There was an error with OpenMS workflow, please check your input files and parameters !!! Alternatively you can run it locally. See documentation."')
-        raise
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')

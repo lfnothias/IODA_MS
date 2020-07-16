@@ -157,7 +157,7 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Make exclusion list from two mzTabs (design to run with the OpenMS TOPPAS workflow in IODA)
 def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
-    input_dir='TOPPAS_Workflow/toppas_output/'
+    input_dir='TOPPAS_Workflow/toppas_output'
     output_dir = 'results'
 
     os.system('rm -r results')
