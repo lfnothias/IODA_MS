@@ -127,7 +127,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
     plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
 
-    Label1 = ['Ions excluded (n='+ str(table0.shape[0])+'), Red circle = intensit, Blue lines = rt range']
+    Label1 = ['Red circle = intensity, Blue dot = ion apex, Horizontal line = RT range, Ions excluded (n='+ str(table0.shape[0])+')]
     Labels.append(Label1)
     plt.title(title, size =13)
     plt.xlabel('Ret. time (sec)')
