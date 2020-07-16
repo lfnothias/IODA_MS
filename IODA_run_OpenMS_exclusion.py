@@ -41,36 +41,26 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             url_id = input_mzML.split('/', 10)[5]
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_mzML = prefixe_google_download+url_id
-            bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp1 = subprocess.run(bashCommand1,shell=True)
-            cp1
         if 'massive.ucsd.edu' in input_mzML:
             logger.info('This is the MassIVE repository link: '+str(input_mzML))
             logger.info('Downloading the mzML, please wait ... ')
-            bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp4 = subprocess.run(bashCommand4,shell=True)
             cp4
-        else:
-            logger.info('This is the input file path: '+str(input_mzML))
-            logger.info('Downloading the mzML, please wait ... ')
-            try:
-                bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
-            except:
-                bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
-            cp2 = subprocess.run(bashCommand2,shell=True)
-            cp2
     else:
         #Check the file path is correct for local upload
         logger.info('This is the input file path: '+str(input_mzML))
         bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
         cp3 = subprocess.run(bashCommand3,shell=True)
         cp3
-    # Error getting the file ! Pleaase, very the path or download link
+    # Error getting the file ! PLEASE VERY THE PATH TO THE FILE OR DOWNLOAD LINK ...
     try:
         f = open(TOPPAS_folder+'/toppas_input/Blank.mzML')
         f.close()
     except subprocess.CalledProcessError:
-        logger.info('There was an error getting the file ! Pleaase, very the path or download link')
+        logger.info('There was an error getting the file !')
     logger.info('The mzML file was found')
 
     logger.info('Copying the mzML to the OpenMS input folder. File will be renamed internally "Blank.mzML"')

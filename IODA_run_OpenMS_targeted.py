@@ -38,7 +38,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logger.info('STARTING the IODA-targeted WORKFLOW with OpenMS')
+    logger.info('STARTING the IODA-targeted WORKFLOW')
     logger.info('======')
     logger.info('Path to the input files: ')
     logger.info('Blank: '+blank_mzML)
@@ -50,10 +50,11 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
             logger.info('Downloading the mzML files, please wait ...')
             if 'google' in input_mzML:
                 logger.info('This is the Google Drive download link:'+str(input_mzML))
+                logger.info('Downloading ...')
                 url_id = input_mzML.split('/', 10)[5]
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
-                bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML+' || rm -f '+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
 
@@ -62,38 +63,22 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                     f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
                     f.close()
                 except subprocess.CalledProcessError:
-                    logger.info('There was an error downloading the file ! Pleaase, very the link')
+                    logger.info('There was an error downloading the mzML file(s) ! Pleaase, very the link')
                 logger.info('The mzML file was download succesfully')
 
             if 'massive.ucsd.edu' in input_mzML:
                 logger.info('This is the MassIVE repository link: '+str(input_mzML))
                 logger.info('Downloading ... ')
-                bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+                bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+'/toppas_input/Blank.mzML'
                 cp4 = subprocess.run(bashCommand4,shell=True)
                 cp4
                 # Error getting the file ! Pleaase, very the path or download link
                 try:
                     f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
                     f.close()
-                    except subprocess.CalledProcessError:
-                        logger.info('There was an error downloading the file ! Pleaase, very the link')
-                    logger.info('The mzML file was download succesfully')
-            else:
-                #logger.info('The Google Drive file path is invalid: '+str(input_mzML))
-                logger.info('This is the input file path: '+str(input_mzML))
-                try:
-                    bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
-                except:
-                    bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
-                cp2 = subprocess.run(bashCommand2,shell=True)
-                cp2
-                # Error getting the file ! Pleaase, very the path or download link
-                try:
-                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
-                    f.close()
-                    except subprocess.CalledProcessError:
-                        logger.info('There was an error downloading the file ! Pleaase, very the link')
-                    logger.info('The mzML file was download succesfully')
+                except subprocess.CalledProcessError:
+                    logger.info('There was an error downloading the mzML file(s) ! Pleaase, very the link')
+                logger.info('The mzML file was download succesfully')
         else:
             logger.info('Path to uploaded file: '+str(input_mzML))
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
@@ -105,7 +90,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1])
                 f.close()
             except subprocess.CalledProcessError:
-                logger.info('There was an error getting the file ! Pleaase, very the path')
+                logger.info('There was an error getting the mzML file(s) ! Pleaase, very the path')
             logger.info('The mzML file was found')
 
     # Run the function for the two input smamples
@@ -179,6 +164,14 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         raise
 
     vdisplay.stop()
+
+    # Error with the OpenMS workflow. No output files.
+    try:
+        mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/TOPPAS_out/Targeted_MzTab/'+mzTab_file)
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')
