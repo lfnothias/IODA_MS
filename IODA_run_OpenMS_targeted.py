@@ -48,14 +48,14 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 url_id = input_mzML.split('/', 10)[5]
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
-                bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 print(bashCommand1)
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
             else:
                 #logger.info('The Google Drive file path is invalid: '+str(input_mzML))
                 logger.info('This is the input file path: '+str(input_mzML))
-                bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp2 = subprocess.run(bashCommand2,shell=True)
                 cp2
         else:
