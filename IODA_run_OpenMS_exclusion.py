@@ -60,10 +60,24 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
     else:
+        #Check the file path is correct for local upload
+        try:
+            os.path.isfile(input_mzML)
+        except NameError:
+            logger.info('There is an error getting the file ! Pleaase, very the path or download link')
+            raise
+
         logger.info('This is the input file path: '+str(input_mzML))
         bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
         cp3 = subprocess.run(bashCommand3,shell=True)
         cp3
+
+    #Check the file was correctly copied to the TOPPAS folder
+    try:
+        os.path.isfile(TOPPAS_folder+"/toppas_input/Blank.mzML")
+    except NameError:
+        logger.info('There is an error getting the file ! Pleaase, very the path or download link')
+        raise
 
     logger.info('Copying the mzML to the OpenMS input folder. File will be renamed internally "Blank.mzML"')
 
