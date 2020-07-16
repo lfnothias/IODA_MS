@@ -11,11 +11,16 @@ from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
 def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
-    # Reference sample
+    # Test samples
         #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
         #input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #input_SAMPLE = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        #input_BLANK = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+        #input_SAMPLE = "https://drive.google.com/file/d/1_lOYEtsmEPAlfGVYbzJpLePPSitUp1yh/view?usp=sharing"
+        #input_BLANK = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
+        #input_SAMPLE = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_F1-1_F2-1_NIST-1_To-1_20181227135238.mzML"
+
     os.system('rm TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_targeted_workflow_qOrbitrap_positive.toppas"
@@ -41,7 +46,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
 
     # Collect the mzML and copy
     def download_copy_mzML(input_mzML, name_mzML):
-        if input_mzML.startswith('http'):
+        if input_mzML.startswith(('http','ftp')):
             logger.info('Downloading the mzML files, please wait ...')
             if 'google' in input_mzML:
                 logger.info('This is the Google Drive download link:'+str(input_mzML))
@@ -49,13 +54,20 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
                 bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
-                print(bashCommand1)
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
+            if 'massive.ucsd.edu' in input_mzML:
+                logger.info('This is the MassIVE repository link:'+str(input_mzML))
+                bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+                cp4 = subprocess.run(bashCommand4,shell=True)
+                cp4
             else:
                 #logger.info('The Google Drive file path is invalid: '+str(input_mzML))
                 logger.info('This is the input file path: '+str(input_mzML))
-                bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                try:
+                    bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                except:
+                    bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp2 = subprocess.run(bashCommand2,shell=True)
                 cp2
         else:

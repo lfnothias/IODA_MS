@@ -11,9 +11,12 @@ from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
-    #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
-    #input_mzML = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
-    #input_mzML = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+    # Test samples
+        #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
+        #input_mzML = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #input_mzML = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+        #input_mzML = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
+
     os.system('rm TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_Exclusion_workflow.toppas"
@@ -31,20 +34,26 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     logger.info('======')
     logger.info('Getting the mzML, please wait ...')
 
-    logger.info('This is the input: '+input_mzML)
-    if input_mzML.startswith('http'):
+    if input_mzML.startswith(('http','ftp')):
         if 'google' in input_mzML:
             logger.info('This is the Google Drive download link:'+str(input_mzML))
             url_id = input_mzML.split('/', 10)[5]
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_mzML = prefixe_google_download+url_id
             bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
-            print(bashCommand1)
             cp1 = subprocess.run(bashCommand1,shell=True)
             cp1
+        if 'massive.ucsd.edu' in input_mzML:
+            logger.info('This is the MassIVE repository link:'+str(input_mzML))
+            bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            cp4 = subprocess.run(bashCommand4,shell=True)
+            cp4
         else:
             logger.info('This is the input file path: '+str(input_mzML))
-            bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            try:
+                bashCommand2 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            except:
+                bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
     else:
@@ -53,7 +62,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         cp3 = subprocess.run(bashCommand3,shell=True)
         cp3
 
-    logger.info('Copying the mzML to the OpenMS input folder')
+    logger.info('Copying the mzML to the OpenMS input folder. File will be renamed internally "Blank.mzML"')
 
 
     logger.info('======')
