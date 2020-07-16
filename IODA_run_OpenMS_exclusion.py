@@ -155,6 +155,12 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
 
     vdisplay.stop()
 
+    try:
+        os.path.isdir('TOPPAS_Workflow/toppas_output/TOPPAS_out/')
+    except NameError:
+        logger.info('!!! There was an error with OpenMS workflow, please check your input files and parameters !!! Alternatively you can run it locally. See documentation."')
+        raise
+
     logger.info('======')
     logger.info('Completed the OpenMS workflow')
     logger.info('======')
