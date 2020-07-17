@@ -165,7 +165,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_OpenMS_results.zip')
 
     logger.info('======')
-    logger.info('NOW CONTINUE WITH THE REST OF THE IODA-exclusion WORKFLOW')
+    logger.info('NOW YOU CONTINUE WITH THE REST OF THE WORKFLOW')
 
 if __name__ == "__main__":
     IODA_run_TOPPAS_exclusion(str(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))

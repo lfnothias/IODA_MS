@@ -199,9 +199,9 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     df_large = pd.read_csv(output_dir+'/table_large.csv',sep=',')
     df_concat = pd.concat([df_narrow,df_large])
 
-    #We arbitrarly expand the exclusion range from +/- 5 seconds
-    df_concat['rt_start'] = df_concat['rt_start'] - 2
-    df_concat['rt_end'] = df_concat['rt_end'] + 2
+    #We expand the margin of the retention time exclusion
+    df_concat['rt_start'] = df_concat['rt_start'] - rtexclusionmargininsecs
+    df_concat['rt_end'] = df_concat['rt_end'] + rtexclusionmargininsecs
 
     #Concatening the tables
     df_concat.to_csv(output_filename, sep=',', index=False)
@@ -221,7 +221,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
     # === Plot the features  ====
     logger.info('Preparing scatter plots of the excluded ions/features')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in'+ blank_samplename)
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in the blank sample)
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
 
@@ -238,6 +238,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     logger.info('======')
     logger.info('End the IODA-exclusion workflow processing')
     logger.info('======')
+    logger.info('Proceed with the results visualization')
     logger.info(' ')
 
 
@@ -314,7 +315,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # === Plot the features  ====
     logger.info('Preparing scatter plots of the excluded ions/features')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in'+ blank_samplename)
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in the blank sample)
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
 
@@ -331,6 +332,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     logger.info('=======================')
     logger.info('End the IODA-exclusion workflow')
     logger.info('=======================')
+    logger.info('Proceed with the results visualization')
     logger.info(' ')
 
 
