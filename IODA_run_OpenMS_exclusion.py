@@ -91,19 +91,22 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         raise
 
     # Check format for variable
+
+    #"== The noise level must be a float or an integer, such as 6.0e05 =="
     try:
         float(large_noise_threshold)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
 
+    #"== The noise level must be a float or an integer, such as 6.0e05 =="
     try:
         float(narrow_noise_threshold)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
-
+    #"== The ppm error must be a float or an integer, such as 10 ppm =="
     try:
         float(ppm_error)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The ppm error must be a float or an integer, such as 10 ppm ==")
 
     # Make string object for the noise level line FFM
@@ -131,7 +134,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     try:
         vdisplay = Xvfb()
         vdisplay.start()
-    except:
+    except subprocess.CalledProcessError:
         raise
 
     logger.info('======')

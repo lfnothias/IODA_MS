@@ -58,12 +58,12 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
 
-                # Error getting the file ! Pleaase, very the path or download link
+                # Error getting the file ! PLEASE, VERY THE DOWNLOAD LINK.
                 try:
                     f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
                     f.close()
                 except subprocess.CalledProcessError:
-                    logger.info('There was an error downloading the mzML file(s) ! Pleaase, very the link')
+                    logger.info('There was an error downloading the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
                 logger.info('The mzML file was download succesfully')
 
             if 'massive.ucsd.edu' in input_mzML:
@@ -72,27 +72,27 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
                 bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+'/toppas_input/Blank.mzML'
                 cp4 = subprocess.run(bashCommand4,shell=True)
                 cp4
-                # Error getting the file ! Pleaase, very the path or download link
+                # Error getting the file ! PLEASE, VERY THE DOWNLOAD LINK.
                 try:
                     f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
                     f.close()
                 except subprocess.CalledProcessError:
-                    logger.info('There was an error downloading the mzML file(s) ! Pleaase, very the link')
+                    logger.info('There was an error downloading the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
                 logger.info('The mzML file was download succesfully')
         else:
             logger.info('Path to uploaded file: '+str(input_mzML))
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
-            # Error getting the file ! Pleaase, very the path or download link
+            # Error getting the file ! PLEASE, VERY THE FILE PATH OR DOWNLOAD LINK')
             try:
                 f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1])
                 f.close()
             except subprocess.CalledProcessError:
-                logger.info('There was an error getting the mzML file(s) ! Pleaase, very the path')
+                logger.info('There was an error getting the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
             logger.info('The mzML file was found')
 
-    # Run the function for the two input smamples
+    # Downloading the two input mzML
     logger.info('Copying the mzML files ...')
     download_copy_mzML(blank_mzML, 'Blank.mzML' )
     download_copy_mzML(sample_mzML, 'Sample.mzML')
@@ -112,14 +112,16 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         logger.info('ERROR getting the reference workflow')
 
     # Check format for variable
+    #"== The noise level must be a float or an integer, such as 6.0e05 ="
     try:
         float(noise_level)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 =")
 
+    #"== The ppm error must be a float or an integer, such as 10 ppm ="
     try:
         float(ppm_tolerance)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The ppm error must be a float or an integer, such as 10 ppm =")
 
     # Preserve the original mzML file names in the OpenMS workflow for local files
@@ -146,7 +148,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     try:
         vdisplay = Xvfb()
         vdisplay.start()
-    except:
+    except subprocess.CalledProcessError:
         raise
 
     logger.info('======')
@@ -167,7 +169,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     # Error with the OpenMS workflow. No output files.
     try:
         mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
-        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/TOPPAS_out/Targeted_MzTab/'+mzTab_file)
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/Targeted_MzTab/'+mzTab_file)
         f.close()
     except subprocess.CalledProcessError:
         logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
