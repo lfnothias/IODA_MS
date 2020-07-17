@@ -315,7 +315,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # === Plot the features  ====
     logger.info('Preparing scatter plots of the excluded ions/features')
-    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in the blank sample)
+    plot_targets_exclusion_range(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Distribution of the excluded ions in the blank sample')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'retention_time', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_BLANK.csv', blank_samplename, 'Mass [m/z]', 'Distribution of intensities for the excluded ions in '+ blank_samplename)
 
