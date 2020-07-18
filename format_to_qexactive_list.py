@@ -109,7 +109,7 @@ def generate_QE_list(input_table: str, output_filename:str, pretarget_rt_exclusi
     df.to_csv(output_filename, index = False, sep=',')
 
 # For targeted experiment
-def generate_MQL_list(input_table:str, output_filename:str, window:float):
+def generate_MQL_list(input_table:str, output_filename:str, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float):
     """Format a table with mz, charge, rt, intensities into a standard MaxQuantLive list"""
     df = pd.read_csv(input_table)
     df2 = df[['Mass [m/z]', 'charge','retention_time']]
@@ -117,9 +117,11 @@ def generate_MQL_list(input_table:str, output_filename:str, window:float):
     df2.rename(columns={'charge':'Charge'}, inplace=True)
     df2.rename(columns={'retention_time':'Retention time'}, inplace=True)
     df2['Charge'] = df2['Charge'].replace([0], 1) #MQL target list bugs if 0
-    df2['Retention time']= (df2['Retention time']/60)
+    # We are shifting the peak apex to allow asymetric retention time range
+    df2['Retention time']= ((df2['Retention time']+pretarget_rt_exclusion_time)/60)
     df2['Retention time'] = df2['Retention time'].round(decimals=3)
-    df2['Retention length']= (window/60)
+    # We are setting the retention time range
+    df2['Retention length']= ((pretarget_rt_exclusion_time+posttarget_rt_exclusion_time)/60)
     df2['Retention length'] = df2['Retention length'].round(decimals=3)
     df2["Intensity"] = '1'
     df2["Colission energies"] = ''
