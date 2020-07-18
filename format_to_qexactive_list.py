@@ -77,18 +77,18 @@ def generate_MQL_exclusion(input_table:str, blank_samplename:str, output_filenam
     df_out.to_csv(output_filename, index=None, sep='\t')
 
 # For targeted experiment (no range, just apex)
-def generate_QE_list(input_table: str, output_filename:str, window:float):
+def generate_QE_list(input_table: str, output_filename:str, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float):
     """Format a table with mz, charge, rt, intensities into a standard QExactive inclusion/exclusion list"""
     # Prepare the columns
     df_master = pd.read_csv(input_table)
-    df_master['Start [min]']=(df_master['retention_time']-(window/2))/60
-    df_master['End [min]']=(df_master['retention_time']+(window/2))/60
-    #Build a comment (optional)
-    df_master['block1'] = round(df_master['retention_time']*1/60,3)
-    df_master['block2'] = round(df_master['retention_time'],2)
-    df_master['block1'] = df_master['block1'].astype(str)
-    df_master['block2'] = df_master['block2'].astype(str)
-    df_master['for_comments'] = 'Apex = '+df_master['block1']+' (min) '+df_master['block2']+' (sec)'
+    df_master['Start [min]']=(df_master['retention_time']-(pretarget_rt_exclusion_time))/60
+    df_master['End [min]']=(df_master['retention_time']+(posttarget_rt_exclusion_time))/60
+    #Build a comment (optional) -> deactivate for lighter output
+    #df_master['block1'] = round(df_master['retention_time']*1/60,3)
+    #df_master['block2'] = round(df_master['retention_time'],2)
+    #df_master['block1'] = df_master['block1'].astype(str)
+    #df_master['block2'] = df_master['block2'].astype(str)
+    #df_master['for_comments'] = 'Apex = '+df_master['block1']+' (min) '+df_master['block2']+' (sec)'
 
     #Make the output table
     df = pd.DataFrame(data=None)
@@ -103,7 +103,8 @@ def generate_QE_list(input_table: str, output_filename:str, window:float):
     df['(N)CE'] = '' #Can be empty ONLY INCLUSION
     df['(N)CE type'] = '' #Can be empty ONLY INCLUSION
     df['MSX ID'] = '' #Can be empty ONLY INCLUSION
-    df['Comment'] = '' #df_master['for_comments']
+    df['Comment'] = '' #df_master['for_comments'] # To add comments in the targeted table. \
+    #Will increase the size of the table and slow down import in XCalibur
 
     df.to_csv(output_filename, index = False, sep=',')
 
