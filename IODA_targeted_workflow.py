@@ -405,8 +405,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
             generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time , posttarget_rt_exclusion_time))
-
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time , posttarget_rt_exclusion_time)
     logger.info('======')
     logger.info('Cleaning and zipping workflow results files ...')
 
