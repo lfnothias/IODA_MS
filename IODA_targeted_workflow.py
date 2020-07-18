@@ -267,7 +267,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make targeted list from mzTab
-def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float, window_bin:int):
+def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio:float, min_intensity_value:int, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float, window_bin:int):
     os.system('rm -r results_targeted')
     os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
@@ -328,12 +328,9 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # User-defined parameters
     logger.info('User-defined parameters')
-    ratio = ratio_value
     logger.info('   Ratio between sample/blank intensity for ion filtering = ' + str(ratio))
-    min_intensity = min_intensity_value
-    logger.info('   Minimum intensity for ion filtering in the sample = '+ str(min_intensity))
-    experiements = experiment_number
-    logger.info('   Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('   Minimum intensity for ion filtering in the sample = '+ str(min_intensity_value))
+    logger.info('   Number of iterative experiment(s) = ' + str(experiment_number))
     logger.info('======')
 
     # Hard coded parameters
@@ -349,51 +346,51 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # Running the table processing
     logger.info('Running the table processing ...')
-    make_exclusion_list_blank(output_filename, blank_samplename, window_exclusion)
+    make_exclusion_list_blank(output_filename, blank_samplename)
     logger.info('======')
-    make_exclusion_list_shared(output_filename, blank_samplename, samplename, window_exclusion)
+    make_exclusion_list_shared(output_filename, blank_samplename, samplename)
     logger.info('======')
     make_shotgun_targeted_list(output_filename, samplename)
     logger.info('======')
     make_targeted_list_ratio(output_filename, blank_samplename, samplename, ratio)
     logger.info('======')
-    make_targeted_list_intensity(output_filename, blank_samplename, samplename, min_intensity)
+    make_targeted_list_intensity(output_filename, blank_samplename, samplename, min_intensity_value)
     logger.info('======')
 
-    # Split the tables for multiple experiements
+    # Split the tables for multiple experiment_number
     logger.info('Splitting the tables')
     from IODA_split_features import split_features
-    split_features(output_filename[:-4]+'_SHOTGUN.csv', output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, experiements)
-    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, experiements)
-    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, experiements)
+    split_features(output_filename[:-4]+'_SHOTGUN.csv', output_filename[:-4]+'_SHOTGUN.csv', samplename, window_bin, experiment_number)
+    split_features(output_filename[:-4]+'_TARGETED_RATIO.csv', output_filename[:-4]+'_TARGETED_RATIO.csv', samplename, window_bin, experiment_number)
+    split_features(output_filename[:-4]+'_TARGETED_INTENSITY.csv', output_filename[:-4]+'_TARGETED_INTENSITY.csv', samplename, window_bin, experiment_number)
     logger.info('======')
 
     # Generate the filename list
     table_list = []
-    for x in range(1,experiements+1):
+    for x in range(1,experiment_number+1):
             table_list.append(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv')
 
     table_list_ratio = []
-    for x in range(1,experiements+1):
+    for x in range(1,experiment_number+1):
             table_list_ratio.append(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv')
 
     table_list_shotgun = []
-    for x in range(1,experiements+1):
+    for x in range(1,experiment_number+1):
             table_list_shotgun.append(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv')
 
     # === OUTPUT FILES BELOW + LOG ====
     logger.info('Plotting the ions ... please wait ...')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
-    plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, experiements)
-    plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, experiements)
-    plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, experiements)
+    plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, experiment_number)
+    plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, experiment_number)
+    plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, experiment_number)
 
     logger.info('======')
 
     # Convert to XCalibur format
     logger.info('Converting tables to XCalibur format ...')
-    for x in range(1,experiements+1):
+    for x in range(1,experiment_number+1):
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
             generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
@@ -403,7 +400,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
         # Convert the MaxQuant.Live format
     logger.info('Converting tables to MaxQuant.Live format ...')
-    for x in range(1,experiements+1):
+    for x in range(1,experiment_number+1):
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
