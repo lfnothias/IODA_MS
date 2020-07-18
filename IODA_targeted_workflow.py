@@ -267,7 +267,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make targeted list from mzTab
-def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float, window_bin:int ):
+def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float, window_bin:int):
     os.system('rm -r results_targeted')
     os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
@@ -338,6 +338,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # Hard coded parameters
     logger.info('Retention time range parameters')
+    rt_window_excluded_ion = pretarget_rt_exclusion_time + posttarget_rt_exclusion_time
     logger.info('   Excluded ion retention time (sec.) = ' + str(rt_window_excluded_ion))
     logger.info('   Pre-target ion retention time range (sec.) = ' + str(pretarget_rt_exclusion_time))
     logger.info('   Post-target ion retention time range (sec.) = ' + str(posttarget_rt_exclusion_time))
@@ -395,9 +396,9 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     for x in range(1,experiements+1):
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
             generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
-            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
-            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
-            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
+            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
+            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
     logger.info('======')
 
         # Convert the MaxQuant.Live format
@@ -405,9 +406,9 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     for x in range(1,experiements+1):
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
-            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)))
+            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
 
     logger.info('======')
     logger.info('Cleaning and zipping workflow results files ...')
@@ -475,4 +476,4 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     print(' ')
 
 if __name__ == "__main__":
-    make_targeted_list_from_mzTab(str(sys.argv[1]),int(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4],float(sys.argv[5]),int(sys.argv[6]))
+    make_targeted_list_from_mzTab(str(sys.argv[1]),int(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5]),int(sys.argv[6]))
