@@ -393,8 +393,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # Convert to XCalibur format
     logger.info('Converting tables to XCalibur format ...')
     for x in range(1,experiements+1):
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', rt_window_excluded_ion/2, rt_window_excluded_ion/2)
             generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
