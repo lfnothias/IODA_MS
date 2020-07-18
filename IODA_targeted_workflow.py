@@ -226,7 +226,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make targeted list from mzTab
-def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int, prefeature_rt_exclusion_time:float, postfeature_rt_exclusion_time:float, window_bin:int ):
+def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, ratio_value:float, min_intensity_value:int, pretarget_rt_exclusion_time:float, posttarget_rt_exclusion_time:float, window_bin:int ):
     os.system('rm -r results_targeted')
     os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
@@ -297,8 +297,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # Hard coded parameters
     logger.info('Retention time range parameters')
-    logger.info('   Pre-feature retention time window (sec.) for ions targeted = ' + str(prefeature_rt_exclusion_time))
-    logger.info('   Post-feature retention time window (sec.) for ions targeted = ' + str(postfeature_rt_exclusion_time))
+    logger.info('   Pre-target ion retention time range (sec.) = ' + str(pretarget_rt_exclusion_time))
+    logger.info('   Post-target ion retention time range (sec.) = ' + str(posttarget_rt_exclusion_time))
 
     #Parameter for split features
     logger.info('Retention time window (sec.) for binning target ions = ' +str(window_bin))
@@ -345,17 +345,17 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # Convert to XCalibur format
     logger.info('Converting tables to XCalibur format ...')
     for x in range(1,experiements+1):
-            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
-            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
-            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
+            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
+            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
+            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
     logger.info('======')
 
         # Convert the MaxQuant.Live format
     logger.info('Converting tables to MaxQuant.Live format ...')
     for x in range(1,experiements+1):
-            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', prefeature_rt_exclusion_time, postfeature_rt_exclusion_time))
+            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
+            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)))
 
     logger.info('======')
     logger.info('Cleaning and zipping workflow results files ...')
