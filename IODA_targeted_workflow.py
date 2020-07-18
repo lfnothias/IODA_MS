@@ -96,6 +96,24 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     df_master.to_csv(output_filename, sep=',', index=False)
     return output_filename
 
+def make_exclusion_list_blank(input_filename: str, sample: str):
+    """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
+    df_master = pd.read_csv(input_filename, sep=',')
+    df_master_exclusion_list = df_master[(df_master[sample] != 0)]
+    df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
+    #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
+    logger.info('Initial number of ions ' + str(df_master.shape[0]))
+    logger.info('Number of ions in the blank = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+
+def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
+    """From a table with mz, charge, rt, intensities, keep only features shared amongst the two samples specified"""
+    df_master = pd.read_csv(input_filename, sep=',')
+    df_master_exclusion_list = df_master[(df_master[blank] != 0) & (df_master[sample] != 0)]
+    df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
+    #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
+    #logger.info('Initial number of ions ' + str(df_master.shape[0]))
+    logger.info('Number of ions shared between blank and sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+
 def make_shotgun_targeted_list(input_filename: str, sample: str):
     """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
     df_master = pd.read_csv(input_filename, sep=',')
@@ -120,6 +138,29 @@ def make_targeted_list_intensity(input_filename: str, blank: str, sample: str, i
     df_master_targeted_list_intensity.to_csv(input_filename[:-4]+'_TARGETED_INTENSITY.csv', sep=',', index = False,)
     #logger.info('Initial number of features ' + str(df_master.shape[0]))
     logger.info('Number of target ions = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
+
+def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
+    """From a table, make a scatter plot of a sample"""
+    Labels = []
+    table0 = pd.read_csv(input_filename, sep=',', header=0)
+    fig = plt.figure(figsize=(8,6))
+    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='blue',s=4, alpha=0.4)
+    Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
+    Labels.append(Label1)
+    plt.yscale('log')
+    if column == 'Mass [m/z]':
+        plt.title(title+', in m/z range', size = 13)
+        plt.xlabel('m/z', size = 12)
+    if column == 'retention_time':
+        plt.title(title+', in retention time range range', size =13)
+        plt.xlabel('Ret. time (sec)', size = 11)
+    plt.ylabel('Ion intensity (log scale)', size = 11)
+    plt.legend(labels=Labels, fontsize =10)
+    if column == 'Mass [m/z]':
+        plt.savefig(input_filename[:-4]+'_excluded_MZ_scatter_plot.png', dpi=200)
+    if column == 'retention_time':
+        plt.savefig(input_filename[:-4]+'_excluded_RT_scatter_plot.png', dpi=200)
+    plt.close()
 
 def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, experiments: int):
     """From a table, make a scatter plot of up to 4 samples"""
@@ -288,15 +329,16 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = ratio_value
-    logger.info('   Ratio between sample/blank for ion filtering = ' + str(ratio))
+    logger.info('   Ratio between sample/blank intensity for ion filtering = ' + str(ratio))
     min_intensity = min_intensity_value
-    logger.info('   Minimum intensity for ion filtering in sample = '+ str(min_intensity))
+    logger.info('   Minimum intensity for ion filtering in the sample = '+ str(min_intensity))
     experiements = experiment_number
     logger.info('   Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Hard coded parameters
     logger.info('Retention time range parameters')
+    logger.info('   Excluded ion retention time (sec.) = ' + str(rt_window_excluded_ion))
     logger.info('   Pre-target ion retention time range (sec.) = ' + str(pretarget_rt_exclusion_time))
     logger.info('   Post-target ion retention time range (sec.) = ' + str(posttarget_rt_exclusion_time))
 
@@ -306,6 +348,10 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # Running the table processing
     logger.info('Running the table processing ...')
+    make_exclusion_list_blank(output_filename, blank_samplename, window_exclusion)
+    logger.info('======')
+    make_exclusion_list_shared(output_filename, blank_samplename, samplename, window_exclusion)
+    logger.info('======')
     make_shotgun_targeted_list(output_filename, samplename)
     logger.info('======')
     make_targeted_list_ratio(output_filename, blank_samplename, samplename, ratio)
@@ -336,6 +382,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     # === OUTPUT FILES BELOW + LOG ====
     logger.info('Plotting the ions ... please wait ...')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
+    plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
     plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, experiements)
     plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, experiements)
     plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, experiements)
@@ -345,6 +393,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # Convert to XCalibur format
     logger.info('Converting tables to XCalibur format ...')
     for x in range(1,experiements+1):
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
+            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
@@ -353,6 +403,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
         # Convert the MaxQuant.Live format
     logger.info('Converting tables to MaxQuant.Live format ...')
     for x in range(1,experiements+1):
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
+            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', 0, rt_window_excluded_ion)
             generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time))
             generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', pretarget_rt_exclusion_time, posttarget_rt_exclusion_time)))
@@ -364,20 +416,26 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
 
     #mkdir XCalibur
     os.system('mkdir results_targeted/XCalibur')
+    os.system('mkdir results_targeted/XCalibur/exclusion')
     os.system('mkdir results_targeted/XCalibur/shotgun')
     os.system('mkdir results_targeted/XCalibur/targeted_ratio')
     os.system('mkdir results_targeted/XCalibur/targeted_intensity')
     # mv files XCalibur
+    os.system('mv results_targeted/*EXCLUSION_BLANK_XCalibur* results_targeted/XCalibur/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED_XCalibur* results_targeted/XCalibur/exclusion')
     os.system('mv results_targeted/*SHOTGUN_XCalibur* results_targeted/XCalibur/shotgun')
     os.system('mv results_targeted/*TARGETED_INTENSITY_XCalibur* results_targeted/XCalibur/targeted_intensity')
     os.system('mv results_targeted/*TARGETED_RATIO_XCalibur* results_targeted/XCalibur/targeted_ratio')
 
     #mkdir XCalibur
     os.system('mkdir results_targeted/MaxQuantLive')
+    os.system('mkdir results_targeted/MaxQuantLive/exclusion')
     os.system('mkdir results_targeted/MaxQuantLive/shotgun')
     os.system('mkdir results_targeted/MaxQuantLive/targeted_ratio')
     os.system('mkdir results_targeted/MaxQuantLive/targeted_intensity')
     # mv files XCalibur
+    os.system('mv results_targeted/*EXCLUSION_BLANK_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
     os.system('mv results_targeted/*SHOTGUN_MaxQuantLive* results_targeted/MaxQuantLive/shotgun')
     os.system('mv results_targeted/*TARGETED_INTENSITY_MaxQuantLive* results_targeted/MaxQuantLive/targeted_intensity')
     os.system('mv results_targeted/*TARGETED_RATIO_MaxQuantLive* results_targeted/MaxQuantLive/targeted_ratio')
@@ -385,6 +443,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # mkdir intermediate files
     os.system('mkdir results_targeted/intermediate_files')
     os.system('mkdir results_targeted/intermediate_files/converted')
+    os.system('mkdir results_targeted/intermediate_files/exclusion')
     os.system('mkdir results_targeted/intermediate_files/shotgun')
     os.system('mkdir results_targeted/intermediate_files/targeted_ratio')
     os.system('mkdir results_targeted/intermediate_files/targeted_intensity')
@@ -397,6 +456,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mv experiment_blank_shared_TARGETED_RATIO_scatter_view.png results_targeted/intermediate_files/')
     os.system('mv experiment_blank_shared_TARGETED_INTENSITY_scatter_view.png results_targeted/intermediate_files/')
     # mv intermediate files
+    os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
+    os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
     os.system('mv results_targeted/*SHOTGUN* results_targeted/intermediate_files/shotgun')
     os.system('mv results_targeted/*TARGETED_INTENSITY* results_targeted/intermediate_files/targeted_intensity')
     os.system('mv results_targeted/*TARGETED_RATIO* results_targeted/intermediate_files/targeted_ratio')
