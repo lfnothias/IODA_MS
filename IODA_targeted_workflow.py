@@ -274,6 +274,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
     os.system('mkdir download_results')
+    os.system('rm results/logfile.txt')
     logfile('results_targeted/logfile.txt')
 
     logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')

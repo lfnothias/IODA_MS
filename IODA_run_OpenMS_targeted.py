@@ -11,14 +11,24 @@ from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
 def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
-    #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
-    #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+    # Test samples
+        #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        #input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #input_SAMPLE = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        #input_BLANK = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+        #input_SAMPLE = "https://drive.google.com/file/d/1_lOYEtsmEPAlfGVYbzJpLePPSitUp1yh/view?usp=sharing"
+        #input_BLANK = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
+        #input_SAMPLE = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_F1-1_F2-1_NIST-1_To-1_20181227135238.mzML"
+
+    os.system('rm TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_targeted_workflow_qOrbitrap_positive.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
     os.system('rm download_results/IODA_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/toppas_input/*')
     os.system('rm -r TOPPAS_Workflow/'+TOPPAS_output_folder+'/TOPPAS_out/')
     os.system('mkdir download_results')
     #large_noise = 5E5
@@ -28,7 +38,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logger.info('STARTING the IODA-targeted WORKFLOW with OpenMS')
+    logger.info('STARTING the IODA-targeted WORKFLOW')
     logger.info('======')
     logger.info('Path to the input files: ')
     logger.info('Blank: '+blank_mzML)
@@ -36,29 +46,53 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
 
     # Collect the mzML and copy
     def download_copy_mzML(input_mzML, name_mzML):
-        if input_mzML.startswith('http'):
+        if input_mzML.startswith(('http','ftp')):
             logger.info('Downloading the mzML files, please wait ...')
             if 'google' in input_mzML:
                 logger.info('This is the Google Drive download link:'+str(input_mzML))
+                logger.info('Downloading ...')
                 url_id = input_mzML.split('/', 10)[5]
                 prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
                 input_mzML = prefixe_google_download+url_id
-                bashCommand1 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
+                bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML+' || rm -f '+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
                 cp1 = subprocess.run(bashCommand1,shell=True)
                 cp1
-            else:
-                #logger.info('The Google Drive file path is invalid: '+str(input_mzML))
-                logger.info('This is the input file path: '+str(input_mzML))
-                bashCommand2 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML
-                cp2 = subprocess.run(bashCommand2,shell=True)
-                cp2
+
+                # Error getting the file ! PLEASE, VERY THE DOWNLOAD LINK.
+                try:
+                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
+                    f.close()
+                except subprocess.CalledProcessError:
+                    logger.info('There was an error downloading the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
+                logger.info('The mzML file was download succesfully')
+
+            if 'massive.ucsd.edu' in input_mzML:
+                logger.info('This is the MassIVE repository link: '+str(input_mzML))
+                logger.info('Downloading ... ')
+                bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+'/toppas_input/Blank.mzML'
+                cp4 = subprocess.run(bashCommand4,shell=True)
+                cp4
+                # Error getting the file ! PLEASE, VERY THE DOWNLOAD LINK.
+                try:
+                    f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+name_mzML)
+                    f.close()
+                except subprocess.CalledProcessError:
+                    logger.info('There was an error downloading the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
+                logger.info('The mzML file was download succesfully')
         else:
             logger.info('Path to uploaded file: '+str(input_mzML))
             bashCommand2 = "cp "+input_mzML+" "+TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1]
             cp2 = subprocess.run(bashCommand2,shell=True)
             cp2
+            # Error getting the file ! PLEASE, VERY THE FILE PATH OR DOWNLOAD LINK')
+            try:
+                f = open(TOPPAS_folder+'/'+TOPPAS_input_folder+'/'+input_mzML.split('/', 10)[-1])
+                f.close()
+            except subprocess.CalledProcessError:
+                logger.info('There was an error getting the mzML file(s) ! PLEASE, VERY THE PATH OR DOWNLOAD LINK')
+            logger.info('The mzML file was found')
 
-    # Run the function for the two input smamples
+    # Downloading the two input mzML
     logger.info('Copying the mzML files ...')
     download_copy_mzML(blank_mzML, 'Blank.mzML' )
     download_copy_mzML(sample_mzML, 'Sample.mzML')
@@ -74,18 +108,20 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
         list_of_lines = a_file.readlines()
-    except:
-        raise
+    except subprocess.CalledProcessError:
+        logger.info('ERROR getting the reference workflow')
 
     # Check format for variable
+    #"== The noise level must be a float or an integer, such as 6.0e05 ="
     try:
         float(noise_level)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 =")
 
+    #"== The ppm error must be a float or an integer, such as 10 ppm ="
     try:
         float(ppm_tolerance)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The ppm error must be a float or an integer, such as 10 ppm =")
 
     # Preserve the original mzML file names in the OpenMS workflow for local files
@@ -99,24 +135,24 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
     # Replace OpenMS workflow parameters
-    list_of_lines = [sub.replace('NOISE', str(noise_level)) for sub in list_of_lines]
-    list_of_lines = [sub.replace('PPM_ERROR', str(ppm_tolerance)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('1E5', str(noise_level)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('11', str(ppm_tolerance)) for sub in list_of_lines]
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)
     a_file.close()
 
     logger.info('======')
-    logger.info('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('Initializing the OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
         vdisplay.start()
-    except:
+    except subprocess.CalledProcessError:
         raise
 
     logger.info('======')
-    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
     logger.info('If this takes longer, increase the noise_level value ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
@@ -129,6 +165,14 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         raise
 
     vdisplay.stop()
+
+    # Error with the OpenMS workflow. No output files.
+    try:
+        mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/Targeted_MzTab/'+mzTab_file)
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')

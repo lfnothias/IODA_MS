@@ -11,20 +11,22 @@ from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
 def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_noise_threshold):
-    #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
-    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
+    # Test samples
+        #source_mzML = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
+        #input_mzML = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #input_mzML = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+        #input_mzML = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
 
+    os.system('rm TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
+    logfile('TOPPAS_Workflow/logfile_IODA_OpenMS_from_mzML.txt')
     TOPPAS_Pipeline = "toppas_Exclusion_workflow.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_folder = "TOPPAS_Workflow"
     os.system('rm download_results/IODA_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/toppas_input/*')
     os.system('rm -r TOPPAS_Workflow/toppas_output/TOPPAS_out/')
     os.system('mkdir download_results')
-    #large_noise = 5E5
-    #narrow_noise = 1E5
-    #ppm_error = 10
 
-    #SOURCE_MZML_URL = "https://raw.githubusercontent.com/lfnothias/IODA_MS/test2/tests/Euphorbia/exclusion/toppas_input/Blank.mzML"
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
@@ -32,33 +34,46 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     logger.info('======')
     logger.info('Getting the mzML, please wait ...')
 
-    logger.info('This is the input: '+input_mzML)
-    if input_mzML.startswith('http'):
+    if input_mzML.startswith(('http','ftp')):
         if 'google' in input_mzML:
             logger.info('This is the Google Drive download link:'+str(input_mzML))
+            logger.info('Downloading the mzML, please wait ...')
             url_id = input_mzML.split('/', 10)[5]
             prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
             input_mzML = prefixe_google_download+url_id
-            bashCommand1 = "wget -r "+input_mzML+" -O input.mzML"
+            bashCommand1 = "wget --no-check-certificate '"+input_mzML+"' -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
             cp1 = subprocess.run(bashCommand1,shell=True)
-            cp1
-        else:
-            logger.info('This is the input file path: '+str(input_mzML))
-            bashCommand2 = "wget -r "+input_mzML+" -O input.mzML"
-            cp2 = subprocess.run(bashCommand2,shell=True)
-            cp2
+            try:
+                cp1
+            except subprocess.CalledProcessError:
+                raise
+        if 'massive.ucsd.edu' in input_mzML:
+            logger.info('This is the MassIVE repository link: '+str(input_mzML))
+            logger.info('Downloading the mzML, please wait ... ')
+            bashCommand4 = "wget -r "+input_mzML+" -O "+TOPPAS_folder+"/toppas_input/Blank.mzML || rm -f "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+            cp4 = subprocess.run(bashCommand4,shell=True)
+            try:
+                cp4
+            except subprocess.CalledProcessError:
+                raise
     else:
+        #Check the file path is correct for local upload
         logger.info('This is the input file path: '+str(input_mzML))
-        bashCommand2 = "cp "+input_mzML+" -O input.mzML"
-        cp2 = subprocess.run(bashCommand2,shell=True)
-        cp2
+        bashCommand3 = "cp "+input_mzML+" "+TOPPAS_folder+"/toppas_input/Blank.mzML"
+        cp3 = subprocess.run(bashCommand3,shell=True)
+        try:
+            cp3
+        except subprocess.CalledProcessError:
+            raise
+    # Error getting the file ! PLEASE VERY THE PATH TO THE FILE OR DOWNLOAD LINK ...
+    try:
+        f = open(TOPPAS_folder+'/toppas_input/Blank.mzML')
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was an error getting the file !')
+    logger.info('The mzML file was found')
 
-    bashCommand3 = "cp input.mzML "+TOPPAS_folder+"/toppas_input/Blank.mzML"
-    cp3 = subprocess.run(bashCommand3,shell=True)
-    cp3
-
-    logger.info('Copying the mzML to the OpenMS input folder')
-
+    logger.info('Copying the mzML to the OpenMS input folder. File will be renamed internally "Blank.mzML"')
 
     logger.info('======')
     logger.info('Changing variables of the OpenMS workflow')
@@ -76,19 +91,22 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
         raise
 
     # Check format for variable
+
+    #"== The noise level must be a float or an integer, such as 6.0e05 =="
     try:
         float(large_noise_threshold)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
 
+    #"== The noise level must be a float or an integer, such as 6.0e05 =="
     try:
         float(narrow_noise_threshold)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The noise level must be a float or an integer, such as 6.0e05 ==")
-
+    #"== The ppm error must be a float or an integer, such as 10 ppm =="
     try:
         float(ppm_error)
-    except ValueError:
+    except subprocess.CalledProcessError:
         logger.info("== The ppm error must be a float or an integer, such as 10 ppm ==")
 
     # Make string object for the noise level line FFM
@@ -111,16 +129,16 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     a_file.close()
 
     logger.info('======')
-    logger.info('Initializing the TOPPAS/OpenMS workflow')
+    logger.info('Initializing the OpenMS workflow')
 
     try:
         vdisplay = Xvfb()
         vdisplay.start()
-    except:
+    except subprocess.CalledProcessError:
         raise
 
     logger.info('======')
-    logger.info('Running the TOPPAS/OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:
@@ -133,6 +151,13 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
 
     vdisplay.stop()
 
+    # Error with the OpenMS workflow. No output files.
+    try:
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
+
     logger.info('======')
     logger.info('Completed the OpenMS workflow')
     logger.info('======')
@@ -140,7 +165,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     get_all_file_paths('TOPPAS_Workflow/','download_results/IODA_OpenMS_results.zip')
 
     logger.info('======')
-    logger.info('NOW CONTINUE WITH THE REST OF THE IODA-exclusion WORKFLOW')
+    logger.info('NOW YOU CONTINUE WITH THE REST OF THE WORKFLOW')
 
 if __name__ == "__main__":
     IODA_run_TOPPAS_exclusion(str(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))
