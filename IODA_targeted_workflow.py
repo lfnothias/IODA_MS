@@ -385,6 +385,8 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     plot_targets_per_groups(output_filename, table_list_ratio, 'SHOTGUN', samplename, experiment_number)
     plot_targets_per_groups(output_filename, table_list, 'TARGETED_INTENSITY', samplename, experiment_number)
     plot_targets_per_groups(output_filename, table_list_ratio, 'TARGETED_RATIO', samplename, experiment_number)
+    plot_targets_per_groups_w_shared(output_filename, table_list,'TARGETED_INTENSITY', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,experiements)
+    plot_targets_per_groups_w_shared(output_filename, table_list_ratio,'TARGETED_RATIO', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename,experiements)
 
     logger.info('======')
 
