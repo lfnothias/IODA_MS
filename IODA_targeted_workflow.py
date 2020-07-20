@@ -123,7 +123,7 @@ def make_targeted_list(input_filename: str, blank: str, sample: str, ratio:float
     logger.info('TARGETED METHOD')
     logger.info('   Number of ions in the reference sample = ' + str(df_master_targeted.shape[0]))
     logger.info('   Number of target ions with minimum intensity ('+ str(min_intensity_value)+') = '+ str(df_master_targeted_int.shape[0]))
-    logger.info('   Number of target ions with reference sample/blank ratio of 'str(ratio)+', n = '+str(df_master_targeted_ratio.shape[0]))
+    logger.info('   Number of target ions with reference sample/blank ratio of '+str(ratio)+', n = '+str(df_master_targeted_ratio.shape[0]))
     logger.info('   Number of target ions with both minimum intensity and ratio filters = '+ str(df_master_targeted_filtered.shape[0]))
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
