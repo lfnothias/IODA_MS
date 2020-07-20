@@ -112,7 +112,7 @@ def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
     #logger.info('Initial number of ions ' + str(df_master.shape[0]))
-    logger.info("'XCLUSION: Number of ions shared between blank and reference samples = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+    logger.info("EXCLUSION: Number of ions shared between blank and reference samples = " + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_targeted_list(input_filename: str, blank: str, sample: str, ratio:float, min_intensity_value:float):
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above the specified ratio between the sample/blank"""
