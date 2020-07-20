@@ -161,12 +161,6 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
         Labels.append(Label)
 
     plt.yscale('log')
-
-    table_filtered = table[(table[sample] != 0)]
-    minimum_value = table_filtered[sample].min()
-
-    plt.ylim(bottom=minimum_value-1000)
-    plt.yscale('log')
     plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
@@ -192,10 +186,6 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
-    table_filtered = table[(table[blank] != 0)]
-    minimum_value = table_filtered[blank].min()
-
-    plt.ylim(bottom=minimum_value-1000)
     plt.yscale('log')
     plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
     plt.xlabel('Ret. time (sec)')
