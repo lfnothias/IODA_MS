@@ -208,40 +208,40 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     if experiments >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=1, alpha=0.6)
-        Label1 = ['Exp. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
+        Label1 = ['Exp. 1, target ions n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
         Labels.append(Label1)
 
     if experiments >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=1, alpha=0.6)
-        Label2 = ['Exp. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
+        Label2 = ['Exp. 2, target ions = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
     if experiments >= 3:
         table2 = pd.read_csv(table_list[2], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=1, alpha=0.6)
-        Label3 = ['Exp. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
+        Label3 = ['Exp. 3, target ions n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
         Labels.append(Label3)
 
     if experiments >= 4:
         table3 = pd.read_csv(table_list[3], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=1, alpha=0.6)
-        Label4 =['Exp. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
+        Label4 =['Exp. 4, target ions n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
         Labels.append(Label4)
 
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
     plt.scatter('Mass [m/z]', blank, data=table_blank, marker='o', color='black',s=1, alpha=0.5)
-    Label2 = ['Blank, n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
+    Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
     plt.yscale('log')
     plt.ylim(bottom=2)
-    plt.title('Ions per experiment (w. blank): '+ output_string, size =10)
+    plt.title('Target ions per iterative experiment (w. excluded ions), method : '+ output_string, size =9)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =8, loc='best', markerscale=5)
+    plt.legend(labels=Labels, fontsize =6, loc='best', markerscale=5)
     plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
     plt.savefig('experiment_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
