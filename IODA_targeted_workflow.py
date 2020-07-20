@@ -384,7 +384,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # mv files XCalibur
     os.system('mv results_targeted/*EXCLUSION_BLANK_XCalibur* results_targeted/XCalibur/exclusion')
     os.system('mv results_targeted/*EXCLUSION_SHARED_XCalibur* results_targeted/XCalibur/exclusion')
-    os.system('mv results_targeted/*TARGETED_XCalibur* results_targeted/XCalibur/targeted)
+    os.system('mv results_targeted/*TARGETED_XCalibur* results_targeted/XCalibur/targeted')
 
     #mkdir XCalibur
     os.system('mkdir results_targeted/MaxQuantLive')
