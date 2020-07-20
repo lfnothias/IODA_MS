@@ -70,9 +70,9 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     #Detection of blank
     #print('#Deducing the blank sample by comparing the sum of feature intensity between samples')
     column1_sum = df_master['peptide_abundance_study_variable[1]'].sum()
-    logger.info('- For sample '+Filename1+' the sum of feature intensities is = '+str(column1_sum))
+    logger.info('   For sample '+Filename1+' the sum of ions intensities is = '+str(column1_sum))
     column2_sum = df_master['peptide_abundance_study_variable[2]'].sum()
-    logger.info('- For sample '+Filename2+' the sum of feature intensities = '+str(column2_sum))
+    logger.info('   For sample '+Filename2+' the sum of ions intensities = '+str(column2_sum))
     if column1_sum > column2_sum:
     #    logger.info('- The blank sample is assumed to be '+str(Filename2)+' in the mzTab-M')
     #    logger.info('- The samples is assumed to be '+str(Filename1)+' in the mzTab-M')
@@ -124,7 +124,7 @@ def make_targeted_list(input_filename: str, blank: str, sample: str, ratio:float
     logger.info('TARGETED METHOD')
     logger.info('   Number of ions in the reference sample = ' + str(df_master_targeted.shape[0]))
     logger.info('   Number of target ions with minimum intensity ('+ str(min_intensity_value)+') = '+ str(df_master_targeted_int.shape[0]))
-    logger.info('   Number of target ions with reference sample/blank ratio of '+str(ratio)+', n = '+str(df_master_targeted_ratio.shape[0]))
+    logger.info('   Number of target ions with reference sample/blank ratio > '+str(ratio)+', n = '+str(df_master_targeted_ratio.shape[0]))
     logger.info('   Number of target ions with both minimum intensity and ratio filters = '+ str(df_master_targeted_filtered.shape[0]))
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
@@ -153,6 +153,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     """From a table, make a scatter plot of up to 4 samples"""
     #Plot
     Labels = []
+
     if experiments >= 1:
         table0 = pd.read_csv(table_list[0], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=3, alpha=0.6)
@@ -321,7 +322,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
     # Hard coded parameters
-    logger.info('Retention time range parameters')
+    logger.info('Retention time range parameters:')
     rt_window_excluded_ion = pretarget_rt_margin + posttarget_rt_exclusion_margin
     logger.info('   Excluded ion retention time (sec.) = ' + str(rt_window_excluded_ion))
     logger.info('   Pre-target ion retention time margin (sec.) = ' + str(pretarget_rt_margin))
@@ -332,9 +333,9 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running the table processing ...')
-    make_exclusion_list_blank(output_filename, blank_samplename)
+    logger.info('Processing the ions ...')
     logger.info('======')
+    make_exclusion_list_blank(output_filename, blank_samplename)
     make_exclusion_list_shared(output_filename, blank_samplename, samplename)
     logger.info('======')
     make_targeted_list(output_filename, blank_samplename, samplename, ratio, min_intensity_value)
