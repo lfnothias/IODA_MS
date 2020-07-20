@@ -102,8 +102,7 @@ def make_exclusion_list_blank(input_filename: str, sample: str):
     df_master_exclusion_list = df_master[(df_master[sample] != 0)]
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
-    logger.info('Initial number of ions = ' + str(df_master.shape[0]))
-    logger.info('   EXCLUSION: Number of ions in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+    logger.info('EXCLUSION: Number of ions in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
     """From a table with mz, charge, rt, intensities, keep only features shared amongst the two samples specified"""
@@ -111,17 +110,21 @@ def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
     df_master_exclusion_list = df_master[(df_master[blank] != 0) & (df_master[sample] != 0)]
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
-    #logger.info('Initial number of ions ' + str(df_master.shape[0]))
     logger.info("EXCLUSION: Number of ions shared between blank and reference samples = " + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_targeted_list(input_filename: str, blank: str, sample: str, ratio:float, min_intensity_value:float):
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above the specified ratio between the sample/blank"""
     df_master = pd.read_csv(input_filename, sep=',')
-    df_master_targeted_list_ratio = df_master[(df_master[sample] > min_intensity_value) & (df_master[sample]/df_master[blank] > ratio)]
-    df_master_targeted_list_ratio.to_csv(input_filename[:-4]+'_TARGETED.csv', sep=',', index = False,)
-    #logger.info('Initial number of ions = ' + str(df_master.shape[0]))
-    logger.info('TARGETED METHOD: Number of target ions in the reference sample = '+ str(df_master_targeted_list_ratio.shape[0])\
-          +', with a ratio of sample/blank ratio of '+str(ratio)+'and with minimum intensity = '+ str(min_intensity_value))
+    df_master_targeted = df_master[(df_master[sample] != 0)]
+    df_master_targeted_int = df_master[(df_master[sample] > min_intensity_value)]
+    df_master_targeted_ratio = df_master[(df_master[sample]/df_master[blank] > ratio)]
+    df_master_targeted_filtered = df_master[(df_master[sample] > min_intensity_value) & (df_master[sample]/df_master[blank] > ratio)]
+    df_master_targeted_filtered.to_csv(input_filename[:-4]+'_TARGETED.csv', sep=',', index = False,)
+    logger.info('TARGETED METHOD')
+    logger.info('   Number of ions in the reference sample = ' + str(df_master_targeted.shape[0]))
+    logger.info('   Number of target ions with minimum intensity ('+ str(min_intensity_value)+') = '+ str(df_master_targeted_int.shape[0]))
+    logger.info('   Number of target ions with reference sample/blank ratio of 'str(ratio)+', n = '+str(df_master_targeted_ratio.shape[0]))
+    logger.info('   Number of target ions with both minimum intensity and ratio filters = '+ str(df_master_targeted_filtered.shape[0]))
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
@@ -198,7 +201,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     if experiments >= 2:
         table1 = pd.read_csv(table_list[1], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=1, alpha=0.6)
-        Label2 = ['Exp. 2, target ions = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
+        Label2 = ['Exp. 2, target ions n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
         Labels.append(Label2)
 
     if experiments >= 3:
@@ -221,7 +224,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
 
     plt.yscale('log')
     plt.ylim(bottom=2)
-    plt.title('Target ions per iterative experiment (w. excluded ions), method : '+ output_string, size =9)
+    plt.title('Target ions per iterative experiment (w. excluded ions), size =9)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
