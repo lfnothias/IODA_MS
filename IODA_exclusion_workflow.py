@@ -104,7 +104,7 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
         plt.title(title+', in m/z range', size = 13)
         plt.xlabel('m/z', size = 12)
     if column == 'retention_time':
-        plt.title(title+', in retention time range range', size =13)
+        plt.title(title+', in retention time range range], size =13, wrap=True)
         plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
     plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
@@ -129,7 +129,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
 
     Label1 = ['Red circle = intensity, Blue dot = ion apex, Horizontal line = RT range, Ions excluded (n='+ str(table0.shape[0])+')']
     Labels.append(Label1)
-    plt.title(title, size =13)
+    plt.title(title, size =13, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
     plt.legend(labels=Labels, fontsize = 10, loc='upper left', markerscale=0.3)
@@ -172,8 +172,9 @@ def make_exclusion_from_mzTabs(input_mzML:int, min_intensity:int, rtexclusionmar
     # Convert the mzTabs into Tables to generate exclusion list
     logger.info('======')
     logger.info('Starting the IODA-exclusion workflow')
-    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
-    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
+    logger.info('The source of the mzML file is: '+input_mzML)
+    logger.info('Intermediate file input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
+    logger.info('Intermediate file input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
     logger.info('======')
     logger.info('Converting mzTab to table format')
     logger.info('For narrow features')
