@@ -121,7 +121,7 @@ def make_targeted_list(input_filename: str, blank: str, sample: str, ratio:float
     df_master_targeted_list_ratio.to_csv(input_filename[:-4]+'_TARGETED.csv', sep=',', index = False,)
     #logger.info('Initial number of ions = ' + str(df_master.shape[0]))
     logger.info('TARGETED METHOD: Number of target ions in the reference sample = '+ str(df_master_targeted_list_ratio.shape[0])\
-          +', with a ratio of sample/blank ratio of '+str(ratio)+'and with minimum intensity = '+ str(min_intensity_value)))
+          +', with a ratio of sample/blank ratio of '+str(ratio)+'and with minimum intensity = '+ str(min_intensity_value))
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
