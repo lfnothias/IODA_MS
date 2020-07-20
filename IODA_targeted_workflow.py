@@ -103,7 +103,7 @@ def make_exclusion_list_blank(input_filename: str, sample: str):
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_BLANK.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
     logger.info('Initial number of ions ' + str(df_master.shape[0]))
-    logger.info('Number of ions in the blank = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+    logger.info('   EXCLUSION: Number of ions in the blank sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
     """From a table with mz, charge, rt, intensities, keep only features shared amongst the two samples specified"""
@@ -112,7 +112,7 @@ def make_exclusion_list_shared(input_filename: str, blank: str, sample: str):
     df_master_exclusion_list.to_csv(input_filename[:-4]+'_EXCLUSION_SHARED.csv', sep=',', index = False)
     #df_master_exclusion_list.sort_values(by=['Mass [m/z]'])
     #logger.info('Initial number of ions ' + str(df_master.shape[0]))
-    logger.info('Number of ions shared between blank and sample = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
+    logger.info('   EXCLUSION: Number of ions shared between blank and reference samples = ' + str(df_master_exclusion_list.shape[0]) +', with int. != 0 ')
 
 def make_shotgun_targeted_list(input_filename: str, sample: str):
     """From a table with mz, charge, rt, intensities, keep only features found in the sample specified"""
@@ -120,7 +120,7 @@ def make_shotgun_targeted_list(input_filename: str, sample: str):
     df_master_shotgun_list = df_master[(df_master[sample] != 0)]
     df_master_shotgun_list.to_csv(input_filename[:-4]+'_SHOTGUN.csv', sep=',', index = False)
     #logger.info('Initial number of ions ' + str(df_master.shape[0]))
-    logger.info('Number of ions in the sample (shotgun) = '+ str(df_master_shotgun_list.shape[0])+', with int.!= 0 ')
+    logger.info('   SHOTGUN METHOD: Number of target ions in the reference sample = '+ str(df_master_shotgun_list.shape[0])+', with int.!= 0 ')
 
 def make_targeted_list_ratio(input_filename: str, blank: str, sample: str, ratio:float):
     """From a table with mz, charge, rt, intensities, keep only features that have an intensity above the specified ratio between the sample/blank"""
@@ -128,7 +128,7 @@ def make_targeted_list_ratio(input_filename: str, blank: str, sample: str, ratio
     df_master_targeted_list_ratio = df_master[(df_master[sample] > 0) & (df_master[sample]/df_master[blank] > ratio) & (df_master[blank] == 0)]
     df_master_targeted_list_ratio.to_csv(input_filename[:-4]+'_TARGETED_RATIO.csv', sep=',', index = False,)
     #logger.info('Initial number of ions = ' + str(df_master.shape[0]))
-    logger.info('Number of target ions = '+ str(df_master_targeted_list_ratio.shape[0])\
+    logger.info('   RATIO METHOD: Number of target ions in the reference sample = '+ str(df_master_targeted_list_ratio.shape[0])\
           +', with a ratio of sample/blank ratio of '+str(ratio))
 
 def make_targeted_list_intensity(input_filename: str, blank: str, sample: str, intensity:float):
@@ -137,7 +137,7 @@ def make_targeted_list_intensity(input_filename: str, blank: str, sample: str, i
     df_master_targeted_list_intensity = df_master[(df_master[sample] > intensity) & (df_master[blank] < intensity) & (df_master[blank] == 0)]
     df_master_targeted_list_intensity.to_csv(input_filename[:-4]+'_TARGETED_INTENSITY.csv', sep=',', index = False,)
     #logger.info('Initial number of features ' + str(df_master.shape[0]))
-    logger.info('Number of target ions = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
+    logger.info('   INTENSITY METHOD: Number of target ions in the reference sample = ' + str(df_master_targeted_list_intensity.shape[0]) + ', with minimum intensity = '+ str(intensity))
 
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
@@ -321,7 +321,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     samplename = feature_table.columns[-1]
-    logger.info('Assumed sample filename: '+samplename)
+    logger.info('Assumed reference sample filename: '+samplename)
     blank_samplename = feature_table.columns[-2]
     logger.info('Assumed blank filename: ' +blank_samplename)
     logger.info('======')
