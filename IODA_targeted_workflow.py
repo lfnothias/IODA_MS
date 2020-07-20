@@ -156,7 +156,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x]'blue', s=3, alpha=0.6)
+        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
         Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
@@ -178,7 +178,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x]'blue', s=3, alpha=0.6)
+        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
         Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
