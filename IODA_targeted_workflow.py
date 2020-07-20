@@ -135,18 +135,17 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
     Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
     plt.yscale('log')
-    if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size = 13)
-        plt.xlabel('m/z', size = 12)
-    if column == 'retention_time':
-        plt.title(title+', in retention time range range', size =13)
-        plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
     plt.legend(labels=Labels, fontsize =10)
     if column == 'Mass [m/z]':
+        plt.title(title+', in m/z range', size = 12, wrap=True)
+        plt.xlabel('m/z', size = 12)
         plt.savefig(input_filename[:-4]+'_excluded_MZ_scatter_plot.png', dpi=200)
     if column == 'retention_time':
+        plt.title(title+', in retention time range range', size =12, wrap=True)
+        plt.xlabel('Ret. time (sec)', size = 11)
         plt.savefig(input_filename[:-4]+'_excluded_RT_scatter_plot.png', dpi=200)
+
     plt.close()
 
 def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, experiments: int):
@@ -180,7 +179,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     plt.yscale('log')
     plt.ylim(bottom=2)
 
-    plt.title('Ions per experiment: '+ output_string)
+    plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
@@ -224,7 +223,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
 
     plt.yscale('log')
     plt.ylim(bottom=2)
-    plt.title('Target ions per iterative experiment (w. excluded ions), size =9)
+    plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 

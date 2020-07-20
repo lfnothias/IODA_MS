@@ -100,17 +100,15 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
     Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
     plt.yscale('log')
-    if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size = 13)
-        plt.xlabel('m/z', size = 12)
-    if column == 'retention_time':
-        plt.title(title+', in retention time range', size =13, wrap=True)
-        plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
     plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
     if column == 'Mass [m/z]':
+        plt.title(title+', in m/z range', size = 12,  wrap=True)
+        plt.xlabel('m/z', size = 12)
         plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
+        plt.title(title+', in retention time range', size =12, wrap=True)
+        plt.xlabel('Ret. time (sec)', size = 11)
         plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
     plt.close()
 
@@ -129,7 +127,7 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
 
     Label1 = ['Red circle = intensity, Blue dot = ion apex, Horizontal line = RT range, Ions excluded (n='+ str(table0.shape[0])+')']
     Labels.append(Label1)
-    plt.title(title, size =13, wrap=True)
+    plt.title(title, size =12, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
     plt.legend(labels=Labels, fontsize = 10, loc='upper left', markerscale=0.3)
