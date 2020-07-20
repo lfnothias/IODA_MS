@@ -153,30 +153,12 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     """From a table, make a scatter plot of up to 4 samples"""
     #Plot
     Labels = []
-
-    if experiments >= 1:
-        table0 = pd.read_csv(table_list[0], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=3, alpha=0.6)
-        Label1 = ['Exp. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
-        Labels.append(Label1)
-
-    if experiments >= 2:
-        table1 = pd.read_csv(table_list[1], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=3, alpha=0.6)
-        Label2 = ['Exp. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
-        Labels.append(Label2)
-
-    if experiments >= 3:
-        table2 = pd.read_csv(table_list[2], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=3, alpha=0.6)
-        Label3 = ['Exp. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
-        Labels.append(Label3)
-
-    if experiments >= 4:
-        table3 = pd.read_csv(table_list[3], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=3, alpha=0.6)
-        Label4 =['Exp. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
-        Labels.append(Label4)
+    color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
+    for x in range(len(table_list)):
+        table = pd.read_csv(table_list[x], sep=',', header=0)
+        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x]'blue', s=3, alpha=0.6)
+        Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        Labels.append(Label)
 
     plt.yscale('log')
     plt.ylim(bottom=2)
@@ -193,29 +175,12 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
     #Plot
     Labels = []
-    if experiments >= 1:
-        table0 = pd.read_csv(table_list[0], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table0, marker='o', color='blue',s=1, alpha=0.6)
-        Label1 = ['Exp. 1, target ions n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0[sample].median()) + ', mean = '+ "{0:.2e}".format(table0[sample].mean())]
-        Labels.append(Label1)
-
-    if experiments >= 2:
-        table1 = pd.read_csv(table_list[1], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table1, marker='o', color='violet',s=1, alpha=0.6)
-        Label2 = ['Exp. 2, target ions n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1[sample].median())  + ', mean = '+ "{0:.2e}".format(table1[sample].mean())]
-        Labels.append(Label2)
-
-    if experiments >= 3:
-        table2 = pd.read_csv(table_list[2], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table2, marker='o', color='orange',s=1, alpha=0.6)
-        Label3 = ['Exp. 3, target ions n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2[sample].median()) + ', mean = '+ "{0:.2e}".format(table2[sample].mean())]
-        Labels.append(Label3)
-
-    if experiments >= 4:
-        table3 = pd.read_csv(table_list[3], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table3, marker='o', color='red', s=1, alpha=0.6)
-        Label4 =['Exp. 4, target ions n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3[sample].median()) + ', mean = '+ "{0:.2e}".format(table3[sample].mean())]
-        Labels.append(Label4)
+    color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
+    for x in range(len(table_list)):
+        table = pd.read_csv(table_list[x], sep=',', header=0)
+        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x]'blue', s=3, alpha=0.6)
+        Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        Labels.append(Label)
 
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
