@@ -104,7 +104,7 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
         plt.title(title+', in m/z range', size = 13)
         plt.xlabel('m/z', size = 12)
     if column == 'retention_time':
-        plt.title(title+', in retention time range range'], size =13, wrap=True)
+        plt.title(title+', in retention time range', size =13, wrap=True)
         plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
     plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
