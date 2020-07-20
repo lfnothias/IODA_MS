@@ -157,17 +157,21 @@ def plot_targets_per_groups(output_filename:str, table_list: str, output_string:
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
-        Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        Label = ['Exp. '+str(x)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     plt.yscale('log')
-    plt.ylim(bottom=2)
 
+    table_filtered = table[(table[sample] != 0)]
+    minimum_value = table_filtered[sample].min()
+
+    plt.ylim(bottom=minimum_value-1000)
+    plt.yscale('log')
     plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =8)
+    plt.legend(labels=Labels, fontsize =5)
     plt.savefig(output_filename[:-4]+'_experiment_'+output_string+'_scatter_plot.png', dpi=300)
     plt.close()
 
@@ -179,7 +183,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
         plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
-        Label = ['Exp. '+x+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        Label = ['Exp. '+str(x)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     # Show shared features between blank and sample
@@ -188,13 +192,16 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, outpu
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
+    table_filtered = table[(table[blank] != 0)]
+    minimum_value = table_filtered[blank].min()
+
+    plt.ylim(bottom=minimum_value-1000)
     plt.yscale('log')
-    plt.ylim(bottom=2)
     plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =6, loc='best', markerscale=5)
+    plt.legend(labels=Labels, fontsize =5, loc='best', markerscale=5)
     plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
     plt.savefig('experiment_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
