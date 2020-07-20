@@ -38,7 +38,7 @@ def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str
             if x not in Filenames:
                 Filenames.append(x[:-5])
 
-    logger.info('Filename(s) in the mzTab'+str(Filenames))
+    logger.info('   Filename(s) in the mzTab: '+str(Filenames))
 
     Filename1 = Filenames[0]
 
@@ -156,7 +156,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make exclusion list from two mzTabs (design to run with the OpenMS TOPPAS workflow in IODA)
-def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
+def make_exclusion_from_mzTabs(input_mzML:int, min_intensity:int, rtexclusionmargininsecs:float):
     input_dir='TOPPAS_Workflow/toppas_output'
     output_dir = 'results'
 
@@ -191,8 +191,8 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
     # User-defined parameters
     logger.info('User-defined parameters')
-    logger.info('Minimum ion intensity treshold (count) = '+ str(min_intensity))
-    logger.info('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
+    logger.info('   Minimum ion intensity treshold (count) = '+ str(min_intensity))
+    logger.info('   Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
 
     # Concatenating the tables from narrow and large features:
     df_narrow = pd.read_csv(output_dir+'/table_narrow.csv',sep=',')
@@ -238,8 +238,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     logger.info('======')
     logger.info('End the IODA-exclusion workflow processing')
     logger.info('======')
-    logger.info('Proceed with the results visualization')
-    logger.info(' ')
+    logger.info('Proceed below with the results visualization')
 
 
 # Make exclusion list from one mzTab
@@ -286,8 +285,8 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # User-defined parameters
     logger.info('User-defined parameters')
-    logger.info('Minimum ion intensity treshold (count) = '+ str(min_intensity))
-    logger.info('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
+    logger.info('   Minimum ion intensity treshold (count) = '+ str(min_intensity))
+    logger.info('   Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
 
     # Concatenating the tables from narrow and large features:
     df_narrow = pd.read_csv(output_filename,sep=',')
@@ -332,8 +331,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     logger.info('=======================')
     logger.info('End the IODA-exclusion workflow')
     logger.info('=======================')
-    logger.info('Proceed with the results visualization')
-    logger.info(' ')
+    logger.info('Proceed below with the results visualization')
 
 
 if __name__ == "__main__":
