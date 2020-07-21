@@ -91,24 +91,25 @@ def make_exclusion_list(input_filename: str, sample: str, intensity:float):
     number_of_ions_after_filtering = 'Number of ions after intensity filtering = '+str(df_master_exclusion_list.shape[0]) +', with intensity >'+ str(intensity)
     logger.info(number_of_ions_after_filtering)
 
+    
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
     Labels = []
     table0 = pd.read_csv(input_filename, sep=',', header=0)
     fig = plt.figure(figsize=(8,6))
-    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='blue',s=4, alpha=0.4)
-    Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
+    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='lightskyblue',s=3, alpha=0.4)
+    Label1 = ['Excluded ions, n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
     plt.yscale('log')
     plt.ylabel('Ion intensity (log scale)', size = 11)
-    plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
+    plt.legend(labels=Labels, fontsize = 8, loc='best', markerscale=5)
     if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size = 12,  wrap=True)
-        plt.xlabel('m/z', size = 12)
+        plt.title(title+', in m/z range', size = 11,  wrap=True)
+        plt.xlabel('m/z', size = 10)
         plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
-        plt.title(title+', in retention time range', size =12, wrap=True)
-        plt.xlabel('Ret. time (sec)', size = 11)
+        plt.title(title+', in retention time range', size =11, wrap=True)
+        plt.xlabel('Ret. time (sec)', size = 10)
         plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
     plt.close()
 
@@ -119,18 +120,19 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     rt_start = table0['retention_time']-table0['rt_start']
     rt_end = table0['rt_end']-table0['retention_time']
     rt_range = [rt_start, rt_end]
-    table0[blank_samplename] = (table0[blank_samplename])/100000
+    # Normalizing
+    table0[blank_samplename]=((table0[blank_samplename]-table0[blank_samplename].min())/(table0[blank_samplename].max()-table0[blank_samplename].min()))*300
     gradient = table0[blank_samplename].to_list()
     plt.figure(figsize=(9,6))
-    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
-    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
+    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.7, color='lightskyblue', ecolor='grey', capsize=0, alpha=0.3)
+    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient, marker = "o", facecolors='', color='', edgecolors='red', alpha=0.85, linewidth=0.45)
 
     Label1 = ['Red circle = intensity, Blue dot = ion apex, Horizontal line = RT range, Ions excluded (n='+ str(table0.shape[0])+')']
     Labels.append(Label1)
-    plt.title(title, size =12, wrap=True)
+    plt.title(title, size =11, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10, loc='upper left', markerscale=0.3)
+    plt.legend(labels=Labels, fontsize = 8, loc='upper left', markerscale=0.45)
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
     plt.close()
 

@@ -150,7 +150,7 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
     plt.close()
 
 def plot_targets_per_groups(output_filename:str, table_list: str, column:str, output_string:str, sample: str, experiments: int):
-    """From a table, make a scatter plot of up to 4 samples"""
+    """From a table, make a scatter plot of experiments"""
     #Plot
     Labels = []
     color_list = ['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
@@ -163,7 +163,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, column:str, ou
 
     plt.yscale('log')
     plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=2, fancybox=True, framealpha=0.6)
-    plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
+    plt.title('Target ions distribution per iterative experiment: '+ output_string, wrap=True)
     plt.ylabel('Ion intensity (log scale)',size = 8)
 
     if column == 'retention_time':
@@ -175,7 +175,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, column:str, ou
     plt.close()
 
 def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, column:str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
-    """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
+    """From a table, make a scatter plot of experiments, and plot the blank too"""
     #Plot
     Labels = []
     color_list = ['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
@@ -193,7 +193,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, colum
     Labels.append(Label2)
 
     plt.yscale('log')
-    plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
+    plt.title('Target ions distribution per iterative experiment (w. excluded ions)', size =9, wrap=True)
     plt.ylabel('Ion intensity (log scale)',size = 8)
     plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
     if column == 'retention_time':
@@ -208,29 +208,31 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, colum
 
 
 def plot_targets_per_groups_w_shared_gradient(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
-    """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
+    """From a table, make a scatter plot of experiments, and plot the blank too"""
     #Plot
     Labels = []
     color_list = ['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
     color_list = color_list + color_list + color_list
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
+        table[table.columns[-1]] = np.log(table[table.columns[-1]])
+        table[table.columns[-1]]=(((table[table.columns[-1]]-table[table.columns[-1]].min())/20)/(table[table.columns[-1]].max()-table[table.columns[-1]].min()))*20
+        #table[table.columns[-1]] = table[table.columns[-1]] /100000
         gradient = table[table.columns[-1]].to_list()
-        plt.scatter('retention_time','Mass [m/z]', data=table, marker = "o", facecolors='', color='', edgecolors=color_list[x], s = gradient*10, alpha=0.45,linewidth=0.6)
+        plt.scatter('retention_time','Mass [m/z]', data=table, marker = "o", facecolors='', color='', edgecolors=color_list[x], s = gradient, alpha=0.8, linewidth=0.5)
         Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
-    gradient = table[table.columns[-1]].to_list()
-    plt.scatter('retention_time','Mass [m/z]', data=table_blank, marker='.', color='black', facecolors='', s = gradient*10, alpha=0.8)
+    plt.scatter('retention_time','Mass [m/z]', data=table_blank, marker='.', color='black', facecolors='', s = 2, alpha=0.8)
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
-    plt.yscale('log')
-    plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
-    plt.ylabel('Ion intensity (log scale)',size = 8)
-    plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
+    #plt.yscale('log')
+    plt.title('Target ions coordinates per iterative experiment (w. excluded ions).', size =9, wrap=True)
+    plt.ylabel('Target ion mass [m/z]',size = 8)
+    plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=1.5, fancybox=True, framealpha=0.7)
     plt.xlabel('Target ion retention time (sec)',size = 8)
     plt.savefig(output_filename[:-4]+'_experiment_blank_shared_MZ_RT_'+output_string+'_scatter_plot.png', dpi=300)
     plt.savefig('experiment_blank_shared_MZ_RT_'+output_string+'_scatter_view.png', dpi=300)
@@ -347,11 +349,11 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('======')
 
     # Split the tables for multiple experiment_number
-    logger.info('Splitting the tables')
+    logger.info('Splitting the target ions per intensity in a given retention time bin')
     from IODA_split_features import split_features
     split_features(output_filename[:-4]+'_TARGETED.csv', output_filename[:-4]+'_TARGETED.csv', samplename, window_bin, experiment_number)
     split_table = pd.read_csv(output_filename[:-4]+'_TARGETED_1.csv', sep=',', header=0)
-    logger.info('Number of target ions per experiment n = '+str(split_table.shape[0]))
+    logger.info('   Number of target ions per experiment n = '+str(split_table.shape[0]))
     logger.info('======')
 
     # Generate the filename list
@@ -420,6 +422,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mv results_targeted/*TARGETED_scatter_plot* results_targeted/plots')
     os.system('mv experiment_blank_shared_MZ_TARGETED_scatter_view.png results_targeted/intermediate_files/')
     os.system('mv experiment_blank_shared_RT_TARGETED_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv experiment_blank_shared_MZ_RT_TARGETED_scatter_view.png results_targeted/intermediate_files/')
 
     # mv intermediate files
     os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
