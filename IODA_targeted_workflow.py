@@ -318,7 +318,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     from IODA_split_features import split_features
     split_features(output_filename[:-4]+'_TARGETED.csv', output_filename[:-4]+'_TARGETED.csv', samplename, window_bin, experiment_number)
     split_table = pd.read_csv(output_filename[:-4]+'_TARGETED_1.csv', sep=',', header=0)
-    logger.info('Number of target ions per experiment n = 'split_table.shape[0])
+    logger.info('Number of target ions per experiment n = '+str(split_table.shape[0]))
     logger.info('======')
 
 
