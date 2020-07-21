@@ -223,7 +223,7 @@ def plot_targets_per_groups_w_shared_gradient(output_filename:str, table_list: s
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
     gradient = table_blank.to_list()
-    plt.scatter('retention_time','Mass [m/z]' data=table_blank, marker='.', color='black', facecolors='', s = gradient*10, alpha=0.8,capsize=0)
+    plt.scatter('retention_time','Mass [m/z]', data=table_blank, marker='.', color='black', facecolors='', s = gradient*10, alpha=0.8,capsize=0)
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
