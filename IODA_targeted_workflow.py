@@ -149,51 +149,61 @@ def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: s
 
     plt.close()
 
-def plot_targets_per_groups(output_filename:str, table_list: str, output_string:str, sample: str, experiments: int):
+def plot_targets_per_groups(output_filename:str, table_list: str, column:str, output_string:str, sample: str, experiments: int):
     """From a table, make a scatter plot of up to 4 samples"""
     #Plot
     Labels = []
-    color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
+    color_list = ['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
+    color_list = color_list + color_list + color_list
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
-        Label = ['Exp. '+str(x)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        plt.scatter(column, sample, data=table, marker='o', color=color_list[x], s=2, alpha=0.45)
+        Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     plt.yscale('log')
+    plt.legend(labels=Labels, fontsize =3, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
     plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
-    plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
 
-    plt.legend(labels=Labels, fontsize =5)
-    plt.savefig(output_filename[:-4]+'_experiment_'+output_string+'_scatter_plot.png', dpi=300)
+    if column == 'retention_time':
+        plt.xlabel('Ret. time (sec)')
+        plt.savefig(output_filename[:-4]+'_experiment_RT_'+output_string+'_scatter_plot.png', dpi=300)
+    if column == 'Mass [m/z]':
+        plt.xlabel('Target ion mass [m/z]')
+        plt.savefig(output_filename[:-4]+'_experiment_MZ_'+output_string+'_scatter_plot.png', dpi=300)
     plt.close()
 
-def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
+def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, column:str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
     """From a table, make a scatter plot of up to 4 samples, and plot the blank too"""
     #Plot
     Labels = []
-    color_list = ['blue','violet','yellow','orange','red','green','brown','blue','violet','yellow','orange','red','green']
+    color_list = ['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
+    color_list = color_list + color_list + color_list
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter('Mass [m/z]', sample, data=table, marker='o', color=color_list[x], s=3, alpha=0.6)
-        Label = ['Exp. '+str(x)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
+        plt.scatter(column, sample, data=table, marker='o', color='', edgecolors=color_list[x], s=3, alpha=0.45,linewidth=0.7)
+        Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
-    plt.scatter('Mass [m/z]', blank, data=table_blank, marker='o', color='black',s=1, alpha=0.5)
+    plt.scatter(column, blank, data=table_blank, marker='.', color='black', s=1, alpha=0.8)
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
     plt.yscale('log')
     plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
-    plt.xlabel('Ret. time (sec)')
     plt.ylabel('Ion intensity (log scale)')
-
-    plt.legend(labels=Labels, fontsize =5, loc='best', markerscale=5)
-    plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
-    plt.savefig('experiment_blank_shared_'+output_string+'_scatter_view.png', dpi=300)
+    plt.legend(labels=Labels, fontsize =3, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
+    if column == 'retention_time':
+        plt.xlabel('Target ion retention time (sec)')
+        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
+        plt.savefig('experiment_blank_shared_RT_'+output_string+'_scatter_view.png', dpi=300)
+    if column == 'Mass [m/z]':
+        plt.xlabel('Target ion mass [m/z]')
+        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
+        plt.savefig('experiment_blank_shared_MZ_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
 
 
@@ -319,9 +329,12 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('Plotting the ions ... please wait ...')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
-    plot_targets_per_groups(output_filename, table_list, 'TARGETED', samplename, experiment_number)
+    plot_targets_per_groups(output_filename, table_list, retention_time, 'TARGETED', samplename, experiment_number)
+    plot_targets_per_groups(output_filename, table_list, 'Mass [m/z]', 'TARGETED', samplename, experiment_number)
+
     #output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
-    plot_targets_per_groups_w_shared(output_filename, table_list,'TARGETED', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename, experiment_number)
+    plot_targets_per_groups_w_shared(output_filename, table_list, 'retention_time','TARGETED', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename, experiment_number)
+    plot_targets_per_groups_w_shared(output_filename, table_list, 'Mass [m/z]','TARGETED', output_filename[:-4]+'_EXCLUSION_SHARED.csv', samplename, blank_samplename, experiment_number)
 
     logger.info('======')
 
