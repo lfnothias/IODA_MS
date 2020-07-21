@@ -329,7 +329,7 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('Plotting the ions ... please wait ...')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'retention_time', 'Intensity distribution of ions excluded')
     plot_targets_exclusion(output_filename[:-4]+'_EXCLUSION_SHARED.csv', blank_samplename, 'Mass [m/z]', 'Intensity distribution of ions excluded')
-    plot_targets_per_groups(output_filename, table_list, retention_time, 'TARGETED', samplename, experiment_number)
+    plot_targets_per_groups(output_filename, table_list, 'retention_time', 'TARGETED', samplename, experiment_number)
     plot_targets_per_groups(output_filename, table_list, 'Mass [m/z]', 'TARGETED', samplename, experiment_number)
 
     #output_filename:str, table_list: str, output_string: str, input_filename_blank: str, sample: str, blank: str, experiments: int):
