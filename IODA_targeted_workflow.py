@@ -301,7 +301,10 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('   Post-target ion retention time margin (sec.) = ' + str(posttarget_rt_exclusion_margin))
 
     #Parameter for split features
-    logger.info('Retention time window (sec.) for binning target ions = ' +str(window_bin))
+    logger.info('======')
+    logger.info('Splitting parameters)
+    logger.info('   Retention time window (sec.) for binning target ions = ' +str(window_bin))
+
     logger.info('======')
 
     # Running the table processing
