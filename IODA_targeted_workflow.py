@@ -162,15 +162,15 @@ def plot_targets_per_groups(output_filename:str, table_list: str, column:str, ou
         Labels.append(Label)
 
     plt.yscale('log')
-    plt.legend(labels=Labels, fontsize =3, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
+    plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=2, fancybox=True, framealpha=0.6)
     plt.title('Target ions per iterative experiment: '+ output_string, wrap=True)
-    plt.ylabel('Ion intensity (log scale)')
+    plt.ylabel('Ion intensity (log scale)',size = 8)
 
     if column == 'retention_time':
-        plt.xlabel('Ret. time (sec)')
+        plt.xlabel('Ret. time (sec)',size = 8)
         plt.savefig(output_filename[:-4]+'_experiment_RT_'+output_string+'_scatter_plot.png', dpi=300)
     if column == 'Mass [m/z]':
-        plt.xlabel('Target ion mass [m/z]')
+        plt.xlabel('Target ion mass [m/z]',size = 8)
         plt.savefig(output_filename[:-4]+'_experiment_MZ_'+output_string+'_scatter_plot.png', dpi=300)
     plt.close()
 
@@ -182,7 +182,7 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, colum
     color_list = color_list + color_list + color_list
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter(column, sample, data=table, marker='o', color='', edgecolors=color_list[x], s=3, alpha=0.45,linewidth=0.7)
+        plt.scatter(column, sample, data=table, marker='o', color='', edgecolors=color_list[x], s=3, alpha=0.45,linewidth=0.6)
         Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
@@ -194,14 +194,14 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, colum
 
     plt.yscale('log')
     plt.title('Target ions per iterative experiment (w. excluded ions)', size =9, wrap=True)
-    plt.ylabel('Ion intensity (log scale)')
-    plt.legend(labels=Labels, fontsize =3, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
+    plt.ylabel('Ion intensity (log scale)',size = 8)
+    plt.legend(labels=Labels, fontsize =4, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
     if column == 'retention_time':
-        plt.xlabel('Target ion retention time (sec)')
+        plt.xlabel('Target ion retention time (sec)',size = 8)
         plt.savefig(output_filename[:-4]+'_experiment_blank_shared_RT_'+output_string+'_scatter_plot.png', dpi=300)
         plt.savefig('experiment_blank_shared_RT_'+output_string+'_scatter_view.png', dpi=300)
     if column == 'Mass [m/z]':
-        plt.xlabel('Target ion mass [m/z]')
+        plt.xlabel('Target ion mass [m/z]', size = 8)
         plt.savefig(output_filename[:-4]+'_experiment_blank_shared_MZ_'+output_string+'_scatter_plot.png', dpi=300)
         plt.savefig('experiment_blank_shared_MZ_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
@@ -317,7 +317,10 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     logger.info('Splitting the tables')
     from IODA_split_features import split_features
     split_features(output_filename[:-4]+'_TARGETED.csv', output_filename[:-4]+'_TARGETED.csv', samplename, window_bin, experiment_number)
+    split_table = pd.read_csv(output_filename[:-4]+'_TARGETED_1.csv', sep=',', header=0)
+    logger.info('Number of target ions per experiment n = 'split_table.shape[0])
     logger.info('======')
+
 
     # Generate the filename list
     table_list = []
