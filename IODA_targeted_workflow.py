@@ -216,14 +216,14 @@ def plot_targets_per_groups_w_shared_gradient(output_filename:str, table_list: s
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
         gradient = table[table.columns[-1]].to_list()
-        plt.scatter('retention_time','Mass [m/z]', data=table, marker = "o", facecolors='', color='', edgecolors=color_list[x], s = gradient*10, alpha=0.45,linewidth=0.6, capsize=0)
+        plt.scatter('retention_time','Mass [m/z]', data=table, marker = "o", facecolors='', color='', edgecolors=color_list[x], s = gradient*10, alpha=0.45,linewidth=0.6)
         Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
     # Show shared features between blank and sample
     table_blank = pd.read_csv(input_filename_blank, sep=',', header=0)
     gradient = table[table.columns[-1]].to_list()
-    plt.scatter('retention_time','Mass [m/z]', data=table_blank, marker='.', color='black', facecolors='', s = gradient*10, alpha=0.8,capsize=0)
+    plt.scatter('retention_time','Mass [m/z]', data=table_blank, marker='.', color='black', facecolors='', s = gradient*10, alpha=0.8)
     Label2 = ['Blank (excluded ion), n = '+ str(table_blank.shape[0])+ ', median = '+ "{0:.2e}".format(table_blank[blank].median())  + ', mean = '+ "{0:.2e}".format(table_blank[blank].mean())]
     Labels.append(Label2)
 
