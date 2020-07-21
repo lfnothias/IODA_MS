@@ -157,7 +157,7 @@ def plot_targets_per_groups(output_filename:str, table_list: str, column:str, ou
     color_list = color_list + color_list + color_list
     for x in range(len(table_list)):
         table = pd.read_csv(table_list[x], sep=',', header=0)
-        plt.scatter(column, sample, data=table, marker='o', color=color_list[x], s=2, alpha=0.45)
+        plt.scatter(column, sample, data=table, marker='o', color='', edgecolors=color_list[x], s=3, alpha=0.45,linewidth=0.7)
         Label = ['Exp. '+str(x+1)+', n = '+ str(table.shape[0])+ ', median = '+ "{0:.2e}".format(table[sample].median()) + ', mean = '+ "{0:.2e}".format(table[sample].mean())]
         Labels.append(Label)
 
@@ -198,11 +198,11 @@ def plot_targets_per_groups_w_shared(output_filename:str, table_list: str, colum
     plt.legend(labels=Labels, fontsize =3, loc='best', markerscale=2, fancybox=True, framealpha=0.7)
     if column == 'retention_time':
         plt.xlabel('Target ion retention time (sec)')
-        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_RT_'+output_string+'_scatter_plot.png', dpi=300)
         plt.savefig('experiment_blank_shared_RT_'+output_string+'_scatter_view.png', dpi=300)
     if column == 'Mass [m/z]':
         plt.xlabel('Target ion mass [m/z]')
-        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_'+output_string+'_scatter_plot.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'_experiment_blank_shared_MZ_'+output_string+'_scatter_plot.png', dpi=300)
         plt.savefig('experiment_blank_shared_MZ_'+output_string+'_scatter_view.png', dpi=300)
     plt.close()
 
@@ -382,17 +382,17 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     os.system('mkdir results_targeted/intermediate_files/targeted')
     os.system('mkdir results_targeted/plots')
     # mv plots
-    os.system('mv results_targeted/*SHOTGUN_scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/scatter_plot* results_targeted/plots')
     os.system('mv results_targeted/*TARGETED_scatter_plot* results_targeted/plots')
-    os.system('mv experiment_blank_shared_TARGETED_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv experiment_blank_shared_MZ_TARGETED_scatter_view.png results_targeted/intermediate_files/')
+    os.system('mv experiment_blank_shared_RT_TARGETED_scatter_view.png results_targeted/intermediate_files/')
+
     # mv intermediate files
     os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
     os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
     os.system('mv results_targeted/*TARGETED_* results_targeted/intermediate_files/targeted')
 
     # mv plots
-    os.system('rm shotgun')
     os.system('mv '+output_filename+' results_targeted/intermediate_files/converted')
     os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
 
