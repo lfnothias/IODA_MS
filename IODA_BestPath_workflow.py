@@ -184,36 +184,19 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     min_intensity = intensity_threshold
     logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
     logger.info('Retention time window (sec.) for binning target ions = ' +str(win_len))
-    logger.info('isolation window (m/z) = ' +str(isolation:float))
+    logger.info('isolation window (m/z) = ' +str(isolation))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Running the table processing
+    logger.info('Running Path Finder  ...')
+    print(output_filename[:-4]+'_PathFinder.csv')
+    run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
+    logger.info('======')
     logger.info('Running the table processing ...')
-    run_pathfinder_baseline(output_filename, output_filename, intensity_threshold, intensity_ratio, num_path, win_len, isolation)
+    #make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
-    make_bestpath_targeted_lists_from_table(output_filename)
-    logger.info('======')
-
-    # Convert to XCalibur format
-    logger.info('Converting tables to XCalibur format ...')
-    for x in range(1,experiements+1):
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_XCalibur_exp_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_XCalibur_exp_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_XCalibur_exp_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_XCalibur_exp_'+str(x)+'.csv', window_targeted)
-            generate_QE_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_XCalibur_exp_'+str(x)+'.csv', window_targeted)
-    logger.info('======')
-
-        # Convert the MaxQuant.Live format
-    logger.info('Converting tables to MaxQuant.Live format ...')
-    for x in range(1,experiements+1):
-            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_BLANK.csv', output_filename[:-4]+'_EXCLUSION_BLANK_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_EXCLUSION_SHARED.csv', output_filename[:-4]+'_EXCLUSION_SHARED_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_SHOTGUN_'+str(x)+'.csv', output_filename[:-4]+'_SHOTGUN_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_RATIO_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_RATIO_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
-            generate_MQL_list(output_filename[:-4]+'_TARGETED_INTENSITY_'+str(x)+'.csv', output_filename[:-4]+'_TARGETED_INTENSITY_MaxQuantLive_exp_'+str(x)+'.csv', window_targeted)
 
     logger.info('======')
     logger.info('Cleaning and zipping workflow results files ...')
@@ -289,6 +272,8 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
 
     #Make a list for the first row
     df_path_list = df_path.iloc[0].values.tolist()
+    print('df_path_list')
+    print(df_path_list)
     df_path_list.pop(0)
     nfeatures = int(len(df_path_list)/8)
 
@@ -303,10 +288,13 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
                         del df_path_list[index]
             except:
                 continue
-
+    print('target_list')
+    print(target_list)
     #Make a dataframe
     target_table = pd.DataFrame(target_list)
     target_table = target_table.rename(columns={0: 'Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end', 5: 'intensity', 6: 'rt_apex',7: 'charge'})
+    print('target_table.columns')
+    print(target_table.columns)
     target_table = target_table[target_table['intensity'] > 0]
 
     print('For '+input_filename+', this path'+str(rows_to_skip+1)+' has number of valid targets = '+str(target_table.shape[0]))
@@ -349,15 +337,11 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
     
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
     os.system("sed -i 's/\t/ /g' "+input_filename)
-    cmd_baseline = ('python path_finder.py baseline '+input_filename+' '+output_filename+' '+intensity_threshold+' '+intensity_ratio+' '+num_path+' -win_len '+win_len+' -isolation '+isolation)
+    cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
     print(cmd_baseline)
     os.system(cmd_baseline)
     
 
-    
-    
-    
-    
 #Best path generate mz / rt figures
 def make_plot_bestpath1(table_list_bestpath):
     Labels = []
