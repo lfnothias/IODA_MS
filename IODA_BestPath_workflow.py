@@ -121,6 +121,7 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     os.system('rm download_results/IODA_targeted_results.zip')
     os.system('mkdir results_targeted')
     os.system('mkdir download_results')
+    os.system('mkdir results_targeted/Plots')
     os.system('rm results/logfile.txt')
     logfile('results_targeted/logfile.txt')
 
@@ -195,7 +196,7 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
     logger.info('Running the table processing ...')
-    #make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
 
     logger.info('======')
@@ -253,7 +254,7 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
 
     # mv plots
     os.system('rm shotgun')
-    os.system('mv '+output_filename+' results_targeted/intermediate_files/converted')
+    os.system('cp '+output_filename+' results_targeted/intermediate_files/converted')
     os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
 
     get_all_file_paths('results_targeted','download_results/IODA_targeted_results.zip')
@@ -272,8 +273,6 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
 
     #Make a list for the first row
     df_path_list = df_path.iloc[0].values.tolist()
-    print('df_path_list')
-    print(df_path_list)
     df_path_list.pop(0)
     nfeatures = int(len(df_path_list)/8)
 
@@ -288,14 +287,10 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
                         del df_path_list[index]
             except:
                 continue
-    print('target_list')
-    print(target_list)
     #Make a dataframe
     target_table = pd.DataFrame(target_list)
     target_table = target_table.rename(columns={0: 'Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end', 5: 'intensity', 6: 'rt_apex',7: 'charge'})
-    print('target_table.columns')
-    print(target_table.columns)
-    target_table = target_table[target_table['intensity'] > 0]
+    #############################target_table = target_table[target_table['intensity'] > 0]
 
     print('For '+input_filename+', this path'+str(rows_to_skip+1)+' has number of valid targets = '+str(target_table.shape[0]))
 
@@ -303,6 +298,7 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
 
 # This parse BestPath output file and create output tables formatted for XCalibur and MaxQuant.live
 def make_bestpath_targeted_lists_from_table(input_filename:str):
+    os.system("sed -i 's/\t/ /g' "+input_filename)
     with open(input_filename) as file:
         counter = -1
         for line in file:
@@ -316,10 +312,10 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
                 logger.info('Formatting tables ...')
                 bestpath_format(input_filename,output_filename, counter)
                 logger.info('Converting tables to XCalibur format ...')
-                generate_QE_list_from_BestPath(output_filename, 'XCalibur/'+output_filename[:-4]+'_QE_'+str(counter+1)+'.csv')
+                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv')
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Converting tables for MaxQuant.Live ...')
-                generate_MQL_list_from_BestPath(output_filename, 'MQL/'+output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt')
+                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt')
             except:
                 raise
     
@@ -330,20 +326,19 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
     print(table_list_bestpath)
         
     logger.info('Plotting results ...')    
-    make_plot_bestpath1(table_list_bestpath)
-    make_plot_bestpath2(table_list_bestpath)
-    make_plot_bestpath3(table_list_bestpath)
+    make_plot_bestpath1(table_list_bestpath,output_filename)
+    make_plot_bestpath2(table_list_bestpath,output_filename)
+    make_plot_bestpath3(table_list_bestpath,output_filename)
 
     
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
-    os.system("sed -i 's/\t/ /g' "+input_filename)
     cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
     print(cmd_baseline)
     os.system(cmd_baseline)
     
 
 #Best path generate mz / rt figures
-def make_plot_bestpath1(table_list_bestpath):
+def make_plot_bestpath1(table_list_bestpath, output_filename):
     Labels = []
     if len(table_list_bestpath) >= 1:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -380,11 +375,11 @@ def make_plot_bestpath1(table_list_bestpath):
     plt.xlabel('Ret. time apex (s)')
 
     plt.legend(labels=Labels, fontsize =4)
-    plt.savefig('Plots/'+output_filename[:-4]+'injection_scatter_plot_mz_rt.png', dpi=300)
+    plt.savefig(output_filename[:-4]+'injection_scatter_plot_mz_rt.png', dpi=300)
     plt.close()
     
 #Best path generate feature intensity / rt figures
-def make_plot_bestpath2(table_list_bestpath):
+def make_plot_bestpath2(table_list_bestpath, output_filename):
     Labels = []
     if len(table_list_bestpath) >= 1:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -425,13 +420,13 @@ def make_plot_bestpath2(table_list_bestpath):
     plt.xlabel('Ret. time apex (s)')
 
     plt.legend(labels=Labels, fontsize =4)
-    plt.savefig('Plots/'+output_filename[:-4]+'injection_scatter_plot_intensity_rt.png', dpi=300)
+    plt.savefig(output_filename[:-4]+'injection_scatter_plot_intensity_rt.png', dpi=300)
     plt.close()
 
     
     
 #Best path generate feature intensity / duration
-def make_plot_bestpath3(table_list_bestpath):
+def make_plot_bestpath3(table_list_bestpath, output_filename):
     Labels = []
     if len(table_list_bestpath) >= 0:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -444,7 +439,7 @@ def make_plot_bestpath3(table_list_bestpath):
         plt.xlabel('Duration (s)')
         plt.legend(labels=Labels, fontsize =5)
 
-        plt.savefig('Plots/'+output_filename[:-4]+'injection1_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'injection1_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -455,7 +450,7 @@ def make_plot_bestpath3(table_list_bestpath):
         Labels.clear()
         Labels.append(Label)
 
-        plt.savefig('Plots/'+output_filename[:-4]+'injection2_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'injection2_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -466,7 +461,7 @@ def make_plot_bestpath3(table_list_bestpath):
         Labels.clear()
         Labels.append(Label)
 
-        plt.savefig('Plots/'+output_filename[:-4]+'injection3_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'injection3_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -476,7 +471,7 @@ def make_plot_bestpath3(table_list_bestpath):
         Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.clear()
         Labels.append(Label)
-        plt.savefig('Plots/'+output_filename[:-4]+'injection4_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'injection4_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -486,7 +481,7 @@ def make_plot_bestpath3(table_list_bestpath):
         Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
         Labels.clear()
         Labels.append(Label)
-        plt.savefig('Plots/'+output_filename[:-4]+'injection5_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_filename[:-4]+'injection5_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
         
