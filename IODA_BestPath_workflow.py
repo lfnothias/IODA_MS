@@ -115,15 +115,15 @@ def get_all_file_paths(directory,output_zip_path):
 
     logger.info('All files zipped successfully!')
 
-# Make targeted list from mzTab
-def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float):
-    os.system('rm -r results_targeted')
-    os.system('rm download_results/IODA_targeted_results.zip')
-    os.system('mkdir results_targeted')
-    os.system('mkdir download_results')
-    os.system('mkdir results_targeted/Plots')
-    os.system('rm results/logfile.txt')
-    logfile('results_targeted/logfile.txt')
+# Run the Path Finder workflow with baseline method
+def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float):
+    
+    output_dir = 'results_targeted_pathfinder_baseline'
+    os.system('rm -r '+output_dir)
+    os.system('rm -r download_'+output_dir)
+    os.system('mkdir '+output_dir)
+    os.system('mkdir download_'+output_dir)
+    logfile(output_dir+'/logfile.txt')
 
     logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
     if input_filename.startswith('http'):
@@ -140,7 +140,6 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     now = datetime.datetime.now()
     logger.info(now)
 
-    output_dir = 'results_targeted'
     logger.info('======')
     logger.info('Getting the mzTab')
     if input_filename.startswith('http'):
@@ -166,8 +165,6 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('======')
     logger.info('Converting mzTab to intermediate table format ...')
     convert_mzTab_to_table(input_filename,output_filename)
-    
-    print(output_filename)
     logger.info('======')
 
     # Read the table to get the filenames
@@ -185,86 +182,288 @@ def make_BP_baseline_list_from_mzTab(input_filename:int, num_path:int, intensity
     min_intensity = intensity_threshold
     logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
     logger.info('Retention time window (sec.) for binning target ions = ' +str(win_len))
-    logger.info('isolation window (m/z) = ' +str(isolation))
+    logger.info('Isolation window (m/z) = ' +str(isolation))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Running the table processing
     logger.info('Running Path Finder  ...')
-    print(output_filename[:-4]+'_PathFinder.csv')
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
     logger.info('Running the table processing ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
 
-    logger.info('======')
     logger.info('Cleaning and zipping workflow results files ...')
 
     # Cleaning files first
 
     #mkdir XCalibur
-    os.system('mkdir results_targeted/XCalibur')
-    os.system('mkdir results_targeted/XCalibur/exclusion')
-    os.system('mkdir results_targeted/XCalibur/shotgun')
-    os.system('mkdir results_targeted/XCalibur/targeted_ratio')
-    os.system('mkdir results_targeted/XCalibur/targeted_intensity')
+    os.system('mkdir '+output_dir+'/XCalibur')
     # mv files XCalibur
-    os.system('mv results_targeted/*EXCLUSION_BLANK_XCalibur* results_targeted/XCalibur/exclusion')
-    os.system('mv results_targeted/*EXCLUSION_SHARED_XCalibur* results_targeted/XCalibur/exclusion')
-    os.system('mv results_targeted/*SHOTGUN_XCalibur* results_targeted/XCalibur/shotgun')
-    os.system('mv results_targeted/*TARGETED_INTENSITY_XCalibur* results_targeted/XCalibur/targeted_intensity')
-    os.system('mv results_targeted/*TARGETED_RATIO_XCalibur* results_targeted/XCalibur/targeted_ratio')
+    os.system('mv '+output_dir+'/*formatted_QE* '+output_dir+'/XCalibur')
 
-    #mkdir XCalibur
-    os.system('mkdir results_targeted/MaxQuantLive')
-    os.system('mkdir results_targeted/MaxQuantLive/exclusion')
-    os.system('mkdir results_targeted/MaxQuantLive/shotgun')
-    os.system('mkdir results_targeted/MaxQuantLive/targeted_ratio')
-    os.system('mkdir results_targeted/MaxQuantLive/targeted_intensity')
-    # mv files XCalibur
-    os.system('mv results_targeted/*EXCLUSION_BLANK_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
-    os.system('mv results_targeted/*EXCLUSION_SHARED_MaxQuantLive* results_targeted/MaxQuantLive/exclusion')
-    os.system('mv results_targeted/*SHOTGUN_MaxQuantLive* results_targeted/MaxQuantLive/shotgun')
-    os.system('mv results_targeted/*TARGETED_INTENSITY_MaxQuantLive* results_targeted/MaxQuantLive/targeted_intensity')
-    os.system('mv results_targeted/*TARGETED_RATIO_MaxQuantLive* results_targeted/MaxQuantLive/targeted_ratio')
+    #mkdir MQL
+    os.system('mkdir '+output_dir+'/MaxQuantLive')
+    
+    # mv files MQL
+    os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
 
     # mkdir intermediate files
-    os.system('mkdir results_targeted/intermediate_files')
-    os.system('mkdir results_targeted/intermediate_files/converted')
-    os.system('mkdir results_targeted/intermediate_files/exclusion')
-    os.system('mkdir results_targeted/intermediate_files/shotgun')
-    os.system('mkdir results_targeted/intermediate_files/targeted_ratio')
-    os.system('mkdir results_targeted/intermediate_files/targeted_intensity')
-    os.system('mkdir results_targeted/plots')
-    # mv plots
-    os.system('mv results_targeted/*SHOTGUN_scatter_plot* results_targeted/plots')
-    os.system('mv results_targeted/scatter_plot* results_targeted/plots')
-    os.system('mv results_targeted/*TARGETED_INTENSITY_scatter_plot* results_targeted/plots')
-    os.system('mv results_targeted/*TARGETED_RATIO_scatter_plot* results_targeted/plots')
-    os.system('mv experiment_blank_shared_TARGETED_RATIO_scatter_view.png results_targeted/intermediate_files/')
-    os.system('mv experiment_blank_shared_TARGETED_INTENSITY_scatter_view.png results_targeted/intermediate_files/')
-    # mv intermediate files
-    os.system('mv results_targeted/*EXCLUSION_BLANK* results_targeted/intermediate_files/exclusion')
-    os.system('mv results_targeted/*EXCLUSION_SHARED* results_targeted/intermediate_files/exclusion')
-    os.system('mv results_targeted/*SHOTGUN* results_targeted/intermediate_files/shotgun')
-    os.system('mv results_targeted/*TARGETED_INTENSITY* results_targeted/intermediate_files/targeted_intensity')
-    os.system('mv results_targeted/*TARGETED_RATIO* results_targeted/intermediate_files/targeted_ratio')
+    os.system('mkdir '+output_dir+'/intermediate_files')
+    os.system('mkdir '+output_dir+'/plots')
+    os.system('mkdir '+output_dir+'/log')
+    
+    # mv 
+    os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
+    os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
+    os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    # mv plots
-    os.system('rm shotgun')
-    os.system('cp '+output_filename+' results_targeted/intermediate_files/converted')
-    os.system('mv results_targeted/logfile.txt results_targeted/intermediate_files/')
-
-    get_all_file_paths('results_targeted','download_results/IODA_targeted_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_baseline_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE IODA-targeted-from-mzTab WORKFLOW')
+    logger.info('END OF THE IODA-Path-Finder-Baseline-from-mzTab WORKFLOW')
     logger.info('======')
     print(' ')
 
 
+
+    
+# Run the Path Finder workflow with apex method
+def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float):
+    
+    output_dir = 'results_targeted_pathfinder_apex'
+    os.system('rm -r '+output_dir)
+    os.system('rm -r download_'+output_dir)
+    os.system('mkdir '+output_dir)
+    os.system('mkdir download_'+output_dir)
+    logfile(output_dir+'/logfile.txt')
+
+    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
+    if input_filename.startswith('http'):
+        logger.info('File path was specified by the user')
+        pass
+    elif input_filename == 'OpenMS_generated':
+        logger.info('The mzTab was generated with the IODA-OpenMS workflow')
+        path_input_folder = "TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/"
+        mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
+        input_filename = path_input_folder+mzTab_file
+    else:
+        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+
+    now = datetime.datetime.now()
+    logger.info(now)
+
+    logger.info('======')
+    logger.info('Getting the mzTab')
+    if input_filename.startswith('http'):
+        if 'google' in input_filename:
+            logger.info('This is the Google Drive download link: '+str(input_filename))
+            url_id = input_filename.split('/', 10)[5]
+            prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
+            input_filename = prefixe_google_download+url_id
+            output_filename = output_dir+'/Converted_mzTab.csv'
+
+        else:
+            output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+            logger.info('This is the input file path: '+str(input_filename))
+            logger.info('This is the output file path: '+str(output_filename))
+
+    else:
+        output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+        logger.info('This is the input file path: '+str(input_filename))
+        logger.info('This is the output file path: '+str(output_filename))
+
+
+    # Convert the mzTab into a Table
+    logger.info('======')
+    logger.info('Converting mzTab to intermediate table format ...')
+    convert_mzTab_to_table(input_filename,output_filename)
+    logger.info('======')
+
+    # Read the table to get the filenames
+    feature_table = pd.read_csv(output_filename)
+    samplename = feature_table.columns[-1]
+    logger.info('Assumed sample filename: '+samplename)
+    blank_samplename = feature_table.columns[-2]
+    logger.info('Assumed blank filename: ' +blank_samplename)
+    logger.info('======')
+
+    # User-defined parameters
+    logger.info('User-defined parameters')
+    ratio = intensity_ratio
+    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    min_intensity = intensity_threshold
+    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
+    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str(intensity_accu))
+    logger.info('Isolation window (m/z) = ' +str(isolation))
+    logger.info('Delay between targeted MS2 scans = ' +str(delta))
+    experiements = num_path
+    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('======')
+
+    # Running the table processing
+    logger.info('Running Path Finder  ...')
+    run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
+    logger.info('======')
+    logger.info('Running the table processing ...')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    logger.info('======')
+
+    logger.info('Cleaning and zipping workflow results files ...')
+
+    # Cleaning files first
+
+    #mkdir XCalibur
+    os.system('mkdir '+output_dir+'/XCalibur')
+    # mv files XCalibur
+    os.system('mv '+output_dir+'/*formatted_QE* '+output_dir+'/XCalibur')
+
+    #mkdir MQL
+    os.system('mkdir '+output_dir+'/MaxQuantLive')
+    
+    # mv files MQL
+    os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
+
+    # mkdir intermediate files
+    os.system('mkdir '+output_dir+'/intermediate_files')
+    os.system('mkdir '+output_dir+'/plots')
+    os.system('mkdir '+output_dir+'/log')
+    
+    # mv 
+    os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
+    os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
+    os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
+
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_apex_results.zip')
+
+    logger.info('======')
+    logger.info('END OF THE IODA-Path-Finder-Apex-from-mzTab WORKFLOW')
+    logger.info('======')
+    print(' ')
+
+
+
+# Run the Path Finder workflow with apex method
+def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float):
+    
+    output_dir = 'results_targeted_pathfinder_curve'
+    os.system('rm -r '+output_dir)
+    os.system('rm -r download_'+output_dir)
+    os.system('mkdir '+output_dir)
+    os.system('mkdir download_'+output_dir)
+    logfile(output_dir+'/logfile.txt')
+
+    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
+    if input_filename.startswith('http'):
+        logger.info('File path was specified by the user')
+        pass
+    elif input_filename == 'OpenMS_generated':
+        logger.info('The mzTab was generated with the IODA-OpenMS workflow')
+        path_input_folder = "TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/"
+        mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
+        input_filename = path_input_folder+mzTab_file
+    else:
+        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+
+    now = datetime.datetime.now()
+    logger.info(now)
+
+    logger.info('======')
+    logger.info('Getting the mzTab')
+    if input_filename.startswith('http'):
+        if 'google' in input_filename:
+            logger.info('This is the Google Drive download link: '+str(input_filename))
+            url_id = input_filename.split('/', 10)[5]
+            prefixe_google_download = 'https://drive.google.com/uc?export=download&id='
+            input_filename = prefixe_google_download+url_id
+            output_filename = output_dir+'/Converted_mzTab.csv'
+
+        else:
+            output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+            logger.info('This is the input file path: '+str(input_filename))
+            logger.info('This is the output file path: '+str(output_filename))
+
+    else:
+        output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
+        logger.info('This is the input file path: '+str(input_filename))
+        logger.info('This is the output file path: '+str(output_filename))
+
+
+    # Convert the mzTab into a Table
+    logger.info('======')
+    logger.info('Converting mzTab to intermediate table format ...')
+    convert_mzTab_to_table(input_filename,output_filename)
+    logger.info('======')
+
+    # Read the table to get the filenames
+    feature_table = pd.read_csv(output_filename)
+    samplename = feature_table.columns[-1]
+    logger.info('Assumed sample filename: '+samplename)
+    blank_samplename = feature_table.columns[-2]
+    logger.info('Assumed blank filename: ' +blank_samplename)
+    logger.info('======')
+
+    # User-defined parameters
+    logger.info('User-defined parameters')
+    ratio = intensity_ratio
+    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    min_intensity = intensity_threshold
+    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
+    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str(intensity_accu))
+    logger.info('Isolation window (m/z) = ' +str(isolation))
+    logger.info('Delay between targeted MS2 scans = ' +str(delta))
+    experiements = num_path
+    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('======')
+
+    # Running the table processing
+    logger.info('Running Path Finder  ...')
+    run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
+    logger.info('======')
+    logger.info('Running the table processing ...')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    logger.info('======')
+
+    logger.info('Cleaning and zipping workflow results files ...')
+
+    # Cleaning files first
+
+    #mkdir XCalibur
+    os.system('mkdir '+output_dir+'/XCalibur')
+    # mv files XCalibur
+    os.system('mv '+output_dir+'/*formatted_QE* '+output_dir+'/XCalibur')
+
+    #mkdir MQL
+    os.system('mkdir '+output_dir+'/MaxQuantLive')
+    
+    # mv files MQL
+    os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
+
+    # mkdir intermediate files
+    os.system('mkdir '+output_dir+'/intermediate_files')
+    os.system('mkdir '+output_dir+'/plots')
+    os.system('mkdir '+output_dir+'/log')
+    
+    # mv 
+    os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
+    os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
+    os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
+
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_curve_results.zip')
+
+    logger.info('======')
+    logger.info('END OF THE IODA-Path-Finder-Apex-from-mzTab WORKFLOW')
+    logger.info('======')
+    print(' ')
+
+
+    
+    
     
 ### PathFinder    
 # This parse one line from the BestPath output and create a output table per path. The rows to skip define which line/path is parsed.
@@ -292,7 +491,7 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
     target_table = target_table.rename(columns={0: 'Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end', 5: 'intensity', 6: 'rt_apex',7: 'charge'})
     #############################target_table = target_table[target_table['intensity'] > 0]
 
-    print('For '+input_filename+', this path'+str(rows_to_skip+1)+' has number of valid targets = '+str(target_table.shape[0]))
+    logger.info('For '+input_filename+', this path'+str(rows_to_skip+1)+' has number of valid targets = '+str(target_table.shape[0]))
 
     target_table.to_csv(output_filename, sep=',', index=False)
 
@@ -304,10 +503,8 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
         for line in file:
             try:
                 counter += 1
-                print("Processing path"+str(counter)+' will be renamed path'+str(counter+1))
+                logger.info("Processing path"+str(counter)+' will be renamed path'+str(counter+1))
                 output_filename = input_filename[:-4]+"_"+str(counter+1)+'_formatted.txt'
-                print(input_filename)
-                print(output_filename)
                 #Take the list and make a table
                 logger.info('Formatting tables ...')
                 bestpath_format(input_filename,output_filename, counter)
@@ -316,14 +513,13 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Converting tables for MaxQuant.Live ...')
                 generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt')
+                logger.info('=======')
             except:
                 raise
     
-    logger.info('List of files ...')    
     table_list_bestpath = []
     for x in range(0,counter+1):
         table_list_bestpath.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
-    print(table_list_bestpath)
         
     logger.info('Plotting results ...')    
     make_plot_bestpath1(table_list_bestpath,output_filename)
@@ -333,7 +529,18 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
     
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
     cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
-    print(cmd_baseline)
+    logger.info('Running Path Finder: '+cmd_baseline)
+    os.system(cmd_baseline)
+    
+    
+def run_pathfinder_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
+    cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delta '+str(delta))
+    logger.info('Running Path Finder: '+cmd_apex)
+    os.system(cmd_apex)
+    
+def run_pathfinder_curse(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
+    cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
+    logger.info('Running Path Finder: '+cmd_baseline)
     os.system(cmd_baseline)
     
 
