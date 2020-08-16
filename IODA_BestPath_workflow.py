@@ -15,6 +15,9 @@ from logzero import logger, logfile
 import datetime
 from IODA_split_features import *
 from format_to_qexactive_list import *
+import subprocess
+from subprocess import call
+import pathlib
 
 def convert_mzTab_to_table(input_filename: str,output_filename: str):
     """Take an mzTab containing two samples, output a table with mz, charge, rt, intensities."""
@@ -70,9 +73,9 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     #Detection of blank
     #print('#Deducing the blank sample by comparing the sum of feature intensity between samples')
     column1_sum = df_master['peptide_abundance_study_variable[1]'].sum()
-    logger.info('- For sample '+Filename1+' the sum of feature intensities is = '+str(column1_sum))
+    logger.info('- For sample '+Filename1+' the sum of feature intensities is = '+str("{:.2e}".format(column1_sum)))
     column2_sum = df_master['peptide_abundance_study_variable[2]'].sum()
-    logger.info('- For sample '+Filename2+' the sum of feature intensities = '+str(column2_sum))
+    logger.info('- For sample '+Filename2+' the sum of feature intensities = '+str("{:.2e}".format(column2_sum)))
     if column1_sum > column2_sum:
     #    logger.info('- The blank sample is assumed to be '+str(Filename2)+' in the mzTab-M')
     #    logger.info('- The samples is assumed to be '+str(Filename1)+' in the mzTab-M')
@@ -180,7 +183,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     ratio = intensity_ratio
     logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
+    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('Retention time window (sec.) for binning target ions = ' +str(win_len))
     logger.info('Isolation window (m/z) = ' +str(isolation))
     experiements = num_path
@@ -188,10 +191,10 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder  ...')
+    logger.info('Running Path Finder in Baseline mode ...')
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
-    logger.info('Running the table processing ...')
+    logger.info('Preparing results ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
 
@@ -227,7 +230,6 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('END OF THE IODA-Path-Finder-Baseline-from-mzTab WORKFLOW')
     logger.info('======')
     print(' ')
-
 
 
     
@@ -296,19 +298,19 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     ratio = intensity_ratio
     logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
-    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str(intensity_accu))
+    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
+    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Delay between targeted MS2 scans = ' +str(delta))
+    logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder  ...')
+    logger.info('Running Path Finder in Apex mode ...')
     run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
-    logger.info('Running the table processing ...')
+    logger.info('Preparing results ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
 
@@ -348,7 +350,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
 
 
 # Run the Path Finder workflow with apex method
-def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float):
+def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
     
     output_dir = 'results_targeted_pathfinder_curve'
     os.system('rm -r '+output_dir)
@@ -391,8 +393,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
-
-
+    
     # Convert the mzTab into a Table
     logger.info('======')
     logger.info('Converting mzTab to intermediate table format ...')
@@ -412,19 +413,38 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     ratio = intensity_ratio
     logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str(min_intensity))
-    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str(intensity_accu))
-    logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Delay between targeted MS2 scans = ' +str(delta))
+    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
+    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
+    logger.info('Input file for curve data : ' +str(input_filename_curve))
+    logger.info('Restriction parameter : ' +str(restriction))    
+    logger.info('Mass accuracy (m/z): ' +str(mz_accuracy))
+    logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
-    # Running the table processing
-    logger.info('Running Path Finder  ...')
-    run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
+    #Checking user provided file for Path Finder
+    mzTab_curve = pathlib.Path(input_filename_curve)
+    try:
+        if mzTab_curve.exists ():
+            logger.info("mzTab for the Curve mode found")
+        else:
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            print("Problem with the mzTab file or file path ! Please verify")
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            logger.info("Problem with the mzTab file or file path ! Please verify")
+    except:
+        raise
+    
+    #Running Path Finder
+    logger.info('Running Path Finder in Curve mode ...')
+    try:
+        run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
+    except:
+        raise
+        
     logger.info('======')
-    logger.info('Running the table processing ...')
+    logger.info('Preparing results ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
     logger.info('======')
 
@@ -491,27 +511,27 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
     target_table = target_table.rename(columns={0: 'Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end', 5: 'intensity', 6: 'rt_apex',7: 'charge'})
     #############################target_table = target_table[target_table['intensity'] > 0]
 
-    logger.info('For '+input_filename+', this path'+str(rows_to_skip+1)+' has number of valid targets = '+str(target_table.shape[0]))
+    logger.info('Valid target ions in path'+str(rows_to_skip+1)+' = '+str(target_table.shape[0]))
 
     target_table.to_csv(output_filename, sep=',', index=False)
 
 # This parse BestPath output file and create output tables formatted for XCalibur and MaxQuant.live
 def make_bestpath_targeted_lists_from_table(input_filename:str):
     os.system("sed -i 's/\t/ /g' "+input_filename)
+    logger.info('File processed: '+input_filename)
+    logger.info('======')
     with open(input_filename) as file:
         counter = -1
         for line in file:
             try:
                 counter += 1
-                logger.info("Processing path"+str(counter)+' will be renamed path'+str(counter+1))
                 output_filename = input_filename[:-4]+"_"+str(counter+1)+'_formatted.txt'
                 #Take the list and make a table
-                logger.info('Formatting tables ...')
                 bestpath_format(input_filename,output_filename, counter)
-                logger.info('Converting tables to XCalibur format ...')
+                logger.info('Formatting to XCalibur format ...')
                 generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv')
                 #Format for MaxQuant.Live targeted experiment
-                logger.info('Converting tables for MaxQuant.Live ...')
+                logger.info('Formatting for MaxQuant.Live ...')
                 generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt')
                 logger.info('=======')
             except:
@@ -529,20 +549,24 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
     
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
     cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
-    logger.info('Running Path Finder: '+cmd_baseline)
+    logger.info('Command: '+cmd_baseline)
     os.system(cmd_baseline)
-    
     
 def run_pathfinder_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
     cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delta '+str(delta))
-    logger.info('Running Path Finder: '+cmd_apex)
+    logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
     
-def run_pathfinder_curse(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
-    cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
-    logger.info('Running Path Finder: '+cmd_baseline)
-    os.system(cmd_baseline)
-    
+def run_pathfinder_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
+    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delta '+str(delta))
+    logger.info('Command: '+cmd_curve)
+    logger.info('Path Finder in Curve mode can take up to 10 minutes to complete ... please wait')
+    try:
+        cp0 = subprocess.run(cmd_curve,shell=True)
+        cp0
+    except subprocess.CalledProcessError:
+        logger.info('ERROR running Path Finder ...')
+
 
 #Best path generate mz / rt figures
 def make_plot_bestpath1(table_list_bestpath, output_filename):
