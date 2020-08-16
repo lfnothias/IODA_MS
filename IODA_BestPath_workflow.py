@@ -119,7 +119,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Run the Path Finder workflow with baseline method
-def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float):
+def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
     
     output_dir = 'results_targeted_pathfinder_baseline'
     os.system('rm -r '+output_dir)
@@ -184,8 +184,10 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
     logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
-    logger.info('Retention time window (sec.) for binning target ions = ' +str(win_len))
+    logger.info('Retention time window (min.) for binning target ions = ' +str(win_len))
     logger.info('Isolation window (m/z) = ' +str(isolation))
+    logger.info('Base retention time margin (sec.) = ' +str(base_rt_margin))
+    logger.info('Percent of duration margin (%) = ' +str(duration_percent_margin))   
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
@@ -195,7 +197,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',base_rt_margin, duration_percent_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -234,7 +236,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
 
     
 # Run the Path Finder workflow with apex method
-def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float):
+def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
     
     output_dir = 'results_targeted_pathfinder_apex'
     os.system('rm -r '+output_dir)
@@ -301,6 +303,10 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('Isolation window (m/z) = ' +str(isolation))
+    logger.info('Base retention time margin (sec.) = ' +str(base_rt_margin))
+    logger.info('Percent of duration margin (%) = ' +str(duration_percent_margin))   
+    
+    
     logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
@@ -311,7 +317,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',base_rt_margin, duration_percent_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -350,7 +356,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
 
 
 # Run the Path Finder workflow with apex method
-def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
+def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
     
     output_dir = 'results_targeted_pathfinder_curve'
     os.system('rm -r '+output_dir)
@@ -415,6 +421,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     min_intensity = intensity_threshold
     logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
+    logger.info('Transient time and overhead (ms) = '+str(transient_time))
     logger.info('Input file for curve data : ' +str(input_filename_curve))
     logger.info('Restriction parameter : ' +str(restriction))    
     logger.info('Mass accuracy (m/z): ' +str(mz_accuracy))
@@ -445,7 +452,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         
     logger.info('======')
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', base_rt_margin, duration_percent_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -481,9 +488,6 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('======')
     print(' ')
 
-
-    
-    
     
 ### PathFinder    
 # This parse one line from the BestPath output and create a output table per path. The rows to skip define which line/path is parsed.
@@ -516,7 +520,7 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
     target_table.to_csv(output_filename, sep=',', index=False)
 
 # This parse BestPath output file and create output tables formatted for XCalibur and MaxQuant.live
-def make_bestpath_targeted_lists_from_table(input_filename:str):
+def make_bestpath_targeted_lists_from_table(input_filename:str,base_rt_margin:float, duration_percent_margin:float,transient_time:float):
     os.system("sed -i 's/\t/ /g' "+input_filename)
     logger.info('File processed: '+input_filename)
     logger.info('======')
@@ -529,10 +533,11 @@ def make_bestpath_targeted_lists_from_table(input_filename:str):
                 #Take the list and make a table
                 bestpath_format(input_filename,output_filename, counter)
                 logger.info('Formatting to XCalibur format ...')
-                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv')
+                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv',base_rt_margin, duration_percent_margin)
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
-                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt')
+                generate_MQL_list_from_BestPath_Apex(output_filename, output_filename[:-4]+'_MQL_Apex'+str(counter+1)+'.txt',base_rt_margin, duration_percent_margin, transient_time)
+                generate_MQL_list_from_BestPath_Curve(output_filename, output_filename[:-4]+'_MQL_Curve'+str(counter+1)+'.txt',transient_time)
                 logger.info('=======')
             except:
                 raise
