@@ -331,21 +331,21 @@ def make_targeted_list_from_mzTab(input_filename:int, experiment_number:int, rat
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = ratio_value
-    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    logger.info('   Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = min_intensity_value
-    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity))
+    logger.info('   Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     experiements = experiment_number
-    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('   Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Hard coded parameters
     logger.info('Hard coded parameters')
     window_exclusion = 30
-    logger.info('Retention time window (sec.) for ions excluded = '+ str(window_exclusion))
+    logger.info('   Retention time window (sec.) for ions excluded = '+ str(window_exclusion))
     window_targeted = 5
-    logger.info('Retention time window (sec.) for ions targeted = ' + str(window_targeted))
+    logger.info('   Retention time window (sec.) for ions targeted = ' + str(window_targeted))
     window_bin = 30
-    logger.info('Retention time window (sec.) for binning target ions = ' +str(window_bin))
+    logger.info('   Retention time window (sec.) for binning target ions = ' +str(window_bin))
     logger.info('======')
 
     # Running the table processing
