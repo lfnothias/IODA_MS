@@ -532,7 +532,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
 ### PathFinder
 # This parse one line from the BestPath output and create a output table per path. The rows to skip define which line/path is parsed.
 def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int):
-    df_path = pd.read_csv(input_filename, sep=' ', header=None, skiprows=rows_to_skip)
+    df_path = pd.read_csv(input_filename, sep=' ', header=None, skiprows=rows_to_skip, error_bad_lines=False, warn_bad_lines=False)
 
     #Make a list for the first row
     df_path_list = df_path.iloc[0].values.tolist()
