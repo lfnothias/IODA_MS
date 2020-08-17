@@ -82,7 +82,7 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     logger.info('   large peak/feature noise_threshold = '+str(large_noise_threshold))
 
     try:
-        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/test2/TOPPAS_Workflow/toppas_Exclusion_workflow.toppas -O TOPPAS_Workflow/toppas_Exclusion_workflow.toppas"
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/master/TOPPAS_Workflow/toppas_Exclusion_workflow.toppas -O TOPPAS_Workflow/toppas_Exclusion_workflow.toppas"
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
         a_file = open("TOPPAS_Workflow/toppas_Exclusion_workflow.toppas", "r")
