@@ -10,7 +10,7 @@ from datetime import date
 from IODA_exclusion_workflow import get_all_file_paths
 from subprocess import call
 
-def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
+def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,noise_level:float):
     # Test samples
         #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
@@ -100,7 +100,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     logger.info('======')
     logger.info('Changing the variables of the OpenMS workflow ...')
     logger.info('   ppm error = '+str(ppm_tolerance))
-    logger.info('   noise threshold = '+str(noise_level))
+    logger.info('   noise threshold = '+str("{:.2e}".format(noise_level)))
 
     try:
         bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/targeted_draft/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
@@ -153,7 +153,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
 
     logger.info('======')
     logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
-    logger.info('If this takes longer, increase the noise_level value ...')
+    logger.info('If this takes longer, increase the noise treshold value ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:
@@ -185,6 +185,110 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
 
     logger.info('======')
     logger.info('NOW CONTINUE WITH THE REST OF THE IODA-targeted WORKFLOW')
+    
+    
+def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:float):
+    # Test samples
+        #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        #input_BLANK = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
+        #input_SAMPLE = "tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
+        #input_BLANK = "https://drive.google.com/file/d/11p2Jau2T-gCQb9KZExWdC7dy8AQWV__l/view?usp=sharing"
+        #input_SAMPLE = "https://drive.google.com/file/d/1_lOYEtsmEPAlfGVYbzJpLePPSitUp1yh/view?usp=sharing"
+        #input_BLANK = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
+        #input_SAMPLE = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_F1-1_F2-1_NIST-1_To-1_20181227135238.mzML"
+
+    os.system('rm TOPPAS_Workflow/logfile_PathFinder_OpenMS.txt')
+    logfile('TOPPAS_Workflow/logfile_PathFinder_OpenMS.txt')
+    TOPPAS_Pipeline = "MS1_PathFinder_Curve_mzTab.toppas"
+    TOPPAS_output_folder = "toppas_output"
+    TOPPAS_input_folder = "toppas_input"
+    TOPPAS_folder = "TOPPAS_Workflow"
+    os.system('rm download_results/PathFinder_OpenMS_results.zip')
+    os.system('rm -r TOPPAS_Workflow/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder*')
+    os.system('mkdir download_results')
+
+
+    today = str(date.today())
+    now = datetime.datetime.now()
+    logger.info(now)
+    logger.info('STARTING the Path Finder Curve processing')
+    logger.info('======')
+    logger.info('Path to the input files: ')
+    logger.info('    Sample: '+sample_mzML)
+
+    logger.info('======')
+    logger.info('Download the latest version of the workflow from the repository ...')
+
+    try:
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/MS2Planner_master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
+        logger.info(bashCommand0)
+        cp0 = subprocess.run(bashCommand0,shell=True)
+        cp0
+        a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
+        list_of_lines = a_file.readlines()
+    except subprocess.CalledProcessError:
+        logger.info('ERROR getting the reference workflow')
+
+    # Preserve the original mzML file names in the OpenMS workflow for local files
+    if sample_mzML.startswith('http'):
+        if 'google' in sample_mzML:
+            pass
+    else:
+        sample_filename = str(sample_mzML.split('/', 10)[-1])
+        list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
+
+    # Replace OpenMS workflow parameters
+    # Write out the file
+    a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
+    a_file.writelines(list_of_lines)
+    a_file.close()
+
+    logger.info('======')
+    logger.info('Initializing the OpenMS workflow')
+
+    try:
+        vdisplay = Xvfb()
+        vdisplay.start()
+    except subprocess.CalledProcessError:
+        raise
+
+    logger.info('======')
+    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
+    logger.info('If this takes longer, increase the noise treshold value ...')
+
+    bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
+    try:
+        cp4 = subprocess.run(bashCommand4,shell=True)
+        cp4
+    except CalledProcessError as e:
+        logger.info("!!! There was an error with OpenMS workflow, please check your input files and parameters !!!")
+        logger.info(e.output)
+        raise
+
+    vdisplay.stop()
+
+    # Error with the OpenMS workflow. No output files.
+    try:
+        mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/PathFinder_mzTab/")[0]
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/PathFinder_mzTab/'+mzTab_file)
+        f.close()
+    except subprocess.CalledProcessError:
+        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
+
+    logger.info('======')
+    logger.info('Completed the OpenMS workflow')
+    logger.info('======')
+    logger.info('Zipping up the OpenMS workflow results ..')
+    get_all_file_paths('TOPPAS_Workflow/TOPPAS_out/Path_Finder_mzTab/','download_results/PathFinder_OpenMS_results.zip')
+
+    logger.info('======')
+    logger.info('Completed zipping up the OpenMS workflow result files')
+
+    logger.info('======')
+    logger.info('NOW CONTINUE WITH THE REST OF THE WORKFLOW')
+    
+    
 
 if __name__ == "__main__":
     IODA_targeted_workflow(str(sys.argv[1]),str(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))

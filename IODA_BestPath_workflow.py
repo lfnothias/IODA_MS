@@ -573,11 +573,11 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
                 #Take the list and make a table
                 bestpath_format(input_filename,output_filename, counter)
                 logger.info('Formatting to XCalibur format ...')
-                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv',rt_margin)
+                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE.csv',rt_margin)
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
-                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt',rt_margin)
-                generate_MQL_list_from_BestPath_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT_'+str(counter+1)+'.txt',transient_time)
+                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL.txt',rt_margin)
+                generate_MQL_list_from_BestPath_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
                 logger.info('=======')
             except:
                 raise
@@ -586,10 +586,16 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
     for x in range(0,counter+1):
         table_list_bestpath.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
         
-    logger.info('Plotting results ...')    
-    make_plot_bestpath1(table_list_bestpath,output_filename)
-    make_plot_bestpath2(table_list_bestpath,output_filename)
-    make_plot_bestpath3(table_list_bestpath,output_filename)
+    logger.info('Plotting results ...')
+    try:
+        make_plot_bestpath1(table_list_bestpath,output_filename)
+        make_plot_bestpath2(table_list_bestpath,output_filename)
+    except:
+        raise
+    try:
+        make_plot_bestpath3(table_list_bestpath,output_filename)
+    except:
+        pass
 
     
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
