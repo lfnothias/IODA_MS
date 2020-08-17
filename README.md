@@ -10,7 +10,7 @@ This repository will help accomplish two things:
 
 We can run this on Binder, click it below
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/MS2Planner_master?urlpath=lab/tree/IODA_notebooks_welcome.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_master?urlpath=lab/tree/IODA_PathFinder.ipynb)
 
 You will need to do two things:
 

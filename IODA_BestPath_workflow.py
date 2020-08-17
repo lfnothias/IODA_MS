@@ -472,7 +472,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         raise
 
     #Running Path Finder
-    logger.info('Running Path Finder in Curve mode ...')
+    logger.info('Running PathFinder in Curve mode ...')
     try:
         run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
     except:
@@ -481,12 +481,12 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
     try:
         if Test_BestPath_Output.exists ():
-            logger.info("Best Path output found")
+            logger.info("PathFinder output found")
         else:
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem when running Best Path !!!")
+            print("Problem when running PathFinder !!!")
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem when running Best Path !!!")
+            logger.info("Problem when running PathFinder !!!")
     except:
         raise
 

@@ -208,6 +208,7 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
     os.system('rm download_results/PathFinder_OpenMS_results.zip')
     os.system('rm -r '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder*')
     os.system('mkdir download_results')
+    os.system('mv '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS.log '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_FFM.log')
     os.system('mkdir '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder_mzTab')
 
 
@@ -282,8 +283,16 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
     logger.info('Completed the OpenMS workflow')
     logger.info('======')
     logger.info('Zipping up the OpenMS workflow results ..')
-    get_all_file_paths('TOPPAS_Workflow/TOPPAS_out/Path_Finder_mzTab/','download_results/PathFinder_OpenMS_results.zip')
-
+    
+    try:
+        cmdA = 'cp '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS.log '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/Path_Finder_mzTab/TOPPAS_PathFinder.log'
+        os.system(cmdA)
+        cmdB ='cp -r '+TOPPAS_folder+'/*PathFinder*'+' '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/Path_Finder_mzTab/'
+        os.system(cmdB)
+        get_all_file_paths(TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder_mzTab','download_results/PathFinder_OpenMS_results.zip')
+    except:
+        raise
+        
     logger.info('======')
     logger.info('Completed zipping up the OpenMS workflow result files')
 
