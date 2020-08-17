@@ -119,7 +119,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Run the Path Finder workflow with baseline method
-def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
+def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
     
     output_dir = 'results_targeted_pathfinder_baseline'
     os.system('rm -r '+output_dir)
@@ -186,8 +186,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('Retention time window (min.) for binning target ions = ' +str(win_len))
     logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Base retention time margin (sec.) = ' +str(base_rt_margin))
-    logger.info('Percent of duration margin (%) = ' +str(duration_percent_margin))   
+    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
@@ -196,8 +195,23 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('Running Path Finder in Baseline mode ...')
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
+    
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+    try:
+        if Test_BestPath_Output.exists ():
+            logger.info("Best Path output found")
+        else:
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            print("Problem when running Best Path !!!")
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            logger.info("Problem when running Best Path !!!")
+    except:
+        raise
+        
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',base_rt_margin, duration_percent_margin, transient_time)
+    transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
+    logger.info('Preparing results ...')
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -236,7 +250,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
 
     
 # Run the Path Finder workflow with apex method
-def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
+def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
     
     output_dir = 'results_targeted_pathfinder_apex'
     os.system('rm -r '+output_dir)
@@ -303,8 +317,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Base retention time margin (sec.) = ' +str(base_rt_margin))
-    logger.info('Percent of duration margin (%) = ' +str(duration_percent_margin))   
+    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
     
     
     logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
@@ -316,8 +329,22 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Running Path Finder in Apex mode ...')
     run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
+    
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+    try:
+        if Test_BestPath_Output.exists ():
+            logger.info("Best Path output found")
+        else:
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            print("Problem when running Best Path !!!")
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            logger.info("Problem when running Best Path !!!")
+    except:
+        raise
+    
+    transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',base_rt_margin, duration_percent_margin, transient_time)
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -356,7 +383,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
 
 
 # Run the Path Finder workflow with apex method
-def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
+def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
     
     output_dir = 'results_targeted_pathfinder_curve'
     os.system('rm -r '+output_dir)
@@ -423,6 +450,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('Transient time and overhead (ms) = '+str(transient_time))
     logger.info('Input file for curve data : ' +str(input_filename_curve))
+    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
     logger.info('Restriction parameter : ' +str(restriction))    
     logger.info('Mass accuracy (m/z): ' +str(mz_accuracy))
     logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
@@ -449,10 +477,22 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
     except:
         raise
+    
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+    try:
+        if Test_BestPath_Output.exists ():
+            logger.info("Best Path output found")
+        else:
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            print("Problem when running Best Path !!!")
+            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+            logger.info("Problem when running Best Path !!!")
+    except:
+        raise
         
     logger.info('======')
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', base_rt_margin, duration_percent_margin, transient_time)
+    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -520,7 +560,7 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
     target_table.to_csv(output_filename, sep=',', index=False)
 
 # This parse BestPath output file and create output tables formatted for XCalibur and MaxQuant.live
-def make_bestpath_targeted_lists_from_table(input_filename:str,base_rt_margin:float, duration_percent_margin:float,transient_time:float):
+def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, transient_time:float):
     os.system("sed -i 's/\t/ /g' "+input_filename)
     logger.info('File processed: '+input_filename)
     logger.info('======')
@@ -533,11 +573,11 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,base_rt_margin:fl
                 #Take the list and make a table
                 bestpath_format(input_filename,output_filename, counter)
                 logger.info('Formatting to XCalibur format ...')
-                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv',base_rt_margin, duration_percent_margin)
+                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE_'+str(counter+1)+'.csv',rt_margin)
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
-                generate_MQL_list_from_BestPath_Apex(output_filename, output_filename[:-4]+'_MQL_Apex'+str(counter+1)+'.txt',base_rt_margin, duration_percent_margin, transient_time)
-                generate_MQL_list_from_BestPath_Curve(output_filename, output_filename[:-4]+'_MQL_Curve'+str(counter+1)+'.txt',transient_time)
+                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL_'+str(counter+1)+'.txt',rt_margin)
+                generate_MQL_list_from_BestPath_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT_'+str(counter+1)+'.txt',transient_time)
                 logger.info('=======')
             except:
                 raise
@@ -571,7 +611,6 @@ def run_pathfinder_curve(input_filename:str, output_filename:str, intensity_thre
         cp0
     except subprocess.CalledProcessError:
         logger.info('ERROR running Path Finder ...')
-
 
 #Best path generate mz / rt figures
 def make_plot_bestpath1(table_list_bestpath, output_filename):

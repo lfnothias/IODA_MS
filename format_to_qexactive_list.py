@@ -142,27 +142,23 @@ def generate_MQL_list(input_table:str, output_filename:str, window:float):
     
 
 ## PathFinder below
-def generate_QE_list_from_BestPath(input_table: str, output_filename:str, base_rt_margin:float, duration_percent_margin:float):
+def generate_QE_list_from_BestPath(input_table: str, output_filename:str, rt_margin:float):
     """Format a table with mz, charge, rt_start, rt_end, intensities into a standard QExactive inclusion/exclusion list"""
     # Prepare the columns
     df_master = pd.read_csv(input_table, sep=',', header=0)
     # We extend the retention time range for target from X percent of the peak duration. Percent is user provided.
     # We extend by retention range start by X*0.25 percent and increase the retention end by X percent.
-    df_master['Start [min]']=((df_master['rt_apex'])-((df_master['duration'])*(duration_percent_margin*0.25))-base_rt_margin)/60
-    df_master['End [min]']=((df_master['rt_apex'])+((df_master['duration'])*duration_percent_margin)+base_rt_margin)/60
+    df_master['Start [min]']=(df_master['rt_apex']-rt_margin)/60
+    df_master['End [min]']=(df_master['rt_apex']+rt_margin)/60
     #Format to scientific notation the intensity
     df_master['intensity'] = df_master['intensity'].astype(float).map(lambda n: '{:.2E}'.format(n))
 
     #Build a comment (optional)
     df_master['block1'] = round(df_master['rt_apex']*1/60,3)
     df_master['block2'] = round(df_master['rt_apex'],2)
-    df_master['block3'] = round(df_master['duration']*1/60,3)
-    df_master['block4'] = round(df_master['duration'],2)
     df_master['block1'] = df_master['block1'].astype(str)
     df_master['block2'] = df_master['block2'].astype(str)
-    df_master['block3'] = df_master['block3'].astype(str)
-    df_master['block4'] = df_master['block4'].astype(str)
-    df_master['for_comments'] = 'Apex = '+df_master['block1']+' (min) or '+df_master['block2']+' (sec), Duration = '+df_master['block3']+' (min) or '+df_master['block4']+' (sec), int. = '+ df_master['intensity'].astype(str)
+    df_master['for_comments'] = 'Apex = '+df_master['block1']+' (min) or '+df_master['block2']+' (sec), int. = '+ df_master['intensity'].astype(str)
 
     #Make the output table
     df = pd.DataFrame(data=None)
@@ -181,7 +177,7 @@ def generate_QE_list_from_BestPath(input_table: str, output_filename:str, base_r
     df.to_csv(output_filename, index = False, sep=',')
 
 
-def generate_MQL_list_from_BestPath_Apex(input_table:str, output_filename:str, base_rt_margin:float, duration_percent_margin:float, transient_time:float):
+def generate_MQL_list_from_BestPath(input_table:str, output_filename:str, rt_margin:float):
     """Format a table with mz, charge, rt, intensities into a standard MaxQuantLive list"""
 
     #Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end',5: 'intensity'})
@@ -190,7 +186,7 @@ def generate_MQL_list_from_BestPath_Apex(input_table:str, output_filename:str, b
     df2.rename(columns={'Mass [m/z]':'Mass'}, inplace=True)
     df2['Mass']=df2['Mass'].round(decimals=5)
     # This is to set the RT acquisition window
-    df2['Retention time']= ((df2['rt_apex'])-((df2['duration'])*(duration_percent_margin*0.25))-base_rt_margin)/60  #MQL requires in minutes
+    df2['Retention time']= (df2['rt_apex']-rt_margin)/60  #MQL requires in minutes
     df2['Apex intensity']= df2['intensity'].round(decimals=0)
     df2['placeholder'] = np.arange(len(df2)) + 1 #Mandatory for import
     df2['Modified sequence'] = np.arange(len(df2)) + 1 #Mandatory for import. Arbitrary string.
@@ -217,7 +213,7 @@ def generate_MQL_list_from_BestPath_Apex(input_table:str, output_filename:str, b
     df_out.to_csv(output_filename, index=None, sep='\t')
     
     
-def generate_MQL_list_from_BestPath_Curve(input_table:str, output_filename:str, transient_time:float):
+def generate_MQL_list_from_BestPath_MaxIT(input_table:str, output_filename:str, transient_time:float):
     """Format a table with mz, charge, rt, intensities into a standard MaxQuantLive list"""
 
     #Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end',5: 'intensity'})
