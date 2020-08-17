@@ -103,7 +103,7 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
     logger.info('   noise threshold = '+str("{:.2e}".format(noise_level)))
 
     try:
-        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/targeted_draft/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
@@ -135,8 +135,8 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
         list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
     # Replace OpenMS workflow parameters
-    list_of_lines = [sub.replace('1E5', str(noise_level)) for sub in list_of_lines]
-    list_of_lines = [sub.replace('11', str(ppm_tolerance)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('"1E5"', str('"'+str(noise_level)+'"')) for sub in list_of_lines]
+    list_of_lines = [sub.replace('"11"', str('"'+str(ppm_tolerance)+'"')) for sub in list_of_lines]
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)
@@ -154,14 +154,15 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
     logger.info('======')
     logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
     logger.info('If this takes longer, increase the noise treshold value ...')
-
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
     try:
         cp4 = subprocess.run(bashCommand4,shell=True)
         cp4
-    except CalledProcessError as e:
-        logger.info("!!! There was an error with OpenMS workflow, please check your input files and parameters !!!")
-        logger.info(e.output)
+    except:
+        logger.info('There was an issue with the OpenMS workflow ! See the log below.')
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
         raise
 
     vdisplay.stop()
@@ -171,8 +172,12 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
         mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
         f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/Targeted_MzTab/'+mzTab_file)
         f.close()
-    except subprocess.CalledProcessError:
-        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
+    except:
+        logger.info('There was an issue with the OpenMS workflow ! See the log below.')
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
+        raise
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')
@@ -260,13 +265,15 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
     logger.info('Running the OpenMS workflow, this usually takes couple minutes, please wait ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
-    logger.info(bashCommand4)
     try:
         cp4 = subprocess.run(bashCommand4,shell=True)
         cp4
-    except CalledProcessError as e:
-        logger.info("!!! There was an error with OpenMS workflow, please check your input files and parameters !!!")
+    except subprocess.CalledProcessError as e:
+        logger.info("!!! There was an error with OpenMS workflow, See the log !")
         logger.info(e.output)
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS.log', 'r')
+        file_contents = f.read()
+        logger(file_contents)
         raise
 
     vdisplay.stop()
@@ -276,8 +283,12 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
         mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/PathFinder_mzTab/")[0]
         f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/PathFinder_mzTab/'+mzTab_file)
         f.close()
-    except subprocess.CalledProcessError:
-        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
+    except:
+        logger.info('There was an issue with the OpenMS workflow ! See the log below. Not enough ressources might be available (memory, ...).')
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
+        raise
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')

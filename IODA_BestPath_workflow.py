@@ -128,7 +128,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
+    logger.info('STARTING THE PathFinder WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -181,14 +181,14 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = intensity_ratio
-    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    logger.info('    Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
-    logger.info('Retention time window (min.) for binning target ions = ' +str(win_len))
-    logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
+    logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
+    logger.info('    Retention time window (min.) for binning target ions = ' +str(win_len))
+    logger.info('    Isolation window (m/z) = ' +str(isolation))
+    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
     experiements = num_path
-    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Running the table processing
@@ -243,7 +243,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_baseline_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE IODA-Path-Finder-Baseline-from-mzTab WORKFLOW')
+    logger.info('END OF THE Path Finder WORKFLOW')
     logger.info('======')
     print(' ')
 
@@ -259,7 +259,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
+    logger.info('STARTING THE PathFinder WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -312,17 +312,15 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = intensity_ratio
-    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    logger.info('    Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
-    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
-    logger.info('Isolation window (m/z) = ' +str(isolation))
-    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
-
-
-    logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
+    logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
+    logger.info('    Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
+    logger.info('    Isolation window (m/z) = ' +str(isolation))
+    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
+    logger.info('    Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
-    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     # Running the table processing
@@ -376,7 +374,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_apex_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE IODA-Path-Finder-Apex-from-mzTab WORKFLOW')
+    logger.info('END OF THE Path Finder WORKFLOW')
     logger.info('======')
     print(' ')
 
@@ -392,7 +390,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE IODA targeted-from-mzTab WORKFLOW')
+    logger.info('STARTING THE PathFinder WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -444,18 +442,18 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = intensity_ratio
-    logger.info('Ratio between sample/blank for ion filtering = ' + str(ratio))
+    logger.info('    Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
-    logger.info('Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
-    logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
-    logger.info('Transient time and overhead (ms) = '+str(transient_time))
-    logger.info('Input file for curve data : ' +str(input_filename_curve))
-    logger.info('Retention time margin (sec.) = ' +str(rt_margin))
-    logger.info('Restriction parameter : ' +str(restriction))
-    logger.info('Mass accuracy (m/z): ' +str(mz_accuracy))
-    logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
+    logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
+    logger.info('    Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
+    logger.info('    Transient time and overhead (ms) = '+str(transient_time))
+    logger.info('    Input file for curve data : ' +str(input_filename_curve))
+    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
+    logger.info('    Restriction parameter : ' +str(restriction))
+    logger.info('    Mass accuracy (m/z): ' +str(mz_accuracy))
+    logger.info('    Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
-    logger.info('Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
     #Checking user provided file for Path Finder
@@ -524,7 +522,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_curve_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE IODA-Path-Finder-Apex-from-mzTab WORKFLOW')
+    logger.info('END OF THE Path Finder WORKFLOW')
     logger.info('======')
     print(' ')
 
