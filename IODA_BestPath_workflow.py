@@ -120,7 +120,7 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Run the Path Finder workflow with baseline method
 def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
-    
+
     output_dir = 'results_targeted_pathfinder_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -195,8 +195,8 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('Running Path Finder in Baseline mode ...')
     run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
-    
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
     try:
         if Test_BestPath_Output.exists ():
             logger.info("Best Path output found")
@@ -207,7 +207,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
             logger.info("Problem when running Best Path !!!")
     except:
         raise
-        
+
     logger.info('Preparing results ...')
     transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
@@ -225,7 +225,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
 
     #mkdir MQL
     os.system('mkdir '+output_dir+'/MaxQuantLive')
-    
+
     # mv files MQL
     os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
 
@@ -233,8 +233,8 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     os.system('mkdir '+output_dir+'/intermediate_files')
     os.system('mkdir '+output_dir+'/plots')
     os.system('mkdir '+output_dir+'/log')
-    
-    # mv 
+
+    # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
@@ -248,10 +248,10 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     print(' ')
 
 
-    
+
 # Run the Path Finder workflow with apex method
 def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
-    
+
     output_dir = 'results_targeted_pathfinder_apex'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -318,8 +318,8 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('Isolation window (m/z) = ' +str(isolation))
     logger.info('Retention time margin (sec.) = ' +str(rt_margin))
-    
-    
+
+
     logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
     logger.info('Number of iterative experiment(s) = ' + str(experiements))
@@ -329,8 +329,8 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Running Path Finder in Apex mode ...')
     run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
-    
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
     try:
         if Test_BestPath_Output.exists ():
             logger.info("Best Path output found")
@@ -341,7 +341,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
             logger.info("Problem when running Best Path !!!")
     except:
         raise
-    
+
     transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',rt_margin, transient_time)
@@ -358,7 +358,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
 
     #mkdir MQL
     os.system('mkdir '+output_dir+'/MaxQuantLive')
-    
+
     # mv files MQL
     os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
 
@@ -366,8 +366,8 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     os.system('mkdir '+output_dir+'/intermediate_files')
     os.system('mkdir '+output_dir+'/plots')
     os.system('mkdir '+output_dir+'/log')
-    
-    # mv 
+
+    # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
@@ -384,7 +384,7 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
 
 # Run the Path Finder workflow with apex method
 def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
-    
+
     output_dir = 'results_targeted_pathfinder_curve'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -426,7 +426,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         output_filename = output_dir+'/'+input_filename.split('/', 10)[-1][:-6]+'.csv'
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
-    
+
     # Convert the mzTab into a Table
     logger.info('======')
     logger.info('Converting mzTab to intermediate table format ...')
@@ -451,7 +451,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('Transient time and overhead (ms) = '+str(transient_time))
     logger.info('Input file for curve data : ' +str(input_filename_curve))
     logger.info('Retention time margin (sec.) = ' +str(rt_margin))
-    logger.info('Restriction parameter : ' +str(restriction))    
+    logger.info('Restriction parameter : ' +str(restriction))
     logger.info('Mass accuracy (m/z): ' +str(mz_accuracy))
     logger.info('Delay between targeted MS2 scans (sec)= ' +str(delta))
     experiements = num_path
@@ -470,15 +470,15 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
             logger.info("Problem with the mzTab file or file path ! Please verify")
     except:
         raise
-    
+
     #Running Path Finder
     logger.info('Running Path Finder in Curve mode ...')
     try:
         run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
     except:
         raise
-    
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')   
+
+    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
     try:
         if Test_BestPath_Output.exists ():
             logger.info("Best Path output found")
@@ -489,7 +489,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
             logger.info("Problem when running Best Path !!!")
     except:
         raise
-        
+
     logger.info('======')
     logger.info('Preparing results ...')
     make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', rt_margin, transient_time)
@@ -506,7 +506,7 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
 
     #mkdir MQL
     os.system('mkdir '+output_dir+'/MaxQuantLive')
-    
+
     # mv files MQL
     os.system('mv '+output_dir+'/*formatted_MQL* '+output_dir+'/MaxQuantLive')
 
@@ -514,8 +514,8 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     os.system('mkdir '+output_dir+'/intermediate_files')
     os.system('mkdir '+output_dir+'/plots')
     os.system('mkdir '+output_dir+'/log')
-    
-    # mv 
+
+    # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
@@ -528,8 +528,8 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('======')
     print(' ')
 
-    
-### PathFinder    
+
+### PathFinder
 # This parse one line from the BestPath output and create a output table per path. The rows to skip define which line/path is parsed.
 def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int):
     df_path = pd.read_csv(input_filename, sep=' ', header=None, skiprows=rows_to_skip)
@@ -581,11 +581,11 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
                 logger.info('=======')
             except:
                 raise
-    
+
     table_list_bestpath = []
     for x in range(0,counter+1):
         table_list_bestpath.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
-        
+
     logger.info('Plotting results ...')
     try:
         make_plot_bestpath1(table_list_bestpath,output_filename)
@@ -597,17 +597,17 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
     except:
         pass
 
-    
+
 def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
     cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
     logger.info('Command: '+cmd_baseline)
     os.system(cmd_baseline)
-    
+
 def run_pathfinder_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
     cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delta '+str(delta))
     logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
-    
+
 def run_pathfinder_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
     cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delta '+str(delta))
     logger.info('Command: '+cmd_curve)
@@ -633,19 +633,19 @@ def make_plot_bestpath1(table_list_bestpath, output_filename):
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
         Labels.append(Label2)
 
-    if len(table_list_bestpath) >= 3: 
+    if len(table_list_bestpath) >= 3:
         table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
         Labels.append(Label3)
 
-    if len(table_list_bestpath) >= 4: 
+    if len(table_list_bestpath) >= 4:
         table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table3, marker='o', color='red', s=2, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.append(Label4)
 
-    if len(table_list_bestpath) >= 5: 
+    if len(table_list_bestpath) >= 5:
         table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table4, marker='o', color='red', s=2, alpha=0.6)
         Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
@@ -658,7 +658,7 @@ def make_plot_bestpath1(table_list_bestpath, output_filename):
     plt.legend(labels=Labels, fontsize =4)
     plt.savefig(output_filename[:-4]+'injection_scatter_plot_mz_rt.png', dpi=300)
     plt.close()
-    
+
 #Best path generate feature intensity / rt figures
 def make_plot_bestpath2(table_list_bestpath, output_filename):
     Labels = []
@@ -674,19 +674,19 @@ def make_plot_bestpath2(table_list_bestpath, output_filename):
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
         Labels.append(Label2)
 
-    if len(table_list_bestpath) >= 3: 
+    if len(table_list_bestpath) >= 3:
         table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
         Labels.append(Label3)
 
-    if len(table_list_bestpath) >= 4: 
+    if len(table_list_bestpath) >= 4:
         table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table3, marker='o', color='red', s=2, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.append(Label4)
 
-    if len(table_list_bestpath) >= 5: 
+    if len(table_list_bestpath) >= 5:
         table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table4, marker='o', color='red', s=2, alpha=0.6)
         Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
@@ -694,7 +694,7 @@ def make_plot_bestpath2(table_list_bestpath, output_filename):
 
     plt.yscale('log')
     #plt.ylim(bottom=4)
-    #plt.xlim(bottom=1) 
+    #plt.xlim(bottom=1)
 
     #plt.title('Features per path: '+ str(table_list[0]))
     plt.ylabel('Feature intensity (log scale)')
@@ -704,8 +704,8 @@ def make_plot_bestpath2(table_list_bestpath, output_filename):
     plt.savefig(output_filename[:-4]+'injection_scatter_plot_intensity_rt.png', dpi=300)
     plt.close()
 
-    
-    
+
+
 #Best path generate feature intensity / duration
 def make_plot_bestpath3(table_list_bestpath, output_filename):
     Labels = []
@@ -735,7 +735,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 2: 
+    if len(table_list_bestpath) >= 2:
         table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table2, marker='o', color='orange',s=1, alpha=0.6)
         Label = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
@@ -746,7 +746,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 3: 
+    if len(table_list_bestpath) >= 3:
         table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table3, marker='o', color='red', s=0.5, alpha=0.6)
         Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
@@ -756,7 +756,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 4: 
+    if len(table_list_bestpath) >= 4:
         table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table4, marker='o', color='red', s=0.1, alpha=0.6)
         Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
@@ -765,7 +765,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         plt.savefig(output_filename[:-4]+'injection5_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
-        
-    
+
+
 if __name__ == "__main__":
     make_targeted_list_from_mzTab(str(sys.argv[1]),int(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))

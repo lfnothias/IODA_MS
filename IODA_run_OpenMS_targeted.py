@@ -185,8 +185,8 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
 
     logger.info('======')
     logger.info('NOW CONTINUE WITH THE REST OF THE IODA-targeted WORKFLOW')
-    
-    
+
+
 def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:float):
     # Test samples
         #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
@@ -198,15 +198,17 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
         #input_BLANK = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
         #input_SAMPLE = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_F1-1_F2-1_NIST-1_To-1_20181227135238.mzML"
 
-    os.system('rm TOPPAS_Workflow/logfile_PathFinder_OpenMS.txt')
-    logfile('TOPPAS_Workflow/logfile_PathFinder_OpenMS.txt')
     TOPPAS_Pipeline = "MS1_PathFinder_Curve_mzTab.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
+
+    os.system('rm '+TOPPAS_folder+'/logfile_PathFinder_OpenMS.txt')
+    logfile(TOPPAS_folder+'/logfile_PathFinder_OpenMS.txt')
     os.system('rm download_results/PathFinder_OpenMS_results.zip')
-    os.system('rm -r TOPPAS_Workflow/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder*')
+    os.system('rm -r '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder*')
     os.system('mkdir download_results')
+    os.system('mkdir '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder_mzTab')
 
 
     today = str(date.today())
@@ -254,10 +256,10 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
         raise
 
     logger.info('======')
-    logger.info('Running the OpenMS workflow, this usually takes less than a minute, please wait ...')
-    logger.info('If this takes longer, increase the noise treshold value ...')
+    logger.info('Running the OpenMS workflow, this usually takes couple minutes, please wait ...')
 
     bashCommand4 = "cd "+TOPPAS_folder+" && /openms-build/bin/ExecutePipeline -in "+TOPPAS_Pipeline+" -out_dir "+TOPPAS_output_folder
+    logger.info(bashCommand4)
     try:
         cp4 = subprocess.run(bashCommand4,shell=True)
         cp4
@@ -287,8 +289,8 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
 
     logger.info('======')
     logger.info('NOW CONTINUE WITH THE REST OF THE WORKFLOW')
-    
-    
+
+
 
 if __name__ == "__main__":
     IODA_targeted_workflow(str(sys.argv[1]),str(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]))
