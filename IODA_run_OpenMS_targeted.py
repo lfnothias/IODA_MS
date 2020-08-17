@@ -103,7 +103,7 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
     logger.info('   noise threshold = '+str(noise_level))
 
     try:
-        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/targeted_draft/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
@@ -135,8 +135,8 @@ def IODA_targeted_workflow(blank_mzML,sample_mzML,ppm_tolerance,noise_level):
         list_of_lines = [sub.replace('LISTITEM value="toppas_input/Sample.mzML', 'LISTITEM value="'+TOPPAS_input_folder+'/'+sample_filename) for sub in list_of_lines]
 
     # Replace OpenMS workflow parameters
-    list_of_lines = [sub.replace('1E5', str(noise_level)) for sub in list_of_lines]
-    list_of_lines = [sub.replace('11', str(ppm_tolerance)) for sub in list_of_lines]
+    list_of_lines = [sub.replace('"1E5"', str('"'+str(noise_level)+'"')) for sub in list_of_lines]
+    list_of_lines = [sub.replace('"11"', str('"'+str(ppm_tolerance)+'"')) for sub in list_of_lines]
     # Write out the file
     a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "w")
     a_file.writelines(list_of_lines)
