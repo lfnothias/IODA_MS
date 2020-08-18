@@ -584,14 +584,15 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
     for x in range(0,counter+1):
         table_list_bestpath.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
 
-    logger.info('Plotting results ...')
+    output_dir = output_filename.split('/', 10)[0]
     try:
-        make_plot_bestpath1(table_list_bestpath,output_filename)
-        make_plot_bestpath2(table_list_bestpath,output_filename)
+        make_plot_bestpath1(table_list_bestpath,output_dir)
+        make_plot_bestpath2(table_list_bestpath,output_dir)
+        make_plot_bestpath4(table_list_bestpath,output_dir)
     except:
         raise
     try:
-        make_plot_bestpath3(table_list_bestpath,output_filename)
+        make_plot_bestpath3(table_list_bestpath,output_dir)
     except:
         pass
 
@@ -617,7 +618,7 @@ def run_pathfinder_curve(input_filename:str, output_filename:str, intensity_thre
         logger.info('ERROR running Path Finder ...')
 
 #Best path generate mz / rt figures
-def make_plot_bestpath1(table_list_bestpath, output_filename):
+def make_plot_bestpath1(table_list_bestpath, output_dir):
     Labels = []
     if len(table_list_bestpath) >= 1:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -654,11 +655,11 @@ def make_plot_bestpath1(table_list_bestpath, output_filename):
     plt.xlabel('Ret. time apex (s)')
 
     plt.legend(labels=Labels, fontsize =4)
-    plt.savefig(output_filename[:-4]+'injection_scatter_plot_mz_rt.png', dpi=300)
+    plt.savefig(output_dir+'/injection_scatter_plot_mz_rt.png', dpi=300)
     plt.close()
 
 #Best path generate feature intensity / rt figures
-def make_plot_bestpath2(table_list_bestpath, output_filename):
+def make_plot_bestpath2(table_list_bestpath, output_dir):
     Labels = []
     if len(table_list_bestpath) >= 1:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -699,13 +700,13 @@ def make_plot_bestpath2(table_list_bestpath, output_filename):
     plt.xlabel('Ret. time apex (s)')
 
     plt.legend(labels=Labels, fontsize =4)
-    plt.savefig(output_filename[:-4]+'injection_scatter_plot_intensity_rt.png', dpi=300)
+    plt.savefig(output_dir+'/injection_scatter_plot_intensity_rt.png', dpi=300)
     plt.close()
 
 
 
 #Best path generate feature intensity / duration
-def make_plot_bestpath3(table_list_bestpath, output_filename):
+def make_plot_bestpath3(table_list_bestpath, output_dir):
     Labels = []
     if len(table_list_bestpath) >= 0:
         table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
@@ -718,7 +719,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         plt.xlabel('Duration (s)')
         plt.legend(labels=Labels, fontsize =5)
 
-        plt.savefig(output_filename[:-4]+'injection1_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_dir+'/injection1_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -729,7 +730,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         Labels.clear()
         Labels.append(Label)
 
-        plt.savefig(output_filename[:-4]+'injection2_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_dir+'/injection2_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -740,7 +741,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         Labels.clear()
         Labels.append(Label)
 
-        plt.savefig(output_filename[:-4]+'injection3_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_dir+'/injection3_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -750,7 +751,7 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.clear()
         Labels.append(Label)
-        plt.savefig(output_filename[:-4]+'injection4_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_dir+'/injection4_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
 
@@ -760,9 +761,33 @@ def make_plot_bestpath3(table_list_bestpath, output_filename):
         Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
         Labels.clear()
         Labels.append(Label)
-        plt.savefig(output_filename[:-4]+'injection5_scatter_plot_intensity_duration.png', dpi=300)
+        plt.savefig(output_dir+'/injection5_scatter_plot_intensity_duration.png', dpi=300)
         plt.close
         plt.clf()
+
+
+def make_plot_bestpath4(table_list_bestpath, output_dir):
+    fig = plt.figure()
+    lenght = len(table_list_bestpath)
+    label = []
+    number = -1
+    fig, axs = plt.subplots(lenght, sharex=True)
+    color_list =['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
+    color_list = color_list + color_list + color_list
+
+    for frame in table_list_bestpath:
+        label = frame.split('mrgd_', 1)[1]
+        frame = pd.read_csv(frame)
+        number = number + 1
+        axs[number].hist(frame['duration'], 10, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
+        
+        #plt.scatter(frame['duration'], frame['intensity'],marker = "o",s = 0.5, alpha=0.5)
+    #plt.yscale('log')
+    plt.xlabel('Scan time duration (seconds)',size = 8,wrap=True)
+    plt.xticks(fontsize=10, rotation=90)
+    plt.savefig(output_dir+'/scatter_plot_duration.png', dpi=200)
+    plt.close
+    plt.clf()
 
 
 if __name__ == "__main__":
