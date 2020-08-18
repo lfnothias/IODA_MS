@@ -155,8 +155,12 @@ def IODA_exclusion_workflow(input_mzML,ppm_error,narrow_noise_threshold,large_no
     try:
         f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
         f.close()
-    except subprocess.CalledProcessError:
-        logger.info('There was with the OpenMS workflow ! Pleaase, very the path or download link, and parameters')
+    except:
+        logger.info('There was an issue with the OpenMS workflow ! See the log below.')
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
+        raise
 
     logger.info('======')
     logger.info('Completed the OpenMS workflow')

@@ -70,9 +70,10 @@ def convert_mzTab_to_table(input_filename: str,output_filename: str):
     #Detection of blank
     #print('#Deducing the blank sample by comparing the sum of feature intensity between samples')
     column1_sum = df_master['peptide_abundance_study_variable[1]'].sum()
-    logger.info('   For sample '+Filename1+' the sum of ions intensities is = '+str(column1_sum))
+    logger.info('- For sample '+Filename1+' the sum of feature intensities is = '+str("{:.2e}".format(column1_sum)))
     column2_sum = df_master['peptide_abundance_study_variable[2]'].sum()
-    logger.info('   For sample '+Filename2+' the sum of ions intensities = '+str(column2_sum))
+    logger.info('- For sample '+Filename2+' the sum of feature intensities = '+str("{:.2e}".format(column2_sum)))
+    
     if column1_sum > column2_sum:
     #    logger.info('- The blank sample is assumed to be '+str(Filename2)+' in the mzTab-M')
     #    logger.info('- The samples is assumed to be '+str(Filename1)+' in the mzTab-M')
