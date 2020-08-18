@@ -38,7 +38,7 @@ def convert_blank_range_mzTab_to_table(input_filename: str, output_filename: str
             if x not in Filenames:
                 Filenames.append(x[:-5])
 
-    logger.info('Filename(s) in the mzTab'+str(Filenames))
+    logger.info('   Filename(s) in the mzTab: '+str(Filenames))
 
     Filename1 = Filenames[0]
 
@@ -91,26 +91,25 @@ def make_exclusion_list(input_filename: str, sample: str, intensity:float):
     number_of_ions_after_filtering = 'Number of ions after intensity filtering = '+str(df_master_exclusion_list.shape[0]) +', with intensity >'+ str(intensity)
     logger.info(number_of_ions_after_filtering)
 
+    
 def plot_targets_exclusion(input_filename: str, blank_samplename: str, column: str, title: str):
     """From a table, make a scatter plot of a sample"""
     Labels = []
     table0 = pd.read_csv(input_filename, sep=',', header=0)
     fig = plt.figure(figsize=(8,6))
-    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='blue',s=4, alpha=0.4)
-    Label1 = ['n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
+    fig = plt.scatter(column, blank_samplename, data=table0, marker='o', color='lightskyblue',s=3, alpha=0.4)
+    Label1 = ['Excluded ions, n = '+ str(table0.shape[0])+ ', median abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].median()) + ', mean abs. int. = '+ "{0:.2e}".format(table0[blank_samplename].mean())]
     Labels.append(Label1)
     plt.yscale('log')
-    if column == 'Mass [m/z]':
-        plt.title(title+', in m/z range', size = 13)
-        plt.xlabel('m/z', size = 12)
-    if column == 'retention_time':
-        plt.title(title+', in retention time range range', size =13)
-        plt.xlabel('Ret. time (sec)', size = 11)
     plt.ylabel('Ion intensity (log scale)', size = 11)
-    plt.legend(labels=Labels, fontsize =10, loc='best', markerscale=5)
+    plt.legend(labels=Labels, fontsize = 8, loc='best', markerscale=5)
     if column == 'Mass [m/z]':
+        plt.title(title+', in m/z range', size = 11,  wrap=True)
+        plt.xlabel('m/z', size = 10)
         plt.savefig('results/plot_exclusion_scatter_MZ.png', dpi=200)
     if column == 'retention_time':
+        plt.title(title+', in retention time range', size =11, wrap=True)
+        plt.xlabel('Ret. time (sec)', size = 10)
         plt.savefig('results/plot_exclusion_scatter_RT.png', dpi=200)
     plt.close()
 
@@ -121,18 +120,19 @@ def plot_targets_exclusion_range(input_filename: str, blank_samplename: str, tit
     rt_start = table0['retention_time']-table0['rt_start']
     rt_end = table0['rt_end']-table0['retention_time']
     rt_range = [rt_start, rt_end]
-    table0[blank_samplename] = (table0[blank_samplename])/100000
+    # Normalizing
+    table0[blank_samplename]=((table0[blank_samplename]-table0[blank_samplename].min())/(table0[blank_samplename].max()-table0[blank_samplename].min()))*300
     gradient = table0[blank_samplename].to_list()
     plt.figure(figsize=(9,6))
-    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.8, color='blue', ecolor='grey', capsize=0, alpha=0.35)
-    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient*10, marker = "o", facecolors='', color='blue', edgecolors='red', alpha=0.5)
+    plt.errorbar('retention_time','Mass [m/z]', data=table0, xerr=rt_range, fmt='.', elinewidth=0.7, color='lightskyblue', ecolor='grey', capsize=0, alpha=0.3)
+    plt.scatter('retention_time','Mass [m/z]', data=table0, s = gradient, marker = "o", facecolors='', color='', edgecolors='red', alpha=0.85, linewidth=0.45)
 
     Label1 = ['Red circle = intensity, Blue dot = ion apex, Horizontal line = RT range, Ions excluded (n='+ str(table0.shape[0])+')']
     Labels.append(Label1)
-    plt.title(title, size =13)
+    plt.title(title, size =11, wrap=True)
     plt.xlabel('Ret. time (sec)')
     plt.ylabel('m/z')
-    plt.legend(labels=Labels, fontsize = 10, loc='upper left', markerscale=0.3)
+    plt.legend(labels=Labels, fontsize = 8, loc='upper left', markerscale=0.45)
     plt.savefig('results/plot_exclusion_RT_range_plot.png', dpi=200)
     plt.close()
 
@@ -156,7 +156,7 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Make exclusion list from two mzTabs (design to run with the OpenMS TOPPAS workflow in IODA)
-def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float):
+def make_exclusion_from_mzTabs(input_mzML:int, min_intensity:int, rtexclusionmargininsecs:float):
     input_dir='TOPPAS_Workflow/toppas_output'
     output_dir = 'results'
 
@@ -172,8 +172,9 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     # Convert the mzTabs into Tables to generate exclusion list
     logger.info('======')
     logger.info('Starting the IODA-exclusion workflow')
-    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
-    logger.info('This is the input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
+    logger.info('The source of the mzML file is: '+input_mzML)
+    logger.info('Intermediate file input: '+input_dir+'/TOPPAS_out/mzTab_Narrow/Blank.mzTab')
+    logger.info('Intermediate file input: '+input_dir+'/TOPPAS_out/mzTab_Large/Blank.mzTab')
     logger.info('======')
     logger.info('Converting mzTab to table format')
     logger.info('For narrow features')
@@ -191,8 +192,8 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
 
     # User-defined parameters
     logger.info('User-defined parameters')
-    logger.info('Minimum ion intensity treshold (count) = '+ str(min_intensity))
-    logger.info('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
+    logger.info('   Minimum ion intensity treshold (count) = '+ str(min_intensity))
+    logger.info('   Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
 
     # Concatenating the tables from narrow and large features:
     df_narrow = pd.read_csv(output_dir+'/table_narrow.csv',sep=',')
@@ -238,8 +239,7 @@ def make_exclusion_from_mzTabs(min_intensity:int, rtexclusionmargininsecs:float)
     logger.info('======')
     logger.info('End the IODA-exclusion workflow processing')
     logger.info('======')
-    logger.info('Proceed with the results visualization')
-    logger.info(' ')
+    logger.info('Proceed below with the results visualization')
 
 
 # Make exclusion list from one mzTab
@@ -286,8 +286,8 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
 
     # User-defined parameters
     logger.info('User-defined parameters')
-    logger.info('Minimum ion intensity treshold (count) = '+ str(min_intensity))
-    logger.info('Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
+    logger.info('   Minimum ion intensity treshold (count) = '+ str(min_intensity))
+    logger.info('   Additional margin for retention time range exclusion (seconds) = '+ str(rtexclusionmargininsecs))
 
     # Concatenating the tables from narrow and large features:
     df_narrow = pd.read_csv(output_filename,sep=',')
@@ -332,8 +332,7 @@ def make_exclusion_from_mzTab(input_filename:str, min_intensity:int, rtexclusion
     logger.info('=======================')
     logger.info('End the IODA-exclusion workflow')
     logger.info('=======================')
-    logger.info('Proceed with the results visualization')
-    logger.info(' ')
+    logger.info('Proceed below with the results visualization')
 
 
 if __name__ == "__main__":
