@@ -69,7 +69,7 @@
       <ITEM name="toppas_type" value="output file list" type="string" description="" required="false" advanced="false" />
       <ITEM name="x_pos" value="-60.0" type="double" description="" required="false" advanced="false" />
       <ITEM name="y_pos" value="-240.0" type="double" description="" required="false" advanced="false" />
-      <ITEM name="output_folder_name" value="PathFinder_mzTab" type="string" description="" required="false" advanced="false" />
+      <ITEM name="output_folder_name" value="MS2Planner_mzTab" type="string" description="" required="false" advanced="false" />
     </NODE>
   </NODE>
   <NODE name="edges" description="">
