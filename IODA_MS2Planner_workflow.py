@@ -433,7 +433,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
             logger.info("mzTab for the Curve mode found from the user specified path")
         if input_filename_curve == 'OpenMS_generated':
             mzTab_curve = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner/")[0]
-            logger.info('mzTab for the Curve mode found from the OpenMS output folder'
+            logger.info('mzTab for the Curve mode found from the OpenMS output folder')
         else:
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
             print("Problem with the mzTab file or file path ! Please verify")
@@ -581,7 +581,7 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
                 generate_MQL_list_from_MS2Planner(output_filename, output_filename[:-4]+'_MQL.txt',rt_margin)
-                generate_MQL_list_from_MS2Plannerh_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
+                generate_MQL_list_from_MS2Planner_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
                 logger.info('=======')
             except:
                 raise
