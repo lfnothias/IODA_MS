@@ -118,7 +118,7 @@ def get_all_file_paths(directory,output_zip_path):
 
     logger.info('All files zipped successfully!')
 
-# Run the Path Finder workflow with baseline method
+# Run the MS2Planner workflow with baseline method
 def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
 
     output_dir = 'results_targeted_MS2Planner_baseline'
@@ -192,7 +192,7 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder in Baseline mode ...')
+    logger.info('Running MS2Planner in Baseline mode ...')
     run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
 
@@ -240,16 +240,16 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_baseline_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_MS2Planner_baseline_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE Path Finder WORKFLOW')
+    logger.info('END OF THE MS2Planner WORKFLOW')
     logger.info('======')
     print(' ')
 
 
 
-# Run the Path Finder workflow with apex method
+# Run the MS2Planner workflow with apex method
 def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
 
     output_dir = 'results_targeted_MS2Planner_apex'
@@ -324,7 +324,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder in Apex mode ...')
+    logger.info('Running MS2Planner in Apex mode ...')
     run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
 
@@ -371,16 +371,16 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_apex_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_MS2Planner_apex_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE Path Finder WORKFLOW')
+    logger.info('END OF THE MS2Planner WORKFLOW')
     logger.info('======')
     print(' ')
 
 
 
-# Run the Path Finder workflow with apex method
+# Run the MS2Planner workflow with apex method
 def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
 
     output_dir = 'results_targeted_MS2Planner_curve'
@@ -425,22 +425,29 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
 
-
-    #Checking user provided file for Path Finder
-    mzTab_curve = pathlib.Path(input_filename_curve)
+    # Check the mzTab from the OpenMS Curve mode
     try:
-        if mzTab_curve.exists ():
-            logger.info("mzTab for the Curve mode found from the user specified path")
         if input_filename_curve == 'OpenMS_generated':
-            mzTab_curve = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner/")[0]
-            logger.info('mzTab for the Curve mode found from the OpenMS output folder')
+            mzTab_curve_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner_mzTab/")[0]
+            mzTab_curve = "TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner_mzTab/"+str(mzTab_curve_file)
+            mzTab_curve = pathlib.Path(mzTab_curve)
+            logger.info(mzTab_curve)
+            if mzTab_curve.exists ():
+                logger.info("mzTab for the Curve mode found in the OpenMS folder at:")
+                logger.info(mzTab_curve)          
         else:
-            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem with the mzTab file or file path ! Please verify")
-            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem with the mzTab file or file path ! Please verify")
+            mzTab_curve = pathlib.Path(input_filename_curve)
+            if mzTab_curve.exists ():
+                logger.info("mzTab for the Curve mode found from the user specified path")
+                mzTab_curve = input_filename_curve
+            else:
+                print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+                print("Problem with the mzTab file or file path ! Please verify")
+                print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+                logger.info("Problem with the mzTab file or file path ! Please verify")
     except:
         raise
+
         
     # Convert the mzTab into a Table
     logger.info('======')
@@ -451,10 +458,10 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     samplename = feature_table.columns[-1]
-    logger.info('Assumed sample filename: '+samplename)
+    logger.info('Assumed sample filename: '+str(samplename))
     blank_samplename = feature_table.columns[-2]
-    logger.info('Assumed blank filename: ' +blank_samplename)
-    logger.info('Sample for the Curve mode: ' +mzTab_curve)
+    logger.info('Assumed blank filename: ' +str(blank_samplename))
+    logger.info('Sample for the Curve mode: ' +str(mzTab_curve))
     logger.info('======')
      
             
@@ -475,10 +482,10 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
-    #Running Path Finder
+    #Running MS2Planner
     logger.info('Running MS2Planner in Curve mode ...')
     try:
-        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
+        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, restriction, mz_accuracy, delta)
     except:
         raise
 
