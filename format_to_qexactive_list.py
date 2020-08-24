@@ -145,7 +145,7 @@ def generate_MQL_list(input_table:str, output_filename:str, pretarget_rt_exclusi
     
 
 ## PathFinder below
-def generate_QE_list_from_BestPath(input_table: str, output_filename:str, rt_margin:float):
+def generate_QE_list_from_MS2Planner(input_table: str, output_filename:str, rt_margin:float):
     """Format a table with mz, charge, rt_start, rt_end, intensities into a standard QExactive inclusion/exclusion list"""
     # Prepare the columns
     df_master = pd.read_csv(input_table, sep=',', header=0)
@@ -180,7 +180,7 @@ def generate_QE_list_from_BestPath(input_table: str, output_filename:str, rt_mar
     df.to_csv(output_filename, index = False, sep=',')
 
 
-def generate_MQL_list_from_BestPath(input_table:str, output_filename:str, rt_margin:float):
+def generate_MQL_list_from_MS2Planner(input_table:str, output_filename:str, rt_margin:float):
     """Format a table with mz, charge, rt, intensities into a standard MaxQuantLive list"""
 
     #Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end',5: 'intensity'})
@@ -216,7 +216,7 @@ def generate_MQL_list_from_BestPath(input_table:str, output_filename:str, rt_mar
     df_out.to_csv(output_filename, index=None, sep='\t')
     
     
-def generate_MQL_list_from_BestPath_MaxIT(input_table:str, output_filename:str, transient_time:float):
+def generate_MQL_list_from_MS2Planner_MaxIT(input_table:str, output_filename:str, transient_time:float):
     """Format a table with mz, charge, rt, intensities into a standard MaxQuantLive list"""
 
     #Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end',5: 'intensity'})

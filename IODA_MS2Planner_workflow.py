@@ -118,17 +118,17 @@ def get_all_file_paths(directory,output_zip_path):
 
     logger.info('All files zipped successfully!')
 
-# Run the Path Finder workflow with baseline method
-def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
+# Run the MS2Planner workflow with baseline method
+def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
 
-    output_dir = 'results_targeted_pathfinder_baseline'
+    output_dir = 'results_targeted_MS2Planner_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
     os.system('mkdir '+output_dir)
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE PathFinder WORKFLOW')
+    logger.info('STARTING THE MS2Planner WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -138,7 +138,7 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
         mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
         input_filename = path_input_folder+mzTab_file
     else:
-        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
+        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")  
 
     now = datetime.datetime.now()
     logger.info(now)
@@ -192,26 +192,26 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder in Baseline mode ...')
-    run_pathfinder_baseline(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
+    logger.info('Running MS2Planner in Baseline mode ...')
+    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
     logger.info('======')
 
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
+    Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
-        if Test_BestPath_Output.exists ():
-            logger.info("Best Path output found")
+        if Test_MS2Planner_Output.exists ():
+            logger.info("MS2Planner Path output found")
         else:
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem when running Best Path !!!")
+            print("Problem when running MS2Planner Path !!!")
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem when running Best Path !!!")
+            logger.info("Problem when running MS2Planner Path !!!")
     except:
         raise
 
     logger.info('Preparing results ...')
     transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', rt_margin, transient_time)
+    make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv', rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -240,26 +240,26 @@ def run_path_finder_baseline_from_mzTab(input_filename:int, num_path:int, intens
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_baseline_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_MS2Planner_baseline_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE Path Finder WORKFLOW')
+    logger.info('END OF THE MS2Planner WORKFLOW')
     logger.info('======')
     print(' ')
 
 
 
-# Run the Path Finder workflow with apex method
-def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
+# Run the MS2Planner workflow with apex method
+def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
 
-    output_dir = 'results_targeted_pathfinder_apex'
+    output_dir = 'results_targeted_MS2Planner_apex'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
     os.system('mkdir '+output_dir)
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE PathFinder WORKFLOW')
+    logger.info('STARTING THE MS2Planner WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -324,25 +324,25 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('======')
 
     # Running the table processing
-    logger.info('Running Path Finder in Apex mode ...')
-    run_pathfinder_apex(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
+    logger.info('Running MS2Planner in Apex mode ...')
+    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
     logger.info('======')
 
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
+    Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
-        if Test_BestPath_Output.exists ():
-            logger.info("Best Path output found")
+        if Test_MS2Planner_Output.exists ():
+            logger.info("MS2Planner output found")
         else:
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem when running Best Path !!!")
+            print("Problem when running MS2Planner !!!")
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem when running Best Path !!!")
+            logger.info("Problem when running MS2Planner !!!")
     except:
         raise
 
     transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv',rt_margin, transient_time)
+    make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv',rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -371,26 +371,26 @@ def run_path_finder_apex_from_mzTab(input_filename:int, num_path:int, intensity_
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_apex_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_MS2Planner_apex_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE Path Finder WORKFLOW')
+    logger.info('END OF THE MS2Planner WORKFLOW')
     logger.info('======')
     print(' ')
 
 
 
-# Run the Path Finder workflow with apex method
-def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
+# Run the MS2Planner workflow with apex method
+def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
 
-    output_dir = 'results_targeted_pathfinder_curve'
+    output_dir = 'results_targeted_MS2Planner_curve'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
     os.system('mkdir '+output_dir)
     os.system('mkdir download_'+output_dir)
     logfile(output_dir+'/logfile.txt')
 
-    logger.info('STARTING THE PathFinder WORKFLOW')
+    logger.info('STARTING THE MS2Planner WORKFLOW')
     if input_filename.startswith('http'):
         logger.info('File path was specified by the user')
         pass
@@ -425,6 +425,30 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
         logger.info('This is the input file path: '+str(input_filename))
         logger.info('This is the output file path: '+str(output_filename))
 
+    # Check the mzTab from the OpenMS Curve mode
+    try:
+        if input_filename_curve == 'OpenMS_generated':
+            mzTab_curve_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner_mzTab/")[0]
+            mzTab_curve = "TOPPAS_Workflow/toppas_output/TOPPAS_out/MS2Planner_mzTab/"+str(mzTab_curve_file)
+            mzTab_curve = pathlib.Path(mzTab_curve)
+            logger.info(mzTab_curve)
+            if mzTab_curve.exists ():
+                logger.info("mzTab for the Curve mode found in the OpenMS folder at:")
+                logger.info(mzTab_curve)          
+        else:
+            mzTab_curve = pathlib.Path(input_filename_curve)
+            if mzTab_curve.exists ():
+                logger.info("mzTab for the Curve mode found from the user specified path")
+                mzTab_curve = input_filename_curve
+            else:
+                print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+                print("Problem with the mzTab file or file path ! Please verify")
+                print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
+                logger.info("Problem with the mzTab file or file path ! Please verify")
+    except:
+        raise
+
+        
     # Convert the mzTab into a Table
     logger.info('======')
     logger.info('Converting mzTab to intermediate table format ...')
@@ -434,11 +458,13 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     # Read the table to get the filenames
     feature_table = pd.read_csv(output_filename)
     samplename = feature_table.columns[-1]
-    logger.info('Assumed sample filename: '+samplename)
+    logger.info('Assumed sample filename: '+str(samplename))
     blank_samplename = feature_table.columns[-2]
-    logger.info('Assumed blank filename: ' +blank_samplename)
+    logger.info('Assumed blank filename: ' +str(blank_samplename))
+    logger.info('Sample for the Curve mode: ' +str(mzTab_curve))
     logger.info('======')
-
+     
+            
     # User-defined parameters
     logger.info('User-defined parameters')
     ratio = intensity_ratio
@@ -456,41 +482,28 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('======')
 
-    #Checking user provided file for Path Finder
-    mzTab_curve = pathlib.Path(input_filename_curve)
+    #Running MS2Planner
+    logger.info('Running MS2Planner in Curve mode ...')
     try:
-        if mzTab_curve.exists ():
-            logger.info("mzTab for the Curve mode found")
-        else:
-            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem with the mzTab file or file path ! Please verify")
-            print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem with the mzTab file or file path ! Please verify")
+        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, restriction, mz_accuracy, delta)
     except:
         raise
 
-    #Running Path Finder
-    logger.info('Running PathFinder in Curve mode ...')
+    Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
-        run_pathfinder_curve(output_filename, output_filename[:-4]+'_PathFinder.csv', intensity_threshold, intensity_ratio, num_path, input_filename_curve, intensity_accu, restriction, mz_accuracy, delta)
-    except:
-        raise
-
-    Test_BestPath_Output = pathlib.Path(output_filename[:-4]+'_PathFinder.csv')
-    try:
-        if Test_BestPath_Output.exists ():
-            logger.info("PathFinder output found")
+        if Test_MS2Planner_Output.exists ():
+            logger.info("MS2Planner output found")
         else:
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            print("Problem when running PathFinder !!!")
+            print("Problem when running MS2Planner !!!")
             print("<---------- !!!!!!!!!!!!!!!!!! ---------->")
-            logger.info("Problem when running PathFinder !!!")
+            logger.info("Problem when running MS2Planner !!!")
     except:
         raise
 
     logger.info('======')
     logger.info('Preparing results ...')
-    make_bestpath_targeted_lists_from_table(output_filename[:-4]+'_PathFinder.csv', rt_margin, transient_time)
+    make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv', rt_margin, transient_time)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -519,17 +532,17 @@ def run_path_finder_curve_from_mzTab(input_filename:int, num_path:int, intensity
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
-    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_Path_Finder_curve_results.zip')
+    get_all_file_paths(output_dir,'download_'+output_dir+'/IODA_MS2Planner_curve_results.zip')
 
     logger.info('======')
-    logger.info('END OF THE Path Finder WORKFLOW')
+    logger.info('END OF THE MS2Planner WORKFLOW')
     logger.info('======')
     print(' ')
 
 
-### PathFinder
-# This parse one line from the BestPath output and create a output table per path. The rows to skip define which line/path is parsed.
-def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int):
+### MS2Planner
+# This parse one line from the MS2Planner output and create a output table per path. The rows to skip define which line/path is parsed.
+def MS2Planner_format(input_filename: str, output_filename: str, rows_to_skip:int):
     df_path = pd.read_csv(input_filename, sep=' ', header=None, skiprows=rows_to_skip, error_bad_lines=False, warn_bad_lines=False)
 
     #Make a list for the first row
@@ -557,8 +570,8 @@ def bestpath_format(input_filename: str, output_filename: str, rows_to_skip:int)
 
     target_table.to_csv(output_filename, sep=',', index=False)
 
-# This parse BestPath output file and create output tables formatted for XCalibur and MaxQuant.live
-def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, transient_time:float):
+# This parse MS2Planner output file and create output tables formatted for XCalibur and MaxQuant.live
+def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float, transient_time:float):
     os.system("sed -i 's/\t/ /g' "+input_filename)
     logger.info('File processed: '+input_filename)
     logger.info('======')
@@ -569,83 +582,83 @@ def make_bestpath_targeted_lists_from_table(input_filename:str,rt_margin:float, 
                 counter += 1
                 output_filename = input_filename[:-4]+"_"+str(counter+1)+'_formatted.txt'
                 #Take the list and make a table
-                bestpath_format(input_filename,output_filename, counter)
+                MS2Planner_format(input_filename,output_filename, counter)
                 logger.info('Formatting to XCalibur format ...')
-                generate_QE_list_from_BestPath(output_filename, output_filename[:-4]+'_QE.csv',rt_margin)
+                generate_QE_list_from_MS2Planner(output_filename, output_filename[:-4]+'_QE.csv',rt_margin)
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
-                generate_MQL_list_from_BestPath(output_filename, output_filename[:-4]+'_MQL.txt',rt_margin)
-                generate_MQL_list_from_BestPath_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
+                generate_MQL_list_from_MS2Planner(output_filename, output_filename[:-4]+'_MQL.txt',rt_margin)
+                generate_MQL_list_from_MS2Planner_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
                 logger.info('=======')
             except:
                 raise
 
-    table_list_bestpath = []
+    table_list_MS2Planner = []
     for x in range(0,counter+1):
-        table_list_bestpath.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
+        table_list_MS2Planner.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
 
     output_dir = output_filename.split('/', 10)[0]
     try:
-        make_plot_bestpath1(table_list_bestpath,output_dir)
-        make_plot_bestpath2(table_list_bestpath,output_dir)
-        make_plot_bestpath4(table_list_bestpath,output_dir)
+        make_plot_MS2Planner1(table_list_MS2Planner,output_dir)
+        make_plot_MS2Planner2(table_list_MS2Planner,output_dir)
+        make_plot_MS2Planner4(table_list_MS2Planner,output_dir)
     except:
         raise
     try:
-        make_plot_bestpath3(table_list_bestpath,output_dir)
+        make_plot_MS2Planner3(table_list_MS2Planner,output_dir)
     except:
         pass
 
 
-def run_pathfinder_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
+def run_MS2Planner_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
     cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
     logger.info('Command: '+cmd_baseline)
     os.system(cmd_baseline)
 
-def run_pathfinder_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
+def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
     cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delta '+str(delta))
     logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
 
-def run_pathfinder_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
+def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
     cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delta '+str(delta))
     logger.info('Command: '+cmd_curve)
-    logger.info('Path Finder in Curve mode can take up to 10 minutes to complete ... please wait')
+    logger.info('MS2Planner in Curve mode can take up to 10 minutes to complete ... please wait')
     try:
         cp0 = subprocess.run(cmd_curve,shell=True)
         cp0
     except subprocess.CalledProcessError:
-        logger.info('ERROR running Path Finder ...')
+        logger.info('ERROR running MS2Planner ...')
 
-#Best path generate mz / rt figures
-def make_plot_bestpath1(table_list_bestpath, output_dir):
+#MS2Planner generate mz / rt figures
+def make_plot_MS2Planner1(table_list_MS2Planner, output_dir):
     Labels = []
-    if len(table_list_bestpath) >= 1:
-        table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 1:
+        table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]', data=table0, marker='o', color='blue',s=2, alpha=0.6)
         Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
         Labels.append(Label1)
 
-    if len(table_list_bestpath) >= 2:
-        table1 = pd.read_csv(table_list_bestpath[1], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 2:
+        table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table1, marker='o', color='violet',s=2, alpha=0.6)
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
         Labels.append(Label2)
 
-    if len(table_list_bestpath) >= 3:
-        table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 3:
+        table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
         Labels.append(Label3)
 
-    if len(table_list_bestpath) >= 4:
-        table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 4:
+        table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table3, marker='o', color='red', s=2, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.append(Label4)
 
-    if len(table_list_bestpath) >= 5:
-        table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 5:
+        table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table4, marker='o', color='red', s=2, alpha=0.6)
         Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
         Labels.append(Label5)
@@ -658,35 +671,35 @@ def make_plot_bestpath1(table_list_bestpath, output_dir):
     plt.savefig(output_dir+'/injection_scatter_plot_mz_rt.png', dpi=300)
     plt.close()
 
-#Best path generate feature intensity / rt figures
-def make_plot_bestpath2(table_list_bestpath, output_dir):
+#MS2Planner generate feature intensity / rt figures
+def make_plot_MS2Planner2(table_list_MS2Planner, output_dir):
     Labels = []
-    if len(table_list_bestpath) >= 1:
-        table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 1:
+        table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('rt_apex','intensity', data=table0, marker='o', color='blue',s=2, alpha=0.6)
         Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
         Labels.append(Label1)
 
-    if len(table_list_bestpath) >= 2:
-        table1 = pd.read_csv(table_list_bestpath[1], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 2:
+        table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table1, marker='o', color='violet',s=2, alpha=0.6)
         Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
         Labels.append(Label2)
 
-    if len(table_list_bestpath) >= 3:
-        table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 3:
+        table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
         Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
         Labels.append(Label3)
 
-    if len(table_list_bestpath) >= 4:
-        table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 4:
+        table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table3, marker='o', color='red', s=2, alpha=0.6)
         Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.append(Label4)
 
-    if len(table_list_bestpath) >= 5:
-        table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 5:
+        table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table4, marker='o', color='red', s=2, alpha=0.6)
         Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
         Labels.append(Label5)
@@ -705,11 +718,11 @@ def make_plot_bestpath2(table_list_bestpath, output_dir):
 
 
 
-#Best path generate feature intensity / duration
-def make_plot_bestpath3(table_list_bestpath, output_dir):
+#MS2Planner generate feature intensity / duration
+def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     Labels = []
-    if len(table_list_bestpath) >= 0:
-        table0 = pd.read_csv(table_list_bestpath[0], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 0:
+        table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('duration','intensity', data=table0, marker='o', color='blue',s=1, alpha=0.6)
         Label = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
         Labels.append(Label)
@@ -723,8 +736,8 @@ def make_plot_bestpath3(table_list_bestpath, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 1:
-        table1 = pd.read_csv(table_list_bestpath[1], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 1:
+        table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table1, marker='o', color='violet',s=1.5, alpha=0.6)
         Label = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
         Labels.clear()
@@ -734,8 +747,8 @@ def make_plot_bestpath3(table_list_bestpath, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 2:
-        table2 = pd.read_csv(table_list_bestpath[2], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 2:
+        table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table2, marker='o', color='orange',s=1, alpha=0.6)
         Label = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
         Labels.clear()
@@ -745,8 +758,8 @@ def make_plot_bestpath3(table_list_bestpath, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 3:
-        table3 = pd.read_csv(table_list_bestpath[3], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 3:
+        table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table3, marker='o', color='red', s=0.5, alpha=0.6)
         Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
         Labels.clear()
@@ -755,8 +768,8 @@ def make_plot_bestpath3(table_list_bestpath, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_bestpath) >= 4:
-        table4 = pd.read_csv(table_list_bestpath[4], sep=',', header=0)
+    if len(table_list_MS2Planner) >= 4:
+        table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table4, marker='o', color='red', s=0.1, alpha=0.6)
         Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
         Labels.clear()
@@ -766,20 +779,20 @@ def make_plot_bestpath3(table_list_bestpath, output_dir):
         plt.clf()
 
 
-def make_plot_bestpath4(table_list_bestpath, output_dir):
+def make_plot_MS2Planner4(table_list_MS2Planner, output_dir):
     fig = plt.figure()
-    lenght = len(table_list_bestpath)
+    lenght = len(table_list_MS2Planner)
     label = []
     number = -1
     fig, axs = plt.subplots(lenght, sharex=True)
     color_list =['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
     color_list = color_list + color_list + color_list
 
-    for frame in table_list_bestpath:
+    for frame in table_list_MS2Planner:
         label = frame.split('mrgd_', 1)[1]
         frame = pd.read_csv(frame)
         number = number + 1
-        axs[number].hist(frame['duration'], 10, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
+        axs[number].hist(frame['duration'], 50, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
         
         #plt.scatter(frame['duration'], frame['intensity'],marker = "o",s = 0.5, alpha=0.5)
     #plt.yscale('log')

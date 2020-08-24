@@ -192,7 +192,7 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
     logger.info('NOW CONTINUE WITH THE REST OF THE IODA-targeted WORKFLOW')
 
 
-def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:float):
+def MS2Planner_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:float):
     # Test samples
         #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"
@@ -203,24 +203,24 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
         #input_BLANK = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_blank_SPE_20181227092326.mzML"
         #input_SAMPLE = "ftp://massive.ucsd.edu/MSV000083306/peak/QE_C18_mzML/QEC18_F1-1_F2-1_NIST-1_To-1_20181227135238.mzML"
 
-    TOPPAS_Pipeline = "MS1_PathFinder_Curve_mzTab.toppas"
+    TOPPAS_Pipeline = "MS1_MS2Planner_Curve_mzTab.toppas"
     TOPPAS_output_folder = "toppas_output"
     TOPPAS_input_folder = "toppas_input"
     TOPPAS_folder = "TOPPAS_Workflow"
 
-    os.system('rm '+TOPPAS_folder+'/logfile_PathFinder_OpenMS.txt')
-    logfile(TOPPAS_folder+'/logfile_PathFinder_OpenMS.txt')
-    os.system('rm download_results/PathFinder_OpenMS_results.zip')
-    os.system('rm -r '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder*')
+    os.system('rm '+TOPPAS_folder+'/logfile_MS2Planner_OpenMS.txt')
+    logfile(TOPPAS_folder+'/logfile_MS2Planner_OpenMS.txt')
+    os.system('rm download_results/MS2Planner_OpenMS_results.zip')
+    os.system('rm -r '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/MS2Planner*')
     os.system('mkdir download_results')
     os.system('mv '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS.log '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_FFM.log')
-    os.system('mkdir '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder_mzTab')
+    os.system('mkdir '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/MS2Planner_mzTab')
 
 
     today = str(date.today())
     now = datetime.datetime.now()
     logger.info(now)
-    logger.info('STARTING the Path Finder Curve processing')
+    logger.info('STARTING the MS2Planner Curve processing')
     logger.info('======')
     logger.info('Path to the input files: ')
     logger.info('    Sample: '+sample_mzML)
@@ -229,7 +229,7 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
     logger.info('Download the latest version of the workflow from the repository ...')
 
     try:
-        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/MS2Planner_master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/MS2Planner_merge_w_master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
         logger.info(bashCommand0)
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
@@ -280,8 +280,8 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
 
     # Error with the OpenMS workflow. No output files.
     try:
-        mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/PathFinder_mzTab/")[0]
-        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/PathFinder_mzTab/'+mzTab_file)
+        mzTab_file = os.listdir(TOPPAS_folder+"/toppas_output/TOPPAS_out/MS2Planner_mzTab/")[0]
+        f = open(TOPPAS_folder+'/toppas_output/TOPPAS_out/MS2Planner_mzTab/'+mzTab_file)
         f.close()
     except:
         logger.info('There was an issue with the OpenMS workflow ! See the log below. Not enough ressources might be available (memory, ...).')
@@ -294,16 +294,16 @@ def Path_Finder_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:flo
     logger.info('Completed the OpenMS workflow')
     logger.info('======')
     logger.info('Zipping up the OpenMS workflow results ..')
-    
+
     try:
-        cmdA = 'cp '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS.log '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/Path_Finder_mzTab/TOPPAS_PathFinder.log'
+        cmdA = 'cp '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS.log '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/MS2Planner_mzTab/TOPPAS_PathFinder.log'
         os.system(cmdA)
-        cmdB ='cp -r '+TOPPAS_folder+'/*PathFinder*'+' '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/Path_Finder_mzTab/'
+        cmdB ='cp -r '+TOPPAS_folder+'/*MS2Planner*'+' '+TOPPAS_folder+'/'+TOPPAS_output_folder+'/MS2Planner_mzTab/'
         os.system(cmdB)
-        get_all_file_paths(TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/PathFinder_mzTab','download_results/PathFinder_OpenMS_results.zip')
+        get_all_file_paths(TOPPAS_folder+'/'+TOPPAS_output_folder+'/TOPPAS_out/MS2Planner_mzTab','download_results/MS2Planner_OpenMS_results.zip')
     except:
         raise
-        
+
     logger.info('======')
     logger.info('Completed zipping up the OpenMS workflow result files')
 
