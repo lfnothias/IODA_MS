@@ -331,7 +331,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
 
     # Running the table processing
     logger.info('Running MS2Planner in Apex mode ...')
-    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delay, min_scan, max_scan):
+    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delay, min_scan, max_scan)
     logger.info('======')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
@@ -387,7 +387,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
 
 
 # Run the MS2Planner workflow with apex method
-def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, delay:float, min_scan:float, max_scan:float, rt_margin:float, transient_time:float):
+def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float, rt_margin:float, transient_time:float):
 
     output_dir = 'results_targeted_MS2Planner_curve'
     os.system('rm -r '+output_dir)
@@ -481,6 +481,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('    Input file for curve data : ' +str(input_filename_curve))
     logger.info('    Restriction parameter : ' +str(rt_tolerance_curve))
     logger.info('    Mass accuracy (m/z): ' +str(mz_tolerance_curve))
+    logger.info('    Isolation window (m/z) = ' +str(isolation))
     logger.info('    Delay between targeted MS2 scans (sec.)= ' +str(delay))
     logger.info('    Minimum MS2 scan duty cycle (sec.)= ' +str(min_scan))
     logger.info('    Maximum MS2 scan duty cycle (sec.)= ' +str(max_scan))
@@ -494,7 +495,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     #Running MS2Planner
     logger.info('Running MS2Planner in Curve mode ...')
     try:
-        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, delay, min_scan, max_scan):
+        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, isolation, delay, min_scan, max_scan)
     except:
         raise
 
@@ -606,6 +607,8 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
         table_list_MS2Planner.append(input_filename[:-4]+"_"+str(x+1)+'_formatted.txt')
 
     output_dir = output_filename.split('/', 10)[0]
+    logger.info(output_dir)
+    
     try:
         make_plot_MS2Planner1(table_list_MS2Planner,output_dir)
         make_plot_MS2Planner2(table_list_MS2Planner,output_dir)
@@ -628,8 +631,8 @@ def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_thres
     logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
 
-def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, delay:float, min_scan:float, max_scan:float):
-    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan))
+def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float):
+    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(rt_tolerance_curve)+' '+str(mz_tolerance_curve)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan))
     logger.info('Command: '+cmd_curve)
     logger.info('MS2Planner in Curve mode can take up to 10 minutes to complete ... please wait')
     try:
