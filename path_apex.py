@@ -1,5 +1,8 @@
+import logging
+
 import numpy as np
 
+logger = logging.getLogger('path_finder.apex')
 
 # this function reads the apex file (.csv) and stores in a numpy array
 # first row is ignored
@@ -16,7 +19,7 @@ def DataFilter(data, intensity, intensity_ratio):
     return data
 
 
-def NodeEdge1Create(data, intensity_accu, delta):
+def NodeEdge1Create(data, intensity_accu, delay, min_time, max_time):
     num_node = 0
     rt_node_dic = {}
     node_rt_dic = {}
@@ -24,9 +27,11 @@ def NodeEdge1Create(data, intensity_accu, delta):
     edge = []
     for i in range(len(data)):
         num_node += 1
-        isolation = intensity_accu / data[i, 4]
-        left_node = data[i, 1] - isolation
-        right_node = data[i, 1] + isolation + delta
+        rt_isolation = intensity_accu / data[i, 4]
+        rt_isolation = min(max_time, max(rt_isolation, min_time))
+        logger.debug(rt_isolation)
+        left_node = data[i, 1] - 0.5 * rt_isolation
+        right_node = data[i, 1] + 0.5 * rt_isolation + delay
         if left_node in rt_node_dic.keys():
             rt_node_dic[left_node].append(num_node)
         else:
@@ -137,15 +142,15 @@ def RemoveVisited(path_node):
     return index
 
 
-def PathGen(data, intensity_accu, num_path, delta):
+def PathGen(data, intensity_accu, num_path, delay, min_time, max_time):
     paths_rt = []
     paths_mz = []
     paths_charge = []
     lengths = []
-    _, _, _, _, edge_intensity_dic = NodeEdge1Create(data, intensity_accu, delta)
+    _, _, _, _, edge_intensity_dic = NodeEdge1Create(data, intensity_accu, delay, min_time, max_time)
     for i in range(num_path):
         num_node, rt_node_dic, node_rt_dic, edge, _ = NodeEdge1Create(
-            data, intensity_accu, delta
+            data, intensity_accu, delay, min_time, max_time
         )
         num_node, edge = Edge0Create(num_node, rt_node_dic, edge)
         g = Graph(num_node)
@@ -156,7 +161,7 @@ def PathGen(data, intensity_accu, num_path, delta):
         length, ancestors = g.ShortestPath(s, t)
         if length >= 0:
             break
-        # print('[%d/%d]: features: %d, rest: %d' %(i+1,num_path,-length, len(data)))
+        logger.info('[%d/%d]: features: %d, rest: %d' %(i+1,num_path,-length, len(data)))
         lengths.append(-length)
         path_node = PathExtraction(ancestors)
         path_rt, path_mz, path_charge = PathRecoverToRT(
@@ -171,16 +176,16 @@ def PathGen(data, intensity_accu, num_path, delta):
 
 
 def WriteFile(
-    outfile_name, paths_rt, paths_mz, paths_charge, edge_intensity_dic, isolation, delta
+    outfile_name, paths_rt, paths_mz, paths_charge, edge_intensity_dic, isolation, delay, min_time, max_time
 ):
     if len(paths_rt) != len(paths_mz):
-        print("Warning, length of rt and mz are not the same")
+        logger.error("length of rt and mz are not the same: rt %d, mz %d", len(paths_rt), len(paths_mz))
         return
     text_file = open(outfile_name, "wt")
     for i in range(len(paths_rt)):
         n = text_file.write("path" + str(i) + "\t")
         if len(paths_rt[i]) != len(paths_mz[i]):
-            print("Warning, length of rt and mz are not the same")
+            logger.error("length of rt and mz are not the same: rt %d, mz %d", len(paths_rt[i]), len(paths_mz[i]))
             break
         for j in range(len(paths_rt[i])):
             mz_index = paths_mz[i][j]
@@ -189,11 +194,13 @@ def WriteFile(
             charge = paths_charge[i][j]
             if j != len(paths_rt[i]) - 1:
                 stop = paths_rt[i][j + 1]
-                dur = stop - start
+                dur = stop - start - delay
                 intensity = 0
                 mid = (stop + start) / 2.0
                 if (start, stop) in edge_intensity_dic.keys():
                     intensity = edge_intensity_dic[(start, stop)]
+                    if dur < min_time - 1e-4 or dur > max_time + 1e-4:
+                        logging.error("dur should not be < min scan time or > max scan time: %.4f", dur)
                     n = text_file.write(
                         "{:.4f}".format(mz_index)
                         + " "
@@ -203,7 +210,7 @@ def WriteFile(
                         + " "
                         + "{:.4f}".format(start)
                         + " "
-                        + "{:.4f}".format(stop - delta)
+                        + "{:.4f}".format(stop - delay)
                         + " "
                         + "{:.4f}".format(intensity)
                         + " "

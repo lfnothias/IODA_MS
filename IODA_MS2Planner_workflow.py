@@ -119,8 +119,8 @@ def get_all_file_paths(directory,output_zip_path):
     logger.info('All files zipped successfully!')
 
 # Run the MS2Planner workflow with baseline method
-def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, rt_margin:float):
-
+def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, delay:float, rt_margin:float):
+    
     output_dir = 'results_targeted_MS2Planner_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -186,14 +186,16 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('    Retention time window (min.) for binning target ions = ' +str(win_len))
     logger.info('    Isolation window (m/z) = ' +str(isolation))
-    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
+    logger.info('    Retention time margin (sec.) = ' +str(delay))
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('User-defined parameters for the output')
+    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
     logger.info('======')
 
     # Running the table processing
     logger.info('Running MS2Planner in Baseline mode ...')
-    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation)
+    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
     logger.info('======')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
@@ -209,9 +211,8 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
         raise
 
     logger.info('Preparing results ...')
-    transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
-    logger.info('Preparing results ...')
-    make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv', rt_margin, transient_time)
+    min_scan = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
+    make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv', rt_margin, min_scan)
     logger.info('======')
 
     logger.info('Cleaning and zipping workflow results files ...')
@@ -250,7 +251,7 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
 
 
 # Run the MS2Planner workflow with apex method
-def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delta:float, rt_margin:float):
+def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, intensity_accu:float, isolation:float, delay:float, min_scan:float, max_scan:float, rt_margin:float, transient_time:float):
 
     output_dir = 'results_targeted_MS2Planner_apex'
     os.system('rm -r '+output_dir)
@@ -317,15 +318,20 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('    Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
     logger.info('    Isolation window (m/z) = ' +str(isolation))
-    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
-    logger.info('    Delay between targeted MS2 scans (sec)= ' +str(delta))
+    logger.info('    Delay between targeted MS2 scans (sec.)= ' +str(delay))
+    logger.info('    Minimum MS2 scan duty cycle (sec.)= ' +str(min_scan))
+    logger.info('    Maximum MS2 scan duty cycle (sec.)= ' +str(max_scan))
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('User-defined parameters for the output')
+    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
+    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (secs) = ' + str(transient_time))
+
     logger.info('======')
 
     # Running the table processing
     logger.info('Running MS2Planner in Apex mode ...')
-    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delta)
+    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delay, min_scan, max_scan):
     logger.info('======')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
@@ -340,7 +346,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     except:
         raise
 
-    transient_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
+    scan_time = 0 #Hardcoded to keep the same def function with Curve mode. Parameter only used in Curve mode.
     logger.info('Preparing results ...')
     make_MS2Planner_targeted_lists_from_table(output_filename[:-4]+'_MS2Planner.csv',rt_margin, transient_time)
     logger.info('======')
@@ -381,7 +387,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
 
 
 # Run the MS2Planner workflow with apex method
-def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float, rt_margin:float, transient_time:float):
+def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, delay:float, min_scan:float, max_scan:float, rt_margin:float, transient_time:float):
 
     output_dir = 'results_targeted_MS2Planner_curve'
     os.system('rm -r '+output_dir)
@@ -466,26 +472,29 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
      
             
     # User-defined parameters
-    logger.info('User-defined parameters')
+    logger.info('User-defined parameters for MS2Planner')
     ratio = intensity_ratio
     logger.info('    Ratio between sample/blank for ion filtering = ' + str(ratio))
     min_intensity = intensity_threshold
     logger.info('    Minimum intensity for ion filtering in sample = '+ str("{:.2e}".format(min_intensity)))
     logger.info('    Precursor ion intensity to accumulate in the MS2 scan = ' +str("{:.2e}".format(intensity_accu)))
-    logger.info('    Transient time and overhead (ms) = '+str(transient_time))
     logger.info('    Input file for curve data : ' +str(input_filename_curve))
-    logger.info('    Retention time margin (sec.) = ' +str(rt_margin))
-    logger.info('    Restriction parameter : ' +str(restriction))
-    logger.info('    Mass accuracy (m/z): ' +str(mz_accuracy))
-    logger.info('    Delay between targeted MS2 scans (sec)= ' +str(delta))
+    logger.info('    Restriction parameter : ' +str(rt_tolerance_curve))
+    logger.info('    Mass accuracy (m/z): ' +str(mz_tolerance_curve))
+    logger.info('    Delay between targeted MS2 scans (sec.)= ' +str(delay))
+    logger.info('    Minimum MS2 scan duty cycle (sec.)= ' +str(min_scan))
+    logger.info('    Maximum MS2 scan duty cycle (sec.)= ' +str(max_scan))
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('User-defined parameters for the output')
+    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
+    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (secs) = ' + str(transient_time))
     logger.info('======')
 
     #Running MS2Planner
     logger.info('Running MS2Planner in Curve mode ...')
     try:
-        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, restriction, mz_accuracy, delta)
+        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, delay, min_scan, max_scan):
     except:
         raise
 
@@ -564,7 +573,6 @@ def MS2Planner_format(input_filename: str, output_filename: str, rows_to_skip:in
     #Make a dataframe
     target_table = pd.DataFrame(target_list)
     target_table = target_table.rename(columns={0: 'Mass [m/z]',1: 'mz_isolation',2: 'duration',3: 'rt_start',4: 'rt_end', 5: 'intensity', 6: 'rt_apex',7: 'charge'})
-    #############################target_table = target_table[target_table['intensity'] > 0]
 
     logger.info('Valid target ions in path'+str(rows_to_skip+1)+' = '+str(target_table.shape[0]))
 
@@ -588,7 +596,7 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
                 #Format for MaxQuant.Live targeted experiment
                 logger.info('Formatting for MaxQuant.Live ...')
                 generate_MQL_list_from_MS2Planner(output_filename, output_filename[:-4]+'_MQL.txt',rt_margin)
-                generate_MQL_list_from_MS2Planner_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt',transient_time)
+                generate_MQL_list_from_MS2Planner_MaxIT(output_filename, output_filename[:-4]+'_MQL_variableMaxIT.txt', transient_time)
                 logger.info('=======')
             except:
                 raise
@@ -610,18 +618,18 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
         pass
 
 
-def run_MS2Planner_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float):
-    cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation))
+def run_MS2Planner_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float, delay:float):
+    cmd_baseline = ('python3 path_finder.py baseline '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -win_len '+str(win_len)+' -isolation '+str(isolation)+' -delay '+str(delay))
     logger.info('Command: '+cmd_baseline)
     os.system(cmd_baseline)
 
-def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delta:float):
-    cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delta '+str(delta))
+def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, intensity_accu:float, isolation:float, delay:float, min_scan:float, max_scan:float):
+    cmd_apex = ('python3 path_finder.py apex '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -intensity_accu '+str(intensity_accu)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan))
     logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
 
-def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, restriction:float, mz_accuracy:float, delta:float):
-    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delta '+str(delta))
+def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, delay:float, min_scan:float, max_scan:float):
+    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(restriction)+' '+str(mz_accuracy)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan))
     logger.info('Command: '+cmd_curve)
     logger.info('MS2Planner in Curve mode can take up to 10 minutes to complete ... please wait')
     try:

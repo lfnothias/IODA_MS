@@ -8,3 +8,7 @@ jupyter_contrib_nbextensions
 xvfbwrapper
 logzero
 scipy
+certifi==2020.6.20
+scipy==1.5.2
+wincertstore==0.2
+

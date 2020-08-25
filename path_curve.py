@@ -1,7 +1,11 @@
+import logging
 import operator
+import sys
 
 import numpy as np
 from scipy.stats import multivariate_normal
+
+logger = logging.getLogger("path_finder.curve")
 
 
 def CentroidSampleControl(centers, intensity_threshold, intensity_ratio):
@@ -104,7 +108,7 @@ class Cluster:
 
     def addNode(self, node):
         if node.cluster != self.num:
-            print("Node into different cluster")
+            logger.error("Node into different cluster")
         self.nodes.append(node)
         self.intensity += node.intensity
 
@@ -119,9 +123,9 @@ class Node:
 
     def addRawSig(self, rawSig, cluster):
         if rawSig[0] != self.rt:
-            print("Different rt, should not merge into same node")
+            logger.error("Different rt, should not merge into same node")
         if cluster != self.cluster:
-            print("Different cluster, should not merger into same node")
+            logger.error("Different cluster, should not merger into same node")
 
         if rawSig[1] < self.mz[0]:
             self.mz[0] = rawSig[1]
@@ -234,7 +238,7 @@ def ClusterCreate(nodes, num_centers, int_max):
     return ret
 
 
-def EdgeCreate(clusters, int_max, num_node, delta):
+def EdgeCreate(clusters, int_max, num_node, delay, min_scan, max_scan):
     edges = []
     # create weight 1 edges
     for i in clusters:
@@ -242,7 +246,11 @@ def EdgeCreate(clusters, int_max, num_node, delta):
             sum_int = 0
             for k in range(j, len(i.nodes)):
                 sum_int += i.nodes[k].intensity
-                if sum_int > int_max:
+                if (
+                    sum_int > int_max
+                    and i.nodes[k].rt > i.nodes[j].rt + min_scan
+                    and i.nodes[k].rt < i.nodes[j].rt + max_scan
+                ):
                     edges.append([i.nodes[j].num, i.nodes[k].num, -1])
                     break
 
@@ -253,11 +261,10 @@ def EdgeCreate(clusters, int_max, num_node, delta):
             edges.append([j.num + num_node + 1, num_node + 1, 0])  # add end node
             for k in range(i + 1, len(clusters)):
                 for m in clusters[k].nodes:
-                    if m.rt > j.rt + delta:
+                    if m.rt > j.rt + delay:
                         edges.append([j.num, m.num, 0])
-                if clusters[k].nodes[0].rt > j.rt + delta:
+                if clusters[k].nodes[0].rt > j.rt + delay:
                     break
-
     return edges
 
 
@@ -300,14 +307,14 @@ def IndexHis(path, num_node, nodes, center_intensity_rt_charge, node_cluster):
         if i[1] > num_node:
             i[1] -= num_node
         if node_cluster[i[0]] != node_cluster[i[1]]:
-            print("Not collecting same sample")
+            logger.error("Not collecting same sample")
         intensity_rt_charge = center_intensity_rt_charge[node_cluster[i[0]]]
         index_his.append(
             [
-                (nodes[i[0]].rt, nodes[i[1]].rt),
+                (nodes[i[0]-1].rt, nodes[i[1]-1].rt),
                 (
-                    min(nodes[i[0]].mz[0], nodes[i[1]].mz[0]),
-                    max(nodes[i[0]].mz[1], nodes[i[1]].mz[1]),
+                    min(nodes[i[0]-1].mz[0], nodes[i[1]-1].mz[0]),
+                    max(nodes[i[0]-1].mz[1], nodes[i[1]-1].mz[1]),
                 ),
                 intensity_rt_charge[0],
                 intensity_rt_charge[1],
@@ -329,7 +336,7 @@ def ClusterRemove(path, num_node, node_cluster, clusters):
     return newClusters
 
 
-def WriteFile(file_name, indice_his, restriction, delta):
+def WriteFile(file_name, indice_his, restriction, delay, isolation, min_time, max_time):
     restriction_rt = restriction[0]
     restriction_mz = restriction[1]
     text_file = open(file_name, "wt")
@@ -337,23 +344,17 @@ def WriteFile(file_name, indice_his, restriction, delta):
         n = text_file.write("path" + str(i) + "\t")
         for j in range(len(indice_his[i])):
             mz_index = (indice_his[i][j][1][0] + indice_his[i][j][1][1]) / 2.0
-            iso = indice_his[i][j][1][1] - mz_index
-            if iso < 1e-4:
-                iso = restriction_mz / 2
+            iso = max(indice_his[i][j][1][1] - mz_index, isolation)
             start = indice_his[i][j][0][0]
             end = indice_his[i][j][0][1]
             intensity = indice_his[i][j][2]
             rt = indice_his[i][j][3]
             charge = indice_his[i][j][4]
-            if end == start and j != len(indice_his[i]) - 1:
-                end = min(
-                    restriction_rt * 0.5 + start,
-                    indice_his[i][j + 1][0][0] - delta,
-                    1 + start,
-                )
-            elif j == len(indice_his[i]) - 1 and end == start:
-                end = min(restriction_rt * 0.5 + start, 1 + start)
             dur = end - start
+            if j != len(indice_his[i])-1 and end > indice_his[i][j+1][0][0] - delay:
+                logger.error("Not enough time for delay. start: %.4f  end: %.4f", end, indice_his[i][j+1][0][0] - delay)
+            if dur < min_time or dur > max_time:
+                logger.error("Too long / short for scan period: dur %.4f", dur)
             n = text_file.write(
                 "{:.4f}".format(mz_index)
                 + " "
@@ -384,65 +385,85 @@ def PathGen(
     intensity_accu,
     restriction,
     num_path,
-    delta,
+    delay,
+    min_scan,
+    max_scan,
 ):
     n_iter = 2
-    Var_init = 2
-    Var_max = 2
+    Var_init = restriction[0]
+    Var_max = restriction[0]
 
-    data = np.genfromtxt(infile_raw, skip_header=12)
-    data = data[~np.isnan(data)]
-    data = data[np.nonzero(data)]
-    data = data.reshape(-1, 3)
-    centers = np.genfromtxt(infile_feature, delimiter=",", skip_header=1)
+    try:
+        data = np.genfromtxt(infile_raw, skip_header=12)
+        data = data[~np.isnan(data)]
+        data = data[np.nonzero(data)]
+        data = data.reshape(-1, 3)
+        centers = np.genfromtxt(infile_feature, delimiter=",", skip_header=1)
+    except:
+        logger.error("error in reading data from input file", exc_info=sys.exc_info())
+        sys.exit()
 
-    data = data[data[:, 1].argsort()]  # First sort doesn't need to be stable.
-    data = data[data[:, 0].argsort(kind="mergesort")]
-    centers = centers[centers[:, 0].argsort()]  # First sort doesn't need to be stable.
-    centers = centers[centers[:, 1].argsort(kind="mergesort")]
+    try:
+        data = data[data[:, 1].argsort()]  # First sort doesn't need to be stable.
+        data = data[data[:, 0].argsort(kind="mergesort")]
+        centers = centers[centers[:, 0].argsort()]  # First sort doesn't need to be stable.
+        centers = centers[centers[:, 1].argsort(kind="mergesort")]
+    except:
+        logger.error("error is sorting data", exc_info=sys.exc_info())
+        sys.exit()
 
-    print("=============")
-    print("File Read")
-    print("=============")
+    logger.info("=============")
+    logger.info("File Read")
+    logger.info("=============")
 
-    centroid_dic, num_center, center_intensity_rt_charge = CentroidSampleControl(
-        centers, intensity_threshold, intensity_ratio
-    )
-    labels = GMMCluster(data, centroid_dic, restriction, True)
-    data_clean = data[labels != -1]
-    labels_clustered = GMM(
-        data_clean[:, :2], centers, centroid_dic, n_iter, Var_init, Var_max
-    )
-
-    print("Begin Finding Path")
-    print("=============")
-    indice_his = []
-    nodes, num_node, node_cluster = NodeCreate(data_clean, labels_clustered)
-    clusters = ClusterCreate(nodes, num_center, intensity_threshold)
-    for i in range(num_path):
-        edges = EdgeCreate(clusters, intensity_threshold, num_node, delta)
-        edges = AddPrimeNode(num_node, edges, node_cluster)
-        g = Graph(num_node * 2 + 2, node_cluster)
-        for j in edges:
-            g.addEdge(j)
-        s = 0
-        t = num_node + 1
-        dist, ancestors = g.shortestPath(s, t)
-        if dist[num_node + 1] >= 0:
-            # print("All collected")
-            break
-        # print(
-        #     "[%d/%d]: features: %d, rest: %d"
-        #     % (i + 1, num_path, -dist[num_node + 1], len(clusters))
-        # )
-        path = PathExtraction(dist, ancestors, num_node + 1)
-        index_his = IndexHis(
-            path, num_node + 1, nodes, center_intensity_rt_charge, node_cluster
+    try:
+        centroid_dic, num_center, center_intensity_rt_charge = CentroidSampleControl(
+            centers, intensity_threshold, intensity_ratio
         )
-        indice_his.append(index_his)
-        clusters = ClusterRemove(path, num_node, node_cluster, clusters)
+        labels = GMMCluster(data, centroid_dic, restriction, True)
+        data_clean = data[labels != -1]
+        labels_clustered = GMM(
+            data_clean[:, :2], centers, centroid_dic, n_iter, Var_init, Var_max
+        )
+    except:
+        logger.error("error in clustering data", exc_info=sys.exc_info())
+        sys.exit()
 
-    print("Path Generated")
-    print("=============")
+    logger.info("Begin Finding Path")
+    logger.info("=============")
+    indice_his = []
+    try:
+        nodes, num_node, node_cluster = NodeCreate(data_clean, labels_clustered)
+        clusters = ClusterCreate(nodes, num_center, intensity_threshold)
+    except:
+        logger.error("error in creating nodes and clusters", exc_info=sys.exc_info())
+        sys.exit()
+    try:
+        for i in range(num_path):
+            edges = EdgeCreate(
+                clusters, intensity_threshold, num_node, delay, min_scan, max_scan
+            )
+            edges = AddPrimeNode(num_node, edges, node_cluster)
+            g = Graph(num_node * 2 + 2, node_cluster)
+            for j in edges:
+                g.addEdge(j)
+            s = 0
+            t = num_node + 1
+            dist, ancestors = g.shortestPath(s, t)
+            if dist[num_node + 1] >= 0:
+                break
+            logger.info(
+                "[%d/%d]: features: %d, rest: %d"
+                % (i + 1, num_path, -dist[num_node + 1], len(clusters))
+            )
+            path = PathExtraction(dist, ancestors, num_node + 1)
+            index_his = IndexHis(
+                path, num_node + 1, nodes, center_intensity_rt_charge, node_cluster
+            )
+            indice_his.append(index_his)
+            clusters = ClusterRemove(path, num_node, node_cluster, clusters)
+    except:
+        logger.error("error in finding paths", exc_info=sys.exc_info())
+        sys.exit()
 
     return indice_his

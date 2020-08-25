@@ -1,8 +1,12 @@
+import logging
+import sys
+
 import numpy as np
 
+logger = logging.getLogger('path_finder.baseline')
 
 def ReadFile(infile_name):
-    data = my_data = np.genfromtxt(infile_name, delimiter=",", skip_header=1)
+    data = np.genfromtxt(infile_name, delimiter=",", skip_header=1)
     return data
 
 
@@ -10,17 +14,17 @@ def DataFilter(data, intensity, intensity_ratio):
     data = data[data[:, 4] != 0]  # remove samples with intensity = 0
     data = data[data[:, 4] >= intensity]  # remove samples with intensity < given
     data = data[
-        data[:, 4] / (data[:, 3] + 1e-4) > intensity_ratio
+    data[:, 4] / (data[:, 3] + 1e-4) > intensity_ratio
     ]  # remove samples with intensity ratio < given
     return data
 
-
-def PathGen(data, window_len, num_path, iso):
+def PathGen(data, window_len, num_path, iso, delay):
+    window_len += delay
     start = min(data[:, 1])
     end = max(data[:, 1])
     path = []
     while start < end:
-        curr_end = start + float(window_len)
+        curr_end = start + window_len
         tmp_data = data[(data[:, 1] >= start) & (data[:, 1] < curr_end)]
         if len(tmp_data) != 0:
             ind = np.argsort(tmp_data[:, 4])
@@ -34,8 +38,8 @@ def PathGen(data, window_len, num_path, iso):
                         tmp_data[ind[i], 0],
                         iso,
                         window_len,
-                        start,
-                        curr_end,
+                        start + delay / 2,
+                        curr_end - delay / 2,
                         tmp_data[ind[i], 4],
                         tmp_data[ind[i], 1],
                         tmp_data[ind[i], 2],

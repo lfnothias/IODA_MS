@@ -1,4 +1,5 @@
 import argparse
+import logging
 import sys
 
 import numpy as np
@@ -10,7 +11,17 @@ import path_curve as curve
 # avoid "RecursionError: maximum recursion depth exceeded in comparison"
 sys.setrecursionlimit(10000)
 
-parser = argparse.ArgumentParser(description="Command line for Path Finder.")
+# set up log
+logger = logging.getLogger('path_finder')
+logger.setLevel(level=logging.INFO)
+# Handler
+handler = logging.FileHandler('path_finder.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+parser = argparse.ArgumentParser(description="Arguments for Path Finder.")
 
 parser.add_argument(
     "mode",
@@ -66,76 +77,153 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-delta",
+    "-delay",
     type=float,
     help="delay switching from feature to next feature (apex and curve mode only)",
 )
 
+parser.add_argument(
+    "-min_scan",
+    type=float,
+    help="minimum scan time required (apex and curve mode)",
+)
+
+parser.add_argument(
+    "-max_scan",
+    type=float,
+    help="maximum scan time required (apex and curve mode)",
+)
+
 args = parser.parse_args()
 
-mode = args.mode
-infile = args.input_filename
-outfile = args.outfile_name
-intensity = args.intensity
-intensity_ratio = args.intensity_ratio
-num_path = args.num_path
+try:
+    mode = args.mode
+    infile = args.input_filename
+    outfile = args.outfile_name
+    intensity = args.intensity
+    intensity_ratio = args.intensity_ratio
+    num_path = args.num_path
+    isolation = args.isolation # all
+    intensity_accu = args.intensity_accu # curve and apex mode
+    delay = args.delay # all
+    window_len = args.win_len # baseline mode
+    infile_raw = args.infile_raw # curve mode
+    restriction = args.restriction # curve mode
+    min_scan = args.min_scan # curve and apex mode
+    max_scan = args.max_scan # curve and apex mode
+except:
+    logger.error("error in parsing args", exc_info=sys.exc_info())
+    sys.exit()
 
 if mode == "apex":
-    isolation = args.isolation
-    intensity_accu = args.intensity_accu
-    intensity_accu = np.exp(np.log(intensity_accu) + 2.5)
-    delta = args.delta
-    data = apex.ReadFile(infile)
-    print("=============")
-    print("Apex mode begin")
-    print("=============")
-    print("File Read")
-    print("=============")
+    try:
+        intensity_accu = np.exp(np.log(intensity_accu) + 2.5)
+    except:
+        logger.error("intensity_accu argument is not valid", exc_info=sys.exc_info)
+        sys.exit()
+    if args.win_len is not None:
+        logger.warning("win_len should not be input for apex mode")
+    if args.infile_raw is not None:
+        logger.warning("infile_raw should not be input for apex mode")
+    if args.restriction is not None:
+        logger.warning("restriction should not be input for apex mode")
 
-    data = apex.DataFilter(data, intensity, intensity_ratio)
-    print("Begin Finding Path")
-    print("=============")
+    try:
+        data = apex.ReadFile(infile)
+    except:
+        logger.error("error in reading data", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("=============")
+    logger.info("Apex mode begin")
+    logger.info("=============")
+    logger.info("File Read")
+    logger.info("=============")
 
-    paths_rt, paths_mz, paths_charge, edge_intensity_dic = apex.PathGen(
-        data, intensity_accu, num_path, delta
-    )
-    print("Paths Generated")
-    print("=============")
+    try:
+        data = apex.DataFilter(data, intensity, intensity_ratio)
+    except:
+        logger.error("error in filtering data", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("Begin Finding Path")
+    logger.info("=============")
 
-    apex.WriteFile(outfile, paths_rt, paths_mz, paths_charge, edge_intensity_dic, isolation, delta)
-    print("File Written")
-    print("=============")
+    try:
+        paths_rt, paths_mz, paths_charge, edge_intensity_dic = apex.PathGen(
+            data, intensity_accu, num_path, delay, min_scan, max_scan
+        )
+    except:
+        logger.error("error in generating path", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("Paths Generated")
+    logger.info("=============")
+
+    try:
+        apex.WriteFile(outfile, paths_rt, paths_mz, paths_charge, edge_intensity_dic, isolation, delay, min_scan, max_scan)
+    except:
+        logger.error("error in generating path", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("File Written")
+    logger.info("=============")
 
 if mode == "baseline":
-    isolation = args.isolation
-    window_len = args.win_len
-    data = baseline.ReadFile(infile)
-    print("=============")
-    print("Baseline mode begin")
-    print("=============")
-    print("File Read")
-    print("=============")
+    if args.intensity_accu is not None:
+        logger.warning("intensity_accu should not be input for baseline mode")
+    if args.infile_raw is not None:
+        logger.warning("infile_raw should not be input for baseline mode")
+    if args.restriction is not None:
+        logger.warning("restriction should not be input for baseline mode")
+    if args.min_scan is not None:
+        logger.warning("min_scan should not be input for baseline mode")
+    if args.max_scan is not None:
+        logger.warning("max_scan should not be input for baseline mode")
 
-    data = baseline.DataFilter(data, intensity, intensity_ratio)
-    print("Begin Finding Path")
-    print("=============")
+    try:
+        data = baseline.ReadFile(infile)
+    except:
+        logger.error("error in reading data", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("=============")
+    logger.info("Baseline mode begin")
+    logger.info("=============")
+    logger.info("File Read")
+    logger.info("=============")
 
-    path = baseline.PathGen(data, window_len, num_path, isolation)
-    print("Paths Generated")
-    print("=============")
+    try:
+        data = baseline.DataFilter(data, intensity, intensity_ratio)
+    except:
+        logger.error("error in filtering data", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("Begin Finding Path")
+    logger.info("=============")
 
-    baseline.WriteFile(outfile, path)
-    print("File Written")
-    print("=============")
+    try:
+        path = baseline.PathGen(data, window_len, num_path, isolation, delay)
+    except:
+        logger.error("error in generating path", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("Paths Generated")
+    logger.info("=============")
+
+    try:
+        baseline.WriteFile(outfile, path)
+    except:
+        logger.error("error in generating path", exc_info=sys.exc_info())
+        sys.exit()
+    logger.info("File Written")
+    logger.info("=============")
 
 if mode == "curve":
-    intensity_accu = args.intensity_accu
-    intensity_accu = np.exp(np.log(intensity_accu) + 2.5)
-    infile_raw = args.infile_raw
-    restriction = args.restriction
-    delta = args.delta
-    print("=============")
-    print("Curve mode begin")
+    restriction[1] = max(restriction[1], isolation)
+    try:
+        intensity_accu = np.exp(np.log(intensity_accu) + 2.5)
+    except:
+        logger.error("intensity_accu argument is not valid", exc_info=sys.exc_info)
+        sys.exit()
+    if args.win_len is not None:
+        logger.warning("win_len should not be input for apex mode")
+    logger.info("=============")
+    logger.info("Curve mode begin")
+    logger.info("restriction: (%.4f, %.4f)", restriction[0], restriction[1])
     indice_his = curve.PathGen(
         infile_raw,
         infile,
@@ -144,8 +232,14 @@ if mode == "curve":
         intensity_accu,
         restriction,
         num_path,
-        delta,
+        delay,
+        min_scan,
+        max_scan,
     )
-    curve.WriteFile(outfile, indice_his, restriction, delta)
-    print("File Written")
-    print("=============")
+    try:
+        curve.WriteFile(outfile, indice_his, restriction, delay, isolation, min_scan, max_scan)
+    except:
+        logger.error("error in writing to output", exc_info=sys.exc_info())
+        exit()
+    logger.info("File Written")
+    logger.info("=============")
