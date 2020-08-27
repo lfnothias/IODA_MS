@@ -5,13 +5,15 @@ RUN apt-get update -y
 RUN apt-get install -y python3-pip python3 build-essential
 
 # Installing Requirements
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
 RUN pip3 install notebook
 RUN pip3 install pandas
 RUN pip3 install scipy
 RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install logzero
-RUN pip3 install -r requirements.txt
 
 # Copying files
 COPY . .
