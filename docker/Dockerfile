@@ -14,6 +14,7 @@ RUN pip3 install scipy
 RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install logzero
+RUN pip3 install xvfbwrapper
 
 # Installing Virtual Frame Buffer
 RUN apt-get install -y xvfb
