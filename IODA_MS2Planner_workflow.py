@@ -195,9 +195,27 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
 
     # Running the table processing
     logger.info('Running MS2Planner in Baseline mode ...')
-    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
+    #Clean up the log
+    try:
+        f = open('path_finder.log', 'w')
+        f.truncate(0)
+        f.close()
+    except:
+        pass
+    try:
+        run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
+    except:
+        logger.info('There was an issue with the MS2Planner ! See the log below.')
+        f = open('path_finder.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
+        raise
     logger.info('======')
 
+    f = open('path_finder.log', 'r')
+    file_contents = f.read()
+    logger.info(file_contents)
+        
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
         if Test_MS2Planner_Output.exists ():
@@ -331,7 +349,28 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
 
     # Running the table processing
     logger.info('Running MS2Planner in Apex mode ...')
-    run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delay, min_scan, max_scan)
+    #Clean up the log
+    try:
+        f = open('path_finder.log', 'w')
+        f.truncate(0)
+        f.close()
+    except:
+        pass
+    try:
+        run_MS2Planner_apex(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, intensity_accu, isolation, delay, min_scan, max_scan)
+    except:
+        logger.info('There was an issue with the MS2Planner ! See the log below.')
+        f = open('path_finder.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
+        raise
+        
+    logger.info('======')
+
+    f = open('path_finder.log', 'r')
+    file_contents = f.read()
+    logger.info(file_contents)
+    
     logger.info('======')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
@@ -394,6 +433,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     os.system('rm -r download_'+output_dir)
     os.system('mkdir '+output_dir)
     os.system('mkdir download_'+output_dir)
+    
     logfile(output_dir+'/logfile.txt')
 
     logger.info('STARTING THE MS2Planner WORKFLOW')
@@ -494,10 +534,29 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
 
     #Running MS2Planner
     logger.info('Running MS2Planner in Curve mode ...')
+    #Clean up the log
+    #Clean up the log
+    try:
+        f = open('path_finder.log', 'w')
+        f.truncate(0)
+        f.close()
+    except:
+        pass
+    
     try:
         run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, isolation, delay, min_scan, max_scan)
     except:
+        logger.info('There was an issue with the MS2Planner ! See the log below.')
+        f = open('path_finder.log', 'r')
+        file_contents = f.read()
+        logger.info(file_contents)
         raise
+        
+    logger.info('======')
+
+    f = open('path_finder.log', 'r')
+    file_contents = f.read()
+    logger.info(file_contents)
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
