@@ -15,6 +15,9 @@ RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install logzero
 
+# Installing Virtual Frame Buffer
+RUN apt-get install -y xvfb
+
 # Copying files
 COPY . .
 CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter notebook --notebook-dir=/ --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"]
