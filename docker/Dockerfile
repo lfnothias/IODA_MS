@@ -18,6 +18,7 @@ RUN pip3 install xvfbwrapper
 
 # Installing Virtual Frame Buffer
 RUN apt-get install -y xvfb
+RUN apt-get install -y wget
 
 # Copying files
 COPY . .
