@@ -22,4 +22,4 @@ RUN apt-get install -y wget
 
 # Copying files
 COPY . .
-CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter notebook --notebook-dir=/ --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"]
+CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter lab --notebook-dir=/ --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"]
