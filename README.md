@@ -36,4 +36,4 @@ Run the following:
 
 `make run_standalone_notebook`
 
-Access the notebook at `localhost:8889`
+Access the notebook at `localhost:9000`
