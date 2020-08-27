@@ -27,3 +27,13 @@ Unit tests are run using github actions. To run them manually:
 ```make test-unit```
 
 The actual tests are in the ```test``` directory.
+
+## Running the Docker in Linux
+
+Run the following:
+
+`make build-standalone`
+
+`make run_standalone_notebook`
+
+Access the notebook at `localhost:8889`
