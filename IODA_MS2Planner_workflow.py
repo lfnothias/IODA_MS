@@ -671,11 +671,11 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
     try:
         make_plot_MS2Planner1(table_list_MS2Planner,output_dir)
         make_plot_MS2Planner2(table_list_MS2Planner,output_dir)
-        make_plot_MS2Planner4(table_list_MS2Planner,output_dir)
     except:
         raise
     try:
         make_plot_MS2Planner3(table_list_MS2Planner,output_dir)
+        make_plot_MS2Planner4(table_list_MS2Planner,output_dir)
     except:
         pass
 
