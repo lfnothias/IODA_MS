@@ -7,9 +7,8 @@ build-standalone:
 run_standalone:
 	docker run -p 9000:8888 --rm -it ioda-standalone /bin/bash
 
-run_standalone_noteook:
-	docker run -p 9000:8888 -it ioda-standalone 
-
+run_standalone_notebook:
+	docker run -p 9000:8888 -it ioda-standalone
 
 test-unit:
 	act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04 -b
