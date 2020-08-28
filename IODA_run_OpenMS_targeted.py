@@ -192,7 +192,7 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
     logger.info('NOW CONTINUE WITH THE REST OF THE IODA-targeted WORKFLOW')
 
 
-def MS2Planner_Curve_OpenMS(sample_mzML:str,ppm_tolerance:float,noise_level:float):
+def MS2Planner_Curve_OpenMS(sample_mzML:str):
     # Test samples
         #source_mzML1 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_Blank_MS1_2uL.mzML"
         #source_mzML2 = "https://raw.githubusercontent.com/lfnothias/IODA_MS/master/tests/Euphorbia/Targeted/toppas_input/Euphorbia_rogers_latex_latex_MS1_2uL.mzML"

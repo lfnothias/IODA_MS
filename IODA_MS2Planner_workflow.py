@@ -121,8 +121,6 @@ def get_all_file_paths(directory,output_zip_path):
 # Run the MS2Planner workflow with baseline method
 def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, delay:float, rt_margin:float):
 
-    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
-
     output_dir = 'results_targeted_MS2Planner_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -217,7 +215,6 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     f = open('path_finder.log', 'r')
     file_contents = f.read()
     logger.info(file_contents)
-    os.system('cp path_finder.log '+output_dir+'/log/path_finder_baseline.log')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
@@ -259,6 +256,7 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_baseline.log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
@@ -373,7 +371,6 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     f = open('path_finder.log', 'r')
     file_contents = f.read()
     logger.info(file_contents)
-    os.system('cp path_finder.log '+output_dir+'/log/path_finder_apex.log')
 
     logger.info('======')
 
@@ -417,6 +414,7 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_apex.log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
@@ -605,6 +603,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     # mv
     os.system('mv '+output_dir+'/*scatter_plot* '+output_dir+'/plots')
     os.system('mv '+output_dir+'/logfile.txt '+output_dir+'/log')
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_curve.log')
     os.system('mv '+output_dir+'/*.csv '+output_dir+'/intermediate_files')
     os.system('mv '+output_dir+'/*.txt '+output_dir+'/intermediate_files')
 
@@ -695,7 +694,7 @@ def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_thres
     os.system(cmd_apex)
 
 def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float, cluster:str):
-    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(rt_tolerance_curve)+' '+str(mz_tolerance_curve)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan)+' -cluster'+str(cluster))
+    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(rt_tolerance_curve)+' '+str(mz_tolerance_curve)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan)+' -cluster '+str(cluster))
     logger.info('Command: '+cmd_curve)
     logger.info('MS2Planner in Curve mode can take up to 10 minutes to complete ... please wait')
     try:
