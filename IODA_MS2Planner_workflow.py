@@ -190,7 +190,7 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('User-defined parameters for the output')
-    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
+    logger.info('    Retention time margin for target ion list (sec. = ' + str(rt_margin))
     logger.info('======')
 
     # Running the table processing
@@ -343,8 +343,8 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('User-defined parameters for the output')
-    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
-    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (secs) = ' + str(transient_time))
+    logger.info('    Retention time margin for target ion list (sec. = ' + str(rt_margin))
+    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (msec.) = ' + str(transient_time))
 
     logger.info('======')
 
@@ -531,8 +531,8 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
     logger.info('    Mode for the curve mode: '+str(cluster))
     logger.info('User-defined parameters for the output')
-    logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
-    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (secs) = ' + str(transient_time))
+    logger.info('    Retention time margin for target ion list (sec.) = ' + str(rt_margin))
+    logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (msec.) = ' + str(transient_time))
     logger.info('======')
 
     #Running MS2Planner
