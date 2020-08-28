@@ -22,6 +22,8 @@ def PathGen(data, window_len, num_path, iso, delay):
     window_len += delay
     start = min(data[:, 1])
     end = max(data[:, 1])
+    total_features = data.shape[0]
+    path_features = [0] * num_path
     path = []
     while start < end:
         curr_end = start + window_len
@@ -45,14 +47,22 @@ def PathGen(data, window_len, num_path, iso, delay):
                         tmp_data[ind[i], 2],
                     )
                 )
+                path_features[i] += 1
             path.append(tmp)
         start = curr_end
+    
+    for i in range(num_path):
+        total_features -= path_features[i]
+        logger.info(
+            "[%d/%d]: features: %d, rest: %d"
+            % (i + 1, num_path, path_features[i], total_features)
+        )
     return path
 
 
-def WriteFile(outfile_name, path):
+def WriteFile(outfile_name, path, num_path):
     text_file = open(outfile_name, "wt")
-    for i in range(len(path[0])):
+    for i in range(num_path):
         n = text_file.write("path" + str(i) + "\t")
         for j in range(len(path)):
             if i > len(path[j]) - 1:

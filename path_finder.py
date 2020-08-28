@@ -94,6 +94,12 @@ parser.add_argument(
     help="maximum scan time required (apex and curve mode)",
 )
 
+parser.add_argument(
+    "-cluster",
+    type=str,
+    help="maximum scan time required (apex and curve mode)",
+)
+
 args = parser.parse_args()
 
 try:
@@ -111,6 +117,7 @@ try:
     restriction = args.restriction # curve mode
     min_scan = args.min_scan # curve and apex mode
     max_scan = args.max_scan # curve and apex mode
+    cluster_mode = args.cluster # curve mode
 except:
     logger.error("error in parsing args", exc_info=sys.exc_info())
     sys.exit()
@@ -121,11 +128,13 @@ if mode == "apex":
     except:
         logger.error("intensity_accu argument is not valid", exc_info=sys.exc_info)
         sys.exit()
-    if args.win_len is not None:
+    if window_len is not None:
         logger.warning("win_len should not be input for apex mode")
-    if args.infile_raw is not None:
+    if infile_raw is not None:
         logger.warning("infile_raw should not be input for apex mode")
-    if args.restriction is not None:
+    if restriction is not None:
+        logger.warning("restriction should not be input for apex mode")
+    if cluster_mode is not None:
         logger.warning("restriction should not be input for apex mode")
 
     try:
@@ -166,15 +175,15 @@ if mode == "apex":
     logger.info("=============")
 
 if mode == "baseline":
-    if args.intensity_accu is not None:
+    if intensity_accu is not None:
         logger.warning("intensity_accu should not be input for baseline mode")
-    if args.infile_raw is not None:
+    if infile_raw is not None:
         logger.warning("infile_raw should not be input for baseline mode")
-    if args.restriction is not None:
+    if restriction is not None:
         logger.warning("restriction should not be input for baseline mode")
-    if args.min_scan is not None:
+    if min_scan is not None:
         logger.warning("min_scan should not be input for baseline mode")
-    if args.max_scan is not None:
+    if max_scan is not None:
         logger.warning("max_scan should not be input for baseline mode")
 
     try:
@@ -205,7 +214,7 @@ if mode == "baseline":
     logger.info("=============")
 
     try:
-        baseline.WriteFile(outfile, path)
+        baseline.WriteFile(outfile, path, num_path)
     except:
         logger.error("error in generating path", exc_info=sys.exc_info())
         sys.exit()
@@ -213,14 +222,14 @@ if mode == "baseline":
     logger.info("=============")
 
 if mode == "curve":
-    restriction[1] = max(restriction[1], isolation)
     try:
         intensity_accu = np.exp(np.log(intensity_accu) + 2.5)
     except:
         logger.error("intensity_accu argument is not valid", exc_info=sys.exc_info)
         sys.exit()
-    if args.win_len is not None:
+    if window_len is not None:
         logger.warning("win_len should not be input for apex mode")
+
     logger.info("=============")
     logger.info("Curve mode begin")
     logger.info("restriction: (%.4f, %.4f)", restriction[0], restriction[1])
@@ -235,6 +244,7 @@ if mode == "curve":
         delay,
         min_scan,
         max_scan,
+        cluster_mode,
     )
     try:
         curve.WriteFile(outfile, indice_his, restriction, delay, isolation, min_scan, max_scan)

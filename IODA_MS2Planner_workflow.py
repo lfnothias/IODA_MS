@@ -120,9 +120,9 @@ def get_all_file_paths(directory,output_zip_path):
 
 # Run the MS2Planner workflow with baseline method
 def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, delay:float, rt_margin:float):
-    
+
     run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
-        
+
     output_dir = 'results_targeted_MS2Planner_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -140,7 +140,7 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
         mzTab_file = os.listdir("TOPPAS_Workflow/toppas_output/TOPPAS_out/Targeted_MzTab/")[0]
         input_filename = path_input_folder+mzTab_file
     else:
-        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")  
+        logger.info("the input_filename variable should be a valid path/download link or must be: 'OpenMS_generated', when using the OpenMS workflow online")
 
     now = datetime.datetime.now()
     logger.info(now)
@@ -217,7 +217,8 @@ def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensi
     f = open('path_finder.log', 'r')
     file_contents = f.read()
     logger.info(file_contents)
-        
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_baseline.log')
+
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
         if Test_MS2Planner_Output.exists ():
@@ -366,13 +367,14 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
         file_contents = f.read()
         logger.info(file_contents)
         raise
-        
+
     logger.info('======')
 
     f = open('path_finder.log', 'r')
     file_contents = f.read()
     logger.info(file_contents)
-    
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_apex.log')
+
     logger.info('======')
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
@@ -428,14 +430,14 @@ def run_MS2Planner_apex_from_mzTab(input_filename:int, num_path:int, intensity_r
 
 
 # Run the MS2Planner workflow with apex method
-def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float, rt_margin:float, transient_time:float):
+def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, input_filename_curve:int, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float, cluster:str, rt_margin:float, transient_time:float):
 
     output_dir = 'results_targeted_MS2Planner_curve'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
     os.system('mkdir '+output_dir)
     os.system('mkdir download_'+output_dir)
-    
+
     logfile(output_dir+'/logfile.txt')
 
     logger.info('STARTING THE MS2Planner WORKFLOW')
@@ -482,7 +484,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
             logger.info(mzTab_curve)
             if mzTab_curve.exists ():
                 logger.info("mzTab for the Curve mode found in the OpenMS folder at:")
-                logger.info(mzTab_curve)          
+                logger.info(mzTab_curve)
         else:
             mzTab_curve = pathlib.Path(input_filename_curve)
             if mzTab_curve.exists ():
@@ -496,7 +498,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     except:
         raise
 
-        
+
     # Convert the mzTab into a Table
     logger.info('======')
     logger.info('Converting mzTab to intermediate table format ...')
@@ -511,8 +513,8 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('Assumed blank filename: ' +str(blank_samplename))
     logger.info('Sample for the Curve mode: ' +str(mzTab_curve))
     logger.info('======')
-     
-            
+
+
     # User-defined parameters
     logger.info('User-defined parameters for MS2Planner')
     ratio = intensity_ratio
@@ -529,6 +531,7 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
     logger.info('    Maximum MS2 scan duty cycle (sec.)= ' +str(max_scan))
     experiements = num_path
     logger.info('    Number of iterative experiment(s) = ' + str(experiements))
+    logger.info('    Mode for the curve mode: '+str(cluster))
     logger.info('User-defined parameters for the output')
     logger.info('    Retention time margin for target ion list (secs.) = ' + str(rt_margin))
     logger.info('    Orbitrap transient + overhead time for MaxQuant.Live (secs) = ' + str(transient_time))
@@ -544,21 +547,23 @@ def run_MS2Planner_curve_from_mzTab(input_filename:int, num_path:int, intensity_
         f.close()
     except:
         pass
-    
+
     try:
-        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, isolation, delay, min_scan, max_scan)
+        run_MS2Planner_curve(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, mzTab_curve, intensity_accu, rt_tolerance_curve, mz_tolerance_curve, isolation, delay, min_scan, max_scan, cluster)
     except:
         logger.info('There was an issue with the MS2Planner ! See the log below.')
         f = open('path_finder.log', 'r')
         file_contents = f.read()
         logger.info(file_contents)
         raise
-        
+
     logger.info('======')
 
     f = open('path_finder.log', 'r')
     file_contents = f.read()
     logger.info(file_contents)
+    os.system('cp path_finder.log '+output_dir+'/log/path_finder_curve.log')
+
 
     Test_MS2Planner_Output = pathlib.Path(output_filename[:-4]+'_MS2Planner.csv')
     try:
@@ -669,7 +674,7 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
 
     output_dir = output_filename.split('/', 10)[0]
     logger.info(output_dir)
-    
+
     try:
         make_plot_MS2Planner1(table_list_MS2Planner,output_dir)
         make_plot_MS2Planner2(table_list_MS2Planner,output_dir)
@@ -689,8 +694,8 @@ def run_MS2Planner_apex(input_filename:str, output_filename:str, intensity_thres
     logger.info('Command: '+cmd_apex)
     os.system(cmd_apex)
 
-def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float):
-    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(rt_tolerance_curve)+' '+str(mz_tolerance_curve)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan))
+def run_MS2Planner_curve(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, input_filename_curve:str, intensity_accu:float, rt_tolerance_curve:float, mz_tolerance_curve:float, isolation:float, delay:float, min_scan:float, max_scan:float, cluster:str):
+    cmd_curve = ('python3 path_finder.py curve '+input_filename+' '+output_filename+' '+str(intensity_threshold)+' '+str(intensity_ratio)+' '+str(num_path)+' -infile_raw '+str(input_filename_curve)+' -intensity_accu '+str(intensity_accu)+' -restriction '+str(rt_tolerance_curve)+' '+str(mz_tolerance_curve)+' -isolation '+str(isolation)+' -delay '+str(delay)+' -min_scan '+str(min_scan)+' -max_scan '+str(max_scan)+' -cluster'+str(cluster))
     logger.info('Command: '+cmd_curve)
     logger.info('MS2Planner in Curve mode can take up to 10 minutes to complete ... please wait')
     try:
@@ -851,12 +856,12 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
 def make_plot_MS2Planner4(table_list_MS2Planner, output_dir):
     color_list =['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
     color_list = color_list + color_list + color_list
-    
+
     if len(table_list_MS2Planner) == 1:
         frame = pd.read_csv(table_list_MS2Planner[0])
         frame.head(5)
         plt.hist(frame['duration'], 10, histtype='bar', alpha=1, linewidth=0.1, color = color_list[0], label= 'Inj. 1')
-            
+
     if len(table_list_MS2Planner) >= 2:
         lenght = len(table_list_MS2Planner)
         label = []
@@ -868,7 +873,7 @@ def make_plot_MS2Planner4(table_list_MS2Planner, output_dir):
             frame = pd.read_csv(frame)
             number = number + 1
             axs[number].hist(frame['duration'], 100, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
-        
+
         #plt.scatter(frame['duration'], frame['intensity'],marker = "o",s = 0.5, alpha=0.5)
     #plt.yscale('log')
     plt.xlabel('Scan time duration (seconds)',size = 8,wrap=True)

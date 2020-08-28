@@ -25,6 +25,40 @@ def CentroidSampleControl(centers, intensity_threshold, intensity_ratio):
             num_center += 1
     return centroid_dic, num_center - 1, center_intensity_rt_charge
 
+# --------------------------------------------------------------
+# -----------------kNN clustering Module------------------------
+# --------------------------------------------------------------
+def kNNCluster(data, centroid_dic, restriction):
+    labels = [-1] * len(data)
+    for j in centroid_dic.keys():
+        ind = np.where((data[:,0]>=j[0]-restriction[0])&(data[:,0]<=j[0]+restriction[0])&(data[:,1]>=j[1]-restriction[1])&(data[:,1]<=j[1]+restriction[1]))
+        for i in range(len(ind[0])):
+            if labels[ind[0][i]] == -1:
+                labels[ind[0][i]] = [j]
+            else:
+                labels[ind[0][i]].append(j)
+    return labels
+
+def kNN(data, labels, centroid_dic, restriction):
+    def Dist(data, centroid, restriction):
+        return (data[0] - centroid[0]) ** 2 + ((data[1] - centroid[1]) * (restriction[0] / restriction[1])) ** 2 
+      
+    for i in range(len(data)):
+        min_dist = float('inf')
+        label_tmp = -1
+        min_dist_tmp = 0
+        if labels[i] != -1:
+            for j in labels[i]:
+                min_dist_tmp = Dist((data[i,0],data[i,1]), j, restriction)
+                if min_dist > min_dist_tmp:
+                    min_dist = min_dist_tmp
+                    label_tmp = centroid_dic[j]
+        labels[i] = label_tmp
+    return labels
+
+# --------------------------------------------------------------
+# -----------------GMM clustering Module------------------------
+# --------------------------------------------------------------
 
 def GMMCluster(data, centroid_dic, restriction, set_restriction):
     if set_restriction:
@@ -40,12 +74,6 @@ def GMMCluster(data, centroid_dic, restriction, set_restriction):
     else:
         labels = np.array([1] * len(data))
     return labels
-
-
-# --------------------------------------------------------------
-# -----------------GMM clustering Module------------------------
-# --------------------------------------------------------------
-
 
 def GMM(data, centers, centroid_dic, n_iter, Var_init, Var_max):
     #     ----------------------init--------------------
@@ -388,9 +416,10 @@ def PathGen(
     delay,
     min_scan,
     max_scan,
+    cluster_mode,
 ):
     n_iter = 2
-    Var_init = restriction[0]
+    Var_init = restriction[1]
     Var_max = restriction[0]
 
     try:
@@ -420,11 +449,18 @@ def PathGen(
         centroid_dic, num_center, center_intensity_rt_charge = CentroidSampleControl(
             centers, intensity_threshold, intensity_ratio
         )
-        labels = GMMCluster(data, centroid_dic, restriction, True)
-        data_clean = data[labels != -1]
-        labels_clustered = GMM(
-            data_clean[:, :2], centers, centroid_dic, n_iter, Var_init, Var_max
-        )
+        if cluster_mode == "GMM":
+            labels = GMMCluster(data, centroid_dic, restriction, True)
+            data_clean = data[labels != -1]
+            labels_clustered = GMM(
+                data_clean[:, :2], centers, centroid_dic, n_iter, Var_init, Var_max
+            )
+        elif cluster_mode == "kNN":
+            labels = kNNCluster(data, centroid_dic, restriction)
+            labels_clustered = kNN(data, labels, centroid_dic, restriction)
+            labels_clustered = np.array(labels_clustered)
+            data_clean = data[labels_clustered > -1]
+            labels_clustered = labels_clustered[labels_clustered > -1]
     except:
         logger.error("error in clustering data", exc_info=sys.exc_info())
         sys.exit()
