@@ -121,6 +121,8 @@ def get_all_file_paths(directory,output_zip_path):
 # Run the MS2Planner workflow with baseline method
 def run_MS2Planner_baseline_from_mzTab(input_filename:int, num_path:int, intensity_ratio:float, intensity_threshold:float, win_len:float, isolation:float, delay:float, rt_margin:float):
     
+    run_MS2Planner_baseline(output_filename, output_filename[:-4]+'_MS2Planner.csv', intensity_threshold, intensity_ratio, num_path, win_len, isolation, delay)
+        
     output_dir = 'results_targeted_MS2Planner_baseline'
     os.system('rm -r '+output_dir)
     os.system('rm -r download_'+output_dir)
@@ -671,13 +673,10 @@ def make_MS2Planner_targeted_lists_from_table(input_filename:str,rt_margin:float
     try:
         make_plot_MS2Planner1(table_list_MS2Planner,output_dir)
         make_plot_MS2Planner2(table_list_MS2Planner,output_dir)
-    except:
-        raise
-    try:
         make_plot_MS2Planner3(table_list_MS2Planner,output_dir)
         make_plot_MS2Planner4(table_list_MS2Planner,output_dir)
     except:
-        pass
+        raise
 
 
 def run_MS2Planner_baseline(input_filename:str, output_filename:str, intensity_threshold:float, intensity_ratio:float, num_path:int, win_len:float, isolation:float, delay:float):
@@ -791,7 +790,7 @@ def make_plot_MS2Planner2(table_list_MS2Planner, output_dir):
 #MS2Planner generate feature intensity / duration
 def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     Labels = []
-    if len(table_list_MS2Planner) >= 0:
+    if len(table_list_MS2Planner) >= 1:
         table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('duration','intensity', data=table0, marker='o', color='blue',s=1, alpha=0.6)
         Label = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
@@ -806,7 +805,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_MS2Planner) >= 1:
+    if len(table_list_MS2Planner) >= 2:
         table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table1, marker='o', color='violet',s=1.5, alpha=0.6)
         Label = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
@@ -817,7 +816,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_MS2Planner) >= 2:
+    if len(table_list_MS2Planner) >= 3:
         table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table2, marker='o', color='orange',s=1, alpha=0.6)
         Label = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
@@ -828,7 +827,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_MS2Planner) >= 3:
+    if len(table_list_MS2Planner) >= 4:
         table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table3, marker='o', color='red', s=0.5, alpha=0.6)
         Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
@@ -838,7 +837,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
         plt.close
         plt.clf()
 
-    if len(table_list_MS2Planner) >= 4:
+    if len(table_list_MS2Planner) >= 5:
         table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table4, marker='o', color='red', s=0.1, alpha=0.6)
         Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
@@ -850,24 +849,30 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
 
 
 def make_plot_MS2Planner4(table_list_MS2Planner, output_dir):
-    fig = plt.figure()
-    lenght = len(table_list_MS2Planner)
-    label = []
-    number = -1
-    fig, axs = plt.subplots(lenght, sharex=True)
     color_list =['blue','violet','gold','red','green','orange','brown','slateblue','plum','gold','khaki','darkred','limegreen']
     color_list = color_list + color_list + color_list
-
-    for frame in table_list_MS2Planner:
-        label = frame.split('mrgd_', 1)[1]
-        frame = pd.read_csv(frame)
-        number = number + 1
-        axs[number].hist(frame['duration'], 50, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
+    
+    if len(table_list_MS2Planner) == 1:
+        frame = pd.read_csv(table_list_MS2Planner[0])
+        frame.head(5)
+        plt.hist(frame['duration'], 10, histtype='bar', alpha=1, linewidth=0.1, color = color_list[0], label= 'Inj. 1')
+            
+    if len(table_list_MS2Planner) >= 2:
+        lenght = len(table_list_MS2Planner)
+        label = []
+        number = -1
+        fig = plt.figure()
+        fig, axs = plt.subplots(lenght, sharex=True)
+        for frame in table_list_MS2Planner:
+            label = frame.split('mrgd_', 1)[1]
+            frame = pd.read_csv(frame)
+            number = number + 1
+            axs[number].hist(frame['duration'], 100, histtype='bar', alpha=1, linewidth=0.1, color = color_list[number], label= label)
         
         #plt.scatter(frame['duration'], frame['intensity'],marker = "o",s = 0.5, alpha=0.5)
     #plt.yscale('log')
     plt.xlabel('Scan time duration (seconds)',size = 8,wrap=True)
-    plt.xticks(fontsize=10, rotation=90)
+    plt.xticks(fontsize=10)
     plt.savefig(output_dir+'/scatter_plot_duration.png', dpi=200)
     plt.close
     plt.clf()
