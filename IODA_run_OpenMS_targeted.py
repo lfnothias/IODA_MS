@@ -103,7 +103,7 @@ def IODA_targeted_workflow(blank_mzML:str,sample_mzML:str,ppm_tolerance:float,no
     logger.info('   noise threshold = '+str("{:.2e}".format(noise_level)))
 
     try:
-        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
+        bashCommand0 = "wget https://github.com/lfnothias/IODA_MS/raw/MS2Planner_merge_w_master/"+TOPPAS_folder+'/'+TOPPAS_Pipeline+" -O "+TOPPAS_folder+'/'+TOPPAS_Pipeline
         cp0 = subprocess.run(bashCommand0,shell=True)
         cp0
         a_file = open(TOPPAS_folder+'/'+TOPPAS_Pipeline, "r")
