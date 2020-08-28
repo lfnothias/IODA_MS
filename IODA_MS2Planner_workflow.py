@@ -709,31 +709,31 @@ def make_plot_MS2Planner1(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 1:
         table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]', data=table0, marker='o', color='blue',s=2, alpha=0.6)
-        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
+        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table0['intensity'].mean())]
         Labels.append(Label1)
 
     if len(table_list_MS2Planner) >= 2:
         table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table1, marker='o', color='violet',s=2, alpha=0.6)
-        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
+        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['intensity'].median())  + ', mean = '+ "{0:.2e}".format(table1['intensity'].mean())]
         Labels.append(Label2)
 
     if len(table_list_MS2Planner) >= 3:
         table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
-        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
+        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table2['intensity'].mean())]
         Labels.append(Label3)
 
     if len(table_list_MS2Planner) >= 4:
         table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table3, marker='o', color='red', s=2, alpha=0.6)
-        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
+        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table3['intensity'].mean())]
         Labels.append(Label4)
 
     if len(table_list_MS2Planner) >= 5:
         table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('rt_apex','Mass [m/z]',  data=table4, marker='o', color='red', s=2, alpha=0.6)
-        Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
+        Label5 =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table4['intensity'].mean())]
         Labels.append(Label5)
 
     #plt.title('Features per path: '+ str(table_list[0]))
@@ -750,31 +750,31 @@ def make_plot_MS2Planner2(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 1:
         table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('rt_apex','intensity', data=table0, marker='o', color='blue',s=2, alpha=0.6)
-        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
+        Label1 = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table0['intensity'].mean())]
         Labels.append(Label1)
 
     if len(table_list_MS2Planner) >= 2:
         table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table1, marker='o', color='violet',s=2, alpha=0.6)
-        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
+        Label2 = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['intensity'].median())  + ', mean = '+ "{0:.2e}".format(table1['intensity'].mean())]
         Labels.append(Label2)
 
     if len(table_list_MS2Planner) >= 3:
         table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table2, marker='o', color='orange',s=2, alpha=0.6)
-        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
+        Label3 = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table2['intensity'].mean())]
         Labels.append(Label3)
 
     if len(table_list_MS2Planner) >= 4:
         table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table3, marker='o', color='red', s=2, alpha=0.6)
-        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
+        Label4 =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table3['intensity'].mean())]
         Labels.append(Label4)
 
     if len(table_list_MS2Planner) >= 5:
         table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('rt_apex','intensity',  data=table4, marker='o', color='red', s=2, alpha=0.6)
-        Label5 =['Inj. 5, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
+        Label5 =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table4['intensity'].mean())]
         Labels.append(Label5)
 
     plt.yscale('log')
@@ -797,7 +797,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 1:
         table0 = pd.read_csv(table_list_MS2Planner[0], sep=',', header=0)
         plt.scatter('duration','intensity', data=table0, marker='o', color='blue',s=1, alpha=0.6)
-        Label = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table0['rt_apex'].mean())]
+        Label = ['Inj. 1, n = '+ str(table0.shape[0])+ ', median = '+ "{0:.2e}".format(table0['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table0['intensity'].mean())]
         Labels.append(Label)
         plt.yscale('log')
         plt.ylim(bottom=1E5)
@@ -812,7 +812,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 2:
         table1 = pd.read_csv(table_list_MS2Planner[1], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table1, marker='o', color='violet',s=1.5, alpha=0.6)
-        Label = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['rt_apex'].median())  + ', mean = '+ "{0:.2e}".format(table1['rt_apex'].mean())]
+        Label = ['Inj. 2, n = '+ str(table1.shape[0])+ ', median = '+ "{0:.2e}".format(table1['intensity'].median())  + ', mean = '+ "{0:.2e}".format(table1['intensity'].mean())]
         Labels.clear()
         Labels.append(Label)
 
@@ -823,7 +823,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 3:
         table2 = pd.read_csv(table_list_MS2Planner[2], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table2, marker='o', color='orange',s=1, alpha=0.6)
-        Label = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table2['rt_apex'].mean())]
+        Label = ['Inj. 3, n = '+ str(table2.shape[0])+ ', median = '+ "{0:.2e}".format(table2['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table2['intensity'].mean())]
         Labels.clear()
         Labels.append(Label)
 
@@ -834,7 +834,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 4:
         table3 = pd.read_csv(table_list_MS2Planner[3], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table3, marker='o', color='red', s=0.5, alpha=0.6)
-        Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table3['rt_apex'].mean())]
+        Label =['Inj. 4, n = '+ str(table3.shape[0])+ ', median = '+ "{0:.2e}".format(table3['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table3['intensity'].mean())]
         Labels.clear()
         Labels.append(Label)
         plt.savefig(output_dir+'/injection4_scatter_plot_intensity_duration.png', dpi=300)
@@ -844,7 +844,7 @@ def make_plot_MS2Planner3(table_list_MS2Planner, output_dir):
     if len(table_list_MS2Planner) >= 5:
         table4 = pd.read_csv(table_list_MS2Planner[4], sep=',', header=0)
         plt.scatter('duration','intensity',  data=table4, marker='o', color='red', s=0.1, alpha=0.6)
-        Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['rt_apex'].median()) + ', mean = '+ "{0:.2e}".format(table4['rt_apex'].mean())]
+        Label =['Inj. 5, n = '+ str(table4.shape[0])+ ', median = '+ "{0:.2e}".format(table4['intensity'].median()) + ', mean = '+ "{0:.2e}".format(table4['intensity'].mean())]
         Labels.clear()
         Labels.append(Label)
         plt.savefig(output_dir+'/injection5_scatter_plot_intensity_duration.png', dpi=300)
