@@ -59,7 +59,7 @@
           </NODE>
           <NODE name="ffm" description="FeatureFinder parameters (assembling mass traces to charged features)">
             <ITEM name="local_rt_range" value="7.0" type="double" description="RT range where to look for coeluting mass traces" required="false" advanced="true" />
-            <ITEM name="local_mz_range" value="5.0" type="double" description="MZ range where to look for isotopic mass traces" required="false" advanced="true" />
+            <ITEM name="local_mz_range" value="6.0" type="double" description="MZ range where to look for isotopic mass traces" required="false" advanced="true" />
             <ITEM name="charge_lower_bound" value="1" type="int" description="Lowest charge state to consider" required="false" advanced="false" />
             <ITEM name="charge_upper_bound" value="3" type="int" description="Highest charge state to consider" required="false" advanced="false" />
             <ITEM name="report_summed_ints" value="false" type="string" description="Set to true for a feature intensity summed up over all traces rather than using monoisotopic trace intensity alone." required="false" advanced="true" restrictions="false,true" />
