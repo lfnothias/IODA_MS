@@ -8,9 +8,13 @@ This repository will help accomplish two things:
 
 ## Running on your own data
 
+View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/MS2Planner_merge_w_master/IODA_MS2Planner.ipynb)
+
 We can run this on Binder, click it below
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_MS2Planner.ipynb)
+Binder standard environment -> [![Binder with GESIS](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_MS2Planner.ipynb)
+
+Binder with GESIS -> [![Binder with GESIS](https://mybinder.org/badge_logo.svg)](https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_MS2Planner.ipynb)
 
 You will need to do two things:
 
