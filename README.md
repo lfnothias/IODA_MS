@@ -8,18 +8,17 @@ This repository will help accomplish two things:
 
 ## Running on your own data
 
-View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/blob/MS2Planner_merge_w_master/IODA_MS2Planner.ipynb)
+View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/blob/MS2Planner_merge_w_master/IODA_notebooks_welcome.ipynb)
 
 We can run this on Binder, click it below
+Binder standard environment -> [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_notebooks_welcome.ipynb)
 
-Binder standard environment -> [![Binder with GESIS](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_MS2Planner.ipynb)
-
-Binder with GESIS -> [![Binder with GESIS](https://mybinder.org/badge_logo.svg)](https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_MS2Planner.ipynb)
+Binder with GESIS -> [![Binder with GESIS](https://mybinder.org/badge_logo.svg)](https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_notebooks_welcome.ipynb)
 
 You will need to do two things:
 
 1. Open IODA_TOPPAS_mztab_generation.ipynb to run the feature finding to create the mztab file
-2. Open IODA_exclusion_from_mztab.ipyn to create the exclusion file to download
+2. Open IODA_exclusion_from_mztab.ipynb to create the exclusion file to download
 
 
 ## Testing
