@@ -10,6 +10,9 @@ This repository will help accomplish two things:
 
 View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/blob/MS2Planner_merge_w_master/IODA_notebooks_welcome.ipynb)
 
+
+https://notebooks.gesis.org/binder/v2/gh/lfnothias/IODA_MS/MS2Planner_master?urlpath=lab/tree/IODA_PathFinder.ipynb
+
 We can run this on Binder, click it below
 Binder standard environment -> [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lfnothias/IODA_MS/MS2Planner_merge_w_master?urlpath=lab/tree/IODA_notebooks_welcome.ipynb)
 
