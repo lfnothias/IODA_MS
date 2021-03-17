@@ -8,7 +8,7 @@ This repository will help accomplish two things:
 
 ## Running on your own data
 
-View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/MS2Planner_merge_w_master/IODA_MS2Planner.ipynb)
+View interface (non-interactive): [`IODA_MS2Planner.ipynb`](https://nbviewer.jupyter.org/github/lfnothias/IODA_MS/blob/MS2Planner_merge_w_master/IODA_MS2Planner.ipynb)
 
 We can run this on Binder, click it below
 
