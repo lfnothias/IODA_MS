@@ -1,3 +1,0 @@
-#!/bin/bash
-#Indicate bash pre server launch
-exec "$@"
